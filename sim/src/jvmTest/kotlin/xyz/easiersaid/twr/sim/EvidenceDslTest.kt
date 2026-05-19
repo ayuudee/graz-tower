@@ -51,9 +51,9 @@ class EvidenceDslTest {
                 cites(ICAO9432.Taxi.HoldingPointLimit)
                 sample("runway", runway)
                 expect {
-                    (instruction<TaxiToHoldingPoint>(aircraft) before
-                        report<ReportEvent.Ready>(aircraft) before
-                        instruction<LineUpAndWait>(aircraft)).toOutcome()
+                    (instructions<TaxiToHoldingPoint>(aircraft).first() before
+                        reports<ReportEvent.Ready>(aircraft).first() before
+                        instructions<LineUpAndWait>(aircraft).first()).toOutcome()
                 }
             }
         }
@@ -61,7 +61,24 @@ class EvidenceDslTest {
         report.assertNoFailures()
         assertEquals(EvidenceClaimKind.SimObservedSourceBehaviour, report.results.single().claimKind)
         assertEquals(ICAO9432.Taxi.HoldingPointLimit, report.results.single().sources)
+        assertTrue(report.results.single().activationFactIds.isNotEmpty())
         assertTrue(!report.format().contains("monitor", ignoreCase = true))
+    }
+
+    @Test
+    fun `source case without activation fails loudly unless typed gap or vacuous`() {
+        val report = simEvidence("activation-required") {
+            observe { EvidenceFactSet(scenarioId = "activation-required", facts = emptyList(), diagnostic = "empty") }
+
+            source("bad source case") {
+                cites(ICAO9432.Taxi.HoldingPointLimit)
+                expect { pass("not enough") }
+            }
+        }
+
+        val outcome = report.results.single().outcome
+        assertTrue(outcome is EvidenceAuditOutcome.Fail)
+        assertTrue((outcome as EvidenceAuditOutcome.Fail).reason.contains("activate"))
     }
 
     @Test

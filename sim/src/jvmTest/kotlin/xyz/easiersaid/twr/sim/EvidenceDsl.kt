@@ -28,7 +28,8 @@ data class EvidenceAuditCase(
     val claimKind: EvidenceClaimKind,
     val sources: Set<EvidenceSourceRef>,
     val samples: List<EvidenceSample<*>>,
-    val evaluate: (EvidenceFactSet) -> EvidenceAuditOutcome,
+    val requiresActivation: Boolean,
+    val evaluate: (EvidenceFactSet) -> EvidenceAuditEvaluation,
 ) {
     init {
         require(id.isNotBlank()) { "evidence case id must not be blank" }
@@ -41,6 +42,12 @@ data class EvidenceAuditResult(
     val sources: Set<EvidenceSourceRef>,
     val samples: List<EvidenceSample<*>>,
     val outcome: EvidenceAuditOutcome,
+    val activationFactIds: Set<FactId>,
+)
+
+data class EvidenceAuditEvaluation(
+    val outcome: EvidenceAuditOutcome,
+    val activationFactIds: Set<FactId>,
 )
 
 data class EvidenceAuditReport(
@@ -188,9 +195,10 @@ class StructuralReadbackBuilder internal constructor(
             claimKind = EvidenceClaimKind.StructuralProtocolRequirement,
             sources = sources,
             samples = emptyList(),
+            requiresActivation = false,
         ) {
             val actual = requiredReadbackAtoms(instruction)
-            if (actual == expected) {
+            val outcome = if (actual == expected) {
                 EvidenceAuditOutcome.Pass(
                     evidence = listOf("${instruction::class.simpleName} structural atoms match $actual"),
                 )
@@ -200,6 +208,7 @@ class StructuralReadbackBuilder internal constructor(
                     evidence = listOf("expected=$expected", "actual=$actual"),
                 )
             }
+            EvidenceAuditEvaluation(outcome = outcome, activationFactIds = emptySet())
         }
     }
 }
@@ -243,8 +252,25 @@ class AuditEvidenceCaseBuilder internal constructor(
             claimKind = claimKind,
             sources = sources,
             samples = samples.toList(),
+            requiresActivation = requireSources,
         ) { facts ->
-            assertion(EvidenceExpectContext(facts = facts, notes = notes.toList()))
+            val context = EvidenceExpectContext(facts = facts, notes = notes.toList())
+            val outcome = assertion(context)
+            val activationFactIds = context.activationFactIds()
+            val activationCheckedOutcome = if (
+                requireSources &&
+                activationFactIds.isEmpty() &&
+                outcome !is EvidenceAuditOutcome.ExpectedGap &&
+                outcome !is EvidenceAuditOutcome.Vacuous
+            ) {
+                EvidenceAuditOutcome.Fail(
+                    reason = "Source evidence case '$id' did not activate any evidence facts",
+                    evidence = emptyList(),
+                )
+            } else {
+                outcome
+            }
+            EvidenceAuditEvaluation(outcome = activationCheckedOutcome, activationFactIds = activationFactIds)
         }
     }
 }
@@ -253,6 +279,9 @@ class EvidenceExpectContext internal constructor(
     @PublishedApi internal val facts: EvidenceFactSet,
     private val notes: List<String>,
 ) {
+    @PublishedApi
+    internal val activated: MutableSet<FactId> = mutableSetOf()
+
     fun pass(vararg evidence: String): EvidenceAuditOutcome.Pass =
         EvidenceAuditOutcome.Pass(evidence = evidence.toList() + notes)
 
@@ -265,23 +294,64 @@ class EvidenceExpectContext internal constructor(
     fun expectedGap(gap: EvidenceGapId, reason: String): EvidenceAuditOutcome.ExpectedGap =
         EvidenceAuditOutcome.ExpectedGap(gap = gap, reason = reason)
 
-    inline fun <reified I : AtcInstruction> instruction(aircraftId: AircraftId): AuditEvidencePoint =
-        facts.orderedFacts()
-            .firstOrNull { fact ->
-                val instruction = fact.payload as? EvidenceFactPayload.Instruction ?: return@firstOrNull false
-                instruction.aircraftId == aircraftId && instruction.instruction is I
-            }
-            ?.let { fact -> AuditEvidencePoint.Present(label = I::class.simpleName ?: "Instruction", sequence = fact.provenance.sequence) }
-            ?: AuditEvidencePoint.Missing(I::class.simpleName ?: "Instruction")
+    fun activationFactIds(): Set<FactId> =
+        activated.toSet()
 
-    inline fun <reified E : ReportEvent> report(aircraftId: AircraftId): AuditEvidencePoint =
-        facts.orderedFacts()
-            .firstOrNull { fact ->
-                val report = fact.payload as? EvidenceFactPayload.PilotReport ?: return@firstOrNull false
+    inline fun <reified I : AtcInstruction> instructions(aircraftId: AircraftId): EvidenceSelector =
+        EvidenceSelector(
+            label = I::class.simpleName ?: "Instruction",
+            facts = facts.orderedFacts().filter { fact ->
+                val instruction = fact.payload as? EvidenceFactPayload.Instruction ?: return@filter false
+                instruction.aircraftId == aircraftId && instruction.instruction is I
+            },
+            activate = { factId -> activated += factId },
+        )
+
+    inline fun <reified E : ReportEvent> reports(aircraftId: AircraftId): EvidenceSelector =
+        EvidenceSelector(
+            label = E::class.simpleName ?: "Report",
+            facts = facts.orderedFacts().filter { fact ->
+                val report = fact.payload as? EvidenceFactPayload.PilotReport ?: return@filter false
                 report.aircraftId == aircraftId && report.events.any { event -> event is E }
-            }
-            ?.let { fact -> AuditEvidencePoint.Present(label = E::class.simpleName ?: "Report", sequence = fact.provenance.sequence) }
-            ?: AuditEvidencePoint.Missing(E::class.simpleName ?: "Report")
+            },
+            activate = { factId -> activated += factId },
+        )
+}
+
+class EvidenceSelector(
+    private val label: String,
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun first(): AuditEvidencePoint =
+        nth(0)
+
+    fun nth(index: Int): AuditEvidencePoint {
+        require(index >= 0) { "selector index must be non-negative" }
+        val fact = facts.getOrNull(index)
+        return if (fact == null) {
+            AuditEvidencePoint.Missing("$label#$index")
+        } else {
+            activate(fact.id)
+            AuditEvidencePoint.Present(label = "$label#$index", sequence = fact.provenance.sequence, factId = fact.id)
+        }
+    }
+
+    fun exactly(count: Int): EvidenceAuditOutcome {
+        require(count >= 0) { "expected count must be non-negative" }
+        return if (facts.size == count) {
+            facts.forEach { fact -> activate(fact.id) }
+            EvidenceAuditOutcome.Pass(listOf("$label count=$count"))
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Expected exactly $count $label fact(s); got ${facts.size}",
+                evidence = facts.map { fact -> "${fact.id.value}@${fact.provenance.sequence.value}" },
+            )
+        }
+    }
+
+    fun none(): EvidenceAuditOutcome =
+        exactly(0)
 }
 
 sealed interface AuditEvidencePoint {
@@ -290,6 +360,7 @@ sealed interface AuditEvidencePoint {
     data class Present(
         override val label: String,
         val sequence: EvidenceSequence,
+        val factId: FactId,
     ) : AuditEvidencePoint
 
     data class Missing(
@@ -336,12 +407,14 @@ private fun auditReport(
         suiteName = name,
         facts = facts,
         results = cases.map { case ->
+            val evaluation = case.evaluate(facts)
             EvidenceAuditResult(
                 id = case.id,
                 claimKind = case.claimKind,
                 sources = case.sources,
                 samples = case.samples,
-                outcome = case.evaluate(facts),
+                outcome = evaluation.outcome,
+                activationFactIds = evaluation.activationFactIds,
             )
         },
     )

@@ -25,9 +25,8 @@ Required direction:
 - [ ] No selector inspects raw sim internals.
 
 ## Done summary
-TBD
-
+Implemented the first explicit selector algebra over evidence facts. Public expectations now use typed instruction/report selectors with first/nth, stable-order before, exactly/none count primitives, and source-case activation fact accounting. Missing selections become typed failures, repeated-event selection is explicit, and before compares EvidenceSequence rather than timestamps.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: this commit
+- Tests: nix-shell --run './gradlew :sim:jvmTest --tests "*.EvidenceSelectorTest" --tests "*.EvidenceDslTest" --tests "*.EvidenceFactsTest" --tests "*.EvidenceSourceCatalogTest"', nix-shell --run './gradlew detekt', git diff --check
 - PRs:
