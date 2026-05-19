@@ -267,6 +267,7 @@ data class EvidenceSample<T : Any>(
     val name: String,
     val value: T,
     val tier: SampleTier,
+    val generated: EvidenceGeneratedSampleMetadata? = null,
 )
 
 enum class SampleTier {

@@ -90,6 +90,15 @@ class ProtocolEvidenceBuilder internal constructor(
 ) {
     private val cases: MutableList<EvidenceAuditCase> = mutableListOf()
 
+    fun <T : Any> generatedProtocol(
+        id: String,
+        domain: EvidenceGeneratedDomain<T>,
+        build: ProtocolEvidenceBuilder.(EvidenceGeneratedSample<T>) -> Unit,
+    ) {
+        require(id.isNotBlank()) { "generated protocol group id must not be blank" }
+        domain.samples.forEach { sample -> build(sample) }
+    }
+
     fun structuralReadback(
         id: String,
         instruction: AtcInstruction,
@@ -171,6 +180,8 @@ class StructuralReadbackBuilder internal constructor(
 ) {
     private val citationScope = EvidenceSourceCitationScope()
     private val requiredAtoms: MutableList<AtomicReadback> = mutableListOf()
+    private val samples: MutableList<EvidenceSample<*>> = mutableListOf()
+    private var requirementDeclared: Boolean = false
 
     fun cites(vararg refs: EvidenceSourceRef) {
         citationScope.cites(*refs)
@@ -182,19 +193,33 @@ class StructuralReadbackBuilder internal constructor(
 
     fun requires(vararg atoms: AtomicReadback) {
         require(atoms.isNotEmpty()) { "structural readback case must require at least one atom" }
+        requirementDeclared = true
         requiredAtoms += atoms
+    }
+
+    fun requiresNoAtoms() {
+        requirementDeclared = true
+    }
+
+    fun <T : Any> sample(sample: EvidenceGeneratedSample<T>) {
+        samples += EvidenceSample(
+            name = sample.metadata.domainName,
+            value = sample.value,
+            tier = SampleTier.Generated,
+            generated = sample.metadata,
+        )
     }
 
     internal fun toCase(): EvidenceAuditCase {
         val sources = citationScope.sources.toSet()
         require(sources.isNotEmpty()) { "structural readback case '$id' must cite typed source refs" }
         val expected = requiredAtoms.toSet()
-        require(expected.isNotEmpty()) { "structural readback case '$id' declared no required atoms" }
+        require(requirementDeclared) { "structural readback case '$id' declared no structural atom expectation" }
         return EvidenceAuditCase(
             id = id,
             claimKind = EvidenceClaimKind.StructuralProtocolRequirement,
             sources = sources,
-            samples = emptyList(),
+            samples = samples.toList(),
             requiresActivation = false,
         ) {
             val actual = requiredReadbackAtoms(instruction)

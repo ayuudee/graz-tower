@@ -25,9 +25,8 @@ this task.
 - [ ] The public call site says domain/sample intent without exposing generator mechanics.
 
 ## Done summary
-TBD
-
+Implemented typed generated sample support and the first pure-protocol generated readback slice. Added deterministic heading domains with seed/count/index/value/partition metadata, generatedProtocol authoring support, structural readback samples carrying generated metadata, and a negative omitted-readback-atom case that reports as a structural failure with reproduction metadata.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: this commit
+- Tests: nix-shell --run './gradlew :sim:jvmTest --tests "*.EvidenceDomainsTest" --tests "*.EvidenceSelectorTest" --tests "*.EvidenceDslTest" --tests "*.EvidenceFactsTest" --tests "*.EvidenceSourceCatalogTest"', nix-shell --run './gradlew detekt', git diff --check
 - PRs:
