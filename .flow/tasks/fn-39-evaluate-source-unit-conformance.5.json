@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-19T10:02:30.093675Z",
+  "depends_on": [
+    "fn-39-evaluate-source-unit-conformance.4"
+  ],
+  "epic": "fn-39-evaluate-source-unit-conformance",
+  "id": "fn-39-evaluate-source-unit-conformance.5",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-39-evaluate-source-unit-conformance.5.md",
+  "status": "todo",
+  "title": "Iterate candidates after review findings",
+  "updated_at": "2026-05-19T10:02:30.093780Z"
+}

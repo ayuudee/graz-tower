@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-39-evaluate-source-unit-conformance",
+  "created_at": "2026-05-19T10:01:53.076233Z",
+  "depends_on_epics": [],
+  "id": "fn-39-evaluate-source-unit-conformance",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-39-evaluate-source-unit-conformance.md",
+  "status": "open",
+  "title": "Evaluate source-unit conformance strategy",
+  "updated_at": "2026-05-19T10:02:20.651283Z"
+}
