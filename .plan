@@ -135,6 +135,17 @@ silence. Evidence:
 `research/tools/requirements-spike/quality/source_unit_conformance_evaluation/fn39_source_unit_conformance_evaluation_2026-05-19/06_final_proposal.md`.
 Impact: H | Effort: H
 
+**FN40-EVID-1 — Build evidence-mapped test facade over SimObservation port**
+FN40 compared the FN39 monitor-first idea against a middle-ground
+evidence-mapped test harness. The next implementation direction should be a
+terse public DSL over a narrow `SimObservation` anti-corruption port: tests
+declare source/golden/regression/invariant basis, typed samples, expected
+evidence, expected gaps, and reportable outcomes while hiding harness
+constructors, provenance, and report plumbing. Monitor extraction should remain
+a later refactoring if repeated evidence selectors prove it. Evidence:
+`research/tools/requirements-spike/quality/evidence_mapped_test_harness/fn40_evidence_mapped_test_harness_2026-05-19/review.md`.
+Impact: H | Effort: M
+
 ### Research review findings (2026-04-30)
 
 **RRD-1 - FM import graph and living docs disagree** - DONE (2026-04-30)

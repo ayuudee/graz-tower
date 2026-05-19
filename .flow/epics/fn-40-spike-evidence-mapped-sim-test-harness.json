@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-40-spike-evidence-mapped-sim-test-harness",
+  "created_at": "2026-05-19T13:37:27.512303Z",
+  "depends_on_epics": [],
+  "id": "fn-40-spike-evidence-mapped-sim-test-harness",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-40-spike-evidence-mapped-sim-test-harness.md",
+  "status": "done",
+  "title": "Spike evidence-mapped sim test harness",
+  "updated_at": "2026-05-19T13:46:36.953597Z"
+}

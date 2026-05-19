@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-19T13:37:52.438270Z",
+  "depends_on": [],
+  "epic": "fn-40-spike-evidence-mapped-sim-test-harness",
+  "id": "fn-40-spike-evidence-mapped-sim-test-harness.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-40-spike-evidence-mapped-sim-test-harness.1.md",
+  "status": "todo",
+  "title": "Implement evidence-mapped harness spike",
+  "updated_at": "2026-05-19T13:37:52.438376Z"
+}
