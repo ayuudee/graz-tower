@@ -21,9 +21,8 @@ source-backed case.
 - [ ] No in-memory-only report path is treated as sufficient.
 
 ## Done summary
-TBD
-
+Implemented durable Markdown and JSON evidence report output. Reports are written to disk and include suite/scenario ids, case ids, claim kind, source refs, samples, generated reproduction metadata, outcome, activation fact ids, derived applicability/activation/adequacy, and typed expected-gap metadata. Tests parse emitted JSON and compare deterministic file content to the formatter output.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: this commit
+- Tests: nix-shell --run './gradlew :sim:jvmTest --tests "*.EvidenceReportWriterTest" --tests "*.EvidenceDomainsTest" --tests "*.EvidenceSelectorTest" --tests "*.EvidenceDslTest" --tests "*.EvidenceFactsTest" --tests "*.EvidenceSourceCatalogTest"', nix-shell --run './gradlew detekt', git diff --check
 - PRs:
