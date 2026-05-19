@@ -26,6 +26,7 @@ import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.Wind
 import xyz.easiersaid.twr.protocol.requiredReadbackAtoms
 import xyz.easiersaid.twr.sim.testing.Fixtures
+import xyz.easiersaid.twr.sim.testing.TransmissionRecord
 import xyz.easiersaid.twr.sim.testing.controllerByRole
 import xyz.easiersaid.twr.sim.testing.formatJourney
 import xyz.easiersaid.twr.sim.testing.load
@@ -78,12 +79,67 @@ data class ObservedAircraft(
     val missionComplete: Boolean,
 )
 
+data class LowgCircuitTrace(
+    val scenarioId: String,
+    val aircraftId: AircraftId,
+    val finalAircraft: Map<AircraftId, ObservedAircraft>,
+    val records: List<TransmissionRecord>,
+    val diagnostic: String,
+)
+
 object LowgObservationPort {
     fun runCircuitTraining(
         scenarioId: String,
         outcomes: List<CircuitOutcome>,
         untilMinutes: Long,
     ): SimObservation {
+        val trace = runCircuitTrainingTrace(
+            scenarioId = scenarioId,
+            outcomes = outcomes,
+            untilMinutes = untilMinutes,
+        )
+        return SimObservation(
+            scenarioId = trace.scenarioId,
+            instructions = trace.records.mapNotNull { record ->
+                val controller = record.speaker as? SpeakerRef.Controller ?: return@mapNotNull null
+                val output = (record.utterance as? Utterance.FromController)?.output ?: return@mapNotNull null
+                val instruct = output as? ControllerOutput.Instruct ?: return@mapNotNull null
+                ObservedInstruction(
+                    time = record.time,
+                    controllerId = controller.id,
+                    aircraftId = instruct.target,
+                    instruction = instruct.instruction,
+                )
+            },
+            pilotReports = trace.records.mapNotNull { record ->
+                val pilot = record.speaker as? SpeakerRef.Pilot ?: return@mapNotNull null
+                val transmission = (record.utterance as? Utterance.FromPilot)?.transmission ?: return@mapNotNull null
+                val report = transmission as? Report ?: return@mapNotNull null
+                ObservedPilotReport(
+                    time = record.time,
+                    aircraftId = pilot.aircraftId,
+                    events = report.events,
+                )
+            },
+            pilotTransmissions = trace.records.mapNotNull { record ->
+                val pilot = record.speaker as? SpeakerRef.Pilot ?: return@mapNotNull null
+                val transmission = (record.utterance as? Utterance.FromPilot)?.transmission ?: return@mapNotNull null
+                ObservedPilotTransmission(
+                    time = record.time,
+                    aircraftId = pilot.aircraftId,
+                    transmission = transmission,
+                )
+            },
+            aircraft = trace.finalAircraft,
+            diagnostic = trace.diagnostic,
+        )
+    }
+
+    fun runCircuitTrainingTrace(
+        scenarioId: String,
+        outcomes: List<CircuitOutcome>,
+        untilMinutes: Long,
+    ): LowgCircuitTrace {
         val loaded = Fixtures.LOWG.load().getOrElse {
             fail("LOWG fixture failed to load: $it")
         }
@@ -138,44 +194,17 @@ object LowgObservationPort {
         )
         val finalState = result.finalState
         val records = result.records
-        return SimObservation(
+        val finalAircraft = finalState.aircraft.mapValues { (_, aircraftState) ->
+            ObservedAircraft(
+                phase = aircraftState.phase,
+                missionComplete = aircraftState.pilotMission?.isComplete == true,
+            )
+        }
+        return LowgCircuitTrace(
             scenarioId = scenarioId,
-            instructions = records.mapNotNull { record ->
-                val controller = record.speaker as? SpeakerRef.Controller ?: return@mapNotNull null
-                val output = (record.utterance as? Utterance.FromController)?.output ?: return@mapNotNull null
-                val instruct = output as? ControllerOutput.Instruct ?: return@mapNotNull null
-                ObservedInstruction(
-                    time = record.time,
-                    controllerId = controller.id,
-                    aircraftId = instruct.target,
-                    instruction = instruct.instruction,
-                )
-            },
-            pilotReports = records.mapNotNull { record ->
-                val pilot = record.speaker as? SpeakerRef.Pilot ?: return@mapNotNull null
-                val transmission = (record.utterance as? Utterance.FromPilot)?.transmission ?: return@mapNotNull null
-                val report = transmission as? Report ?: return@mapNotNull null
-                ObservedPilotReport(
-                    time = record.time,
-                    aircraftId = pilot.aircraftId,
-                    events = report.events,
-                )
-            },
-            pilotTransmissions = records.mapNotNull { record ->
-                val pilot = record.speaker as? SpeakerRef.Pilot ?: return@mapNotNull null
-                val transmission = (record.utterance as? Utterance.FromPilot)?.transmission ?: return@mapNotNull null
-                ObservedPilotTransmission(
-                    time = record.time,
-                    aircraftId = pilot.aircraftId,
-                    transmission = transmission,
-                )
-            },
-            aircraft = finalState.aircraft.mapValues { (_, aircraftState) ->
-                ObservedAircraft(
-                    phase = aircraftState.phase,
-                    missionComplete = aircraftState.pilotMission?.isComplete == true,
-                )
-            },
+            aircraftId = aircraftId,
+            finalAircraft = finalAircraft,
+            records = records,
             diagnostic = finalState.formatJourney(aircraftId, records),
         )
     }

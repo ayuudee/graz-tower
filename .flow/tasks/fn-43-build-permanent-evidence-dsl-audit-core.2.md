@@ -28,9 +28,8 @@ Facts must be observations only. They must not encode conformance conclusions.
 - [ ] Tests prove facts are emitted for the LOWG instruction/report paths used by FN41.
 
 ## Done summary
-TBD
-
+Implemented provenance-bearing evidence facts for synthetic protocol and LOWG sim evidence. Facts now carry stable ids, origin, scenario id, deterministic sequence, sim time, source transmission id where available, extraction path, and typed payloads for instructions, pilot transmissions, reports, aircraft summaries, and samples. The LOWG fact adapter shares the existing observation trace runner, and TransmissionRecord now preserves TransmissionId for provenance.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: this commit
+- Tests: nix-shell --run './gradlew :sim:jvmTest --tests "*.EvidenceFactsTest" --tests "*.EvidenceSourceCatalogTest"', nix-shell --run './gradlew detekt', git diff --check
 - PRs:

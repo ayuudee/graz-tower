@@ -13,6 +13,7 @@ import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.sim.ReceiverRef
 import xyz.easiersaid.twr.sim.SimEvent
 import xyz.easiersaid.twr.sim.SpeakerRef
+import xyz.easiersaid.twr.sim.TransmissionId
 import xyz.easiersaid.twr.sim.Utterance
 
 /**
@@ -26,6 +27,7 @@ import xyz.easiersaid.twr.sim.Utterance
  * time). Storing it would admit a "speaker and frequency disagree" bug class.
  */
 data class TransmissionRecord(
+    val transmissionId: TransmissionId,
     val time: SimTime,
     val speaker: SpeakerRef,
     val receiver: ReceiverRef,
@@ -35,6 +37,7 @@ data class TransmissionRecord(
 /** Extract a typed [TransmissionRecord] from a [SimEvent.TransmissionStart]. */
 fun SimEvent.TransmissionStart.toTransmissionRecord(): TransmissionRecord =
     TransmissionRecord(
+        transmissionId = transmission.id,
         time = transmission.startedAt,
         speaker = transmission.speaker,
         receiver = transmission.receiver,
@@ -87,7 +90,7 @@ fun List<TransmissionRecord>.timeOfFirst(
 
 /** Pretty-print for diagnostic output. */
 fun TransmissionRecord.format(): String =
-    "[${time.millis}ms] $speaker → $receiver: $utterance"
+    "[${time.millis}ms #${transmissionId.value}] $speaker → $receiver: $utterance"
 
 /** Multi-line concatenation of records for failure-message output. */
 fun List<TransmissionRecord>.formatAll(): String =
