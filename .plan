@@ -206,6 +206,25 @@ reactive/emergency behaviour or splitting any intentionally obsolete golden
 expectation into an explicit design decision.
 Impact: H | Effort: M
 
+**FN44-GAP-1 — Evidence facts need controller-advised frequency-transfer projection**
+FN44 can cite ICAO 9432 §2.8.2.1's controller-advised frequency-change source
+unit, but the current evidence port does not expose an explicit controller
+frequency-transfer advice fact. G2 currently models cross-aerodrome progression
+as release plus autonomous first contact, not a controller-issued `CONTACT`
+instruction with target unit/frequency. Close when a scenario or trace adapter
+emits a typed `FrequencyTransfer(mode = ControllerAdvised)` fact backed by
+actual transmission or coordination evidence.
+Impact: M | Effort: M
+
+**FN44-GAP-2 — Evidence facts need pilot-notified frequency-change projection**
+FN44 can cite ICAO 9432 §2.8.2.1's fallback requirement that the aircraft
+notify before a frequency change absent advice, but the current sim does not
+model pilot-initiated frequency changes as a distinct event before the change.
+Initial contact with another unit is not enough to prove prior notification.
+Close when the pilot/comms trace exposes a typed notification-before-change
+fact or an explicit pilot-initiated frequency-change scenario.
+Impact: M | Effort: M
+
 ### Research review findings (2026-04-30)
 
 **RRD-1 - FM import graph and living docs disagree** - DONE (2026-04-30)

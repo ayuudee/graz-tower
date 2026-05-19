@@ -52,11 +52,14 @@ class EvidenceSourceCatalogTest {
     fun `gap ids carry affected sources missing concept closure trigger and backlog link`() {
         val metadata = EvidenceGaps.All.map { gap -> gap.metadata }
 
-        assertEquals(2, metadata.size)
+        assertEquals(4, metadata.size)
         assertTrue(metadata.all { gap -> gap.affectedSources.isNotEmpty() })
         assertTrue(metadata.all { gap -> gap.missingConcept.isNotBlank() })
         assertTrue(metadata.all { gap -> gap.closureTrigger.isNotBlank() })
-        assertEquals(setOf("FN43-GAP-1", "FN43-GAP-2"), metadata.map { gap -> gap.tracking.id }.toSet())
+        assertEquals(
+            setOf("FN43-GAP-1", "FN43-GAP-2", "FN44-GAP-1", "FN44-GAP-2"),
+            metadata.map { gap -> gap.tracking.id }.toSet(),
+        )
     }
 
     @Test
