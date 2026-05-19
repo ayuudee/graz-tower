@@ -3,6 +3,7 @@ package xyz.easiersaid.twr.sim
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.InitialContact
@@ -46,6 +47,31 @@ class EvidenceProjectionPressureTest {
         report.assertNoFailures()
         val result = report.results.single()
         assertEquals(EvidenceClaimKind.SimObservedSourceBehaviour, result.claimKind)
+        assertTrue(result.activationFactIds.isNotEmpty())
+        assertTrue(result.outcome is EvidenceAuditOutcome.Pass)
+    }
+
+    @Test
+    fun `critical phase radio silence uses observed phase windows`() {
+        val aircraft = AircraftId("OE-ABC")
+
+        val report = simEvidence("fn44-critical-phase-radio-silence") {
+            observe {
+                EvidenceFactAdapters.lowgCircuitTraining(
+                    scenarioId = "fn44-critical-phase-radio-silence",
+                    outcomes = listOf(CircuitOutcome.FullStop),
+                    untilMinutes = 30,
+                )
+            }
+
+            source("no routine controller transmissions in critical windows") {
+                cites(ICAO9432.CriticalPhase.CriticalPhaseRadioSilence)
+                expect { criticalPhase(aircraft).routineControllerTransmissions().none() }
+            }
+        }
+
+        report.assertNoFailures()
+        val result = report.results.single()
         assertTrue(result.activationFactIds.isNotEmpty())
         assertTrue(result.outcome is EvidenceAuditOutcome.Pass)
     }

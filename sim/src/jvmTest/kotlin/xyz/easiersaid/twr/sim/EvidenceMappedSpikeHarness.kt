@@ -26,6 +26,7 @@ import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.Wind
 import xyz.easiersaid.twr.protocol.requiredReadbackAtoms
 import xyz.easiersaid.twr.sim.testing.Fixtures
+import xyz.easiersaid.twr.sim.testing.SimTrace
 import xyz.easiersaid.twr.sim.testing.TransmissionRecord
 import xyz.easiersaid.twr.sim.testing.controllerByRole
 import xyz.easiersaid.twr.sim.testing.formatJourney
@@ -84,6 +85,7 @@ data class LowgCircuitTrace(
     val aircraftId: AircraftId,
     val finalAircraft: Map<AircraftId, ObservedAircraft>,
     val records: List<TransmissionRecord>,
+    val trace: SimTrace,
     val diagnostic: String,
 )
 
@@ -205,6 +207,7 @@ object LowgObservationPort {
             aircraftId = aircraftId,
             finalAircraft = finalAircraft,
             records = records,
+            trace = result.trace,
             diagnostic = finalState.formatJourney(aircraftId, records),
         )
     }

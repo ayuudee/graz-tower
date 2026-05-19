@@ -359,6 +359,13 @@ class EvidenceExpectContext internal constructor(
             facts = facts.orderedFacts(),
             activate = { factId -> activated += factId },
         )
+
+    fun criticalPhase(aircraftId: AircraftId): AuditCriticalPhaseSubject =
+        AuditCriticalPhaseSubject(
+            aircraftId = aircraftId,
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
 }
 
 class AuditAircraftSubject internal constructor(
@@ -474,6 +481,58 @@ class AuditAerodromeInformationContext internal constructor(
                     val information = fact.payload as EvidenceFactPayload.AerodromeInformation
                     "${information.status}:${information.detail.value}@${fact.provenance.sequence.value}"
                 },
+            )
+        }
+    }
+}
+
+class AuditCriticalPhaseSubject internal constructor(
+    private val aircraftId: AircraftId,
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun routineControllerTransmissions(): AuditCriticalPhaseRoutineTransmissions =
+        AuditCriticalPhaseRoutineTransmissions(
+            aircraftId = aircraftId,
+            facts = facts,
+            activate = activate,
+        )
+}
+
+class AuditCriticalPhaseRoutineTransmissions internal constructor(
+    private val aircraftId: AircraftId,
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun none(): EvidenceAuditOutcome {
+        val windows = facts.filter { fact ->
+            val window = fact.payload as? EvidenceFactPayload.CriticalPhaseWindow ?: return@filter false
+            window.aircraftId == aircraftId
+        }
+        if (windows.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing critical-phase window evidence for ${aircraftId.value}",
+                evidence = emptyList(),
+            )
+        }
+        val routineTransmissions = facts.filter { fact ->
+            val transmission = fact.payload as? EvidenceFactPayload.CriticalPhaseTransmission
+                ?: return@filter false
+            transmission.aircraftId == aircraftId && transmission.necessity == TransmissionNecessity.Routine
+        }
+        windows.forEach { fact -> activate(fact.id) }
+        routineTransmissions.forEach { fact -> activate(fact.id) }
+        return if (routineTransmissions.isEmpty()) {
+            EvidenceAuditOutcome.Pass(
+                windows.map { fact ->
+                    val window = fact.payload as EvidenceFactPayload.CriticalPhaseWindow
+                    "${window.phase}:${window.start.value}-${window.end.value}"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Observed routine controller transmission(s) during critical phase",
+                evidence = routineTransmissions.map { fact -> fact.id.value },
             )
         }
     }

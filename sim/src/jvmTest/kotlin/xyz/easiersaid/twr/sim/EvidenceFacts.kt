@@ -12,6 +12,7 @@ import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.SimTime
+import xyz.easiersaid.twr.sim.testing.SimTrace
 import xyz.easiersaid.twr.sim.testing.TransmissionRecord
 
 @JvmInline
@@ -288,11 +289,21 @@ object EvidenceFactAdapters {
     }
 
     fun fromLowgCircuitTrace(trace: LowgCircuitTrace): EvidenceFactSet {
-        return fromTransmissionRecords(
+        val transmissionFacts = fromTransmissionRecords(
             scenarioId = trace.scenarioId,
             records = trace.records,
             finalAircraft = trace.finalAircraft,
             diagnostic = trace.diagnostic,
+        )
+        val nextSequence = EvidenceSequence(
+            transmissionFacts.facts.maxOfOrNull { fact -> fact.provenance.sequence.value }?.plus(1) ?: 0,
+        )
+        return transmissionFacts.copy(
+            facts = transmissionFacts.facts + criticalPhaseWindowFacts(
+                scenarioId = trace.scenarioId,
+                trace = trace.trace,
+                startSequence = nextSequence,
+            ),
         )
     }
 
@@ -517,6 +528,101 @@ object EvidenceFactAdapters {
         )
     }
 
+    private fun criticalPhaseWindowFacts(
+        scenarioId: String,
+        trace: SimTrace,
+        startSequence: EvidenceSequence,
+    ): List<EvidenceFact> {
+        val aircraftIds = (listOf(trace.initial) + trace.steps.map { step -> step.state })
+            .flatMap { state -> state.aircraft.keys }
+            .distinct()
+            .sortedBy { aircraftId -> aircraftId.value }
+        val windows = aircraftIds.flatMap { aircraftId -> criticalPhaseWindowsForAircraft(aircraftId, trace) }
+        return windows.mapIndexed { index, window ->
+            fact(
+                scenarioId = scenarioId,
+                origin = EvidenceFactOrigin.SimRun,
+                sequence = EvidenceSequence(startSequence.value + index),
+                simTime = null,
+                sourceTransmissionId = null,
+                extractionPath = EvidenceExtractionPath(
+                    "sim.trace.${window.aircraftId.value}.${window.phase}.${window.start.value}-${window.end.value}",
+                ),
+                payload = EvidenceFactPayload.CriticalPhaseWindow(
+                    aircraftId = window.aircraftId,
+                    phase = window.phase,
+                    start = window.start,
+                    end = window.end,
+                ),
+            )
+        }
+    }
+
+    private fun criticalPhaseWindowsForAircraft(
+        aircraftId: AircraftId,
+        trace: SimTrace,
+    ): List<CriticalWindowSpec> {
+        val samples = trace.steps.mapIndexedNotNull { index, step ->
+            val phase = step.state.aircraft[aircraftId]?.phase ?: return@mapIndexedNotNull null
+            CriticalPhaseSample(
+                traceIndex = index + 1,
+                kind = criticalPhaseKind(phase),
+            )
+        }
+        val build = samples.fold(CriticalWindowBuild(open = null, closed = emptyList())) { acc, sample ->
+            when (val open = acc.open) {
+                null -> if (sample.kind == null) {
+                    acc
+                } else {
+                    acc.copy(
+                        open = OpenCriticalWindow(
+                            aircraftId = aircraftId,
+                            phase = sample.kind,
+                            start = sample.traceIndex,
+                            last = sample.traceIndex,
+                        ),
+                    )
+                }
+
+                else -> if (sample.kind == open.phase) {
+                    acc.copy(open = open.copy(last = sample.traceIndex))
+                } else {
+                    CriticalWindowBuild(
+                        open = sample.kind?.let { nextKind ->
+                            OpenCriticalWindow(
+                                aircraftId = aircraftId,
+                                phase = nextKind,
+                                start = sample.traceIndex,
+                                last = sample.traceIndex,
+                            )
+                        },
+                        closed = acc.closed + open.toSpec(),
+                    )
+                }
+            }
+        }
+        return build.closed + listOfNotNull(build.open?.toSpec())
+    }
+
+    private fun criticalPhaseKind(phase: PilotPhase): CriticalPhaseKind? =
+        when (phase) {
+            PilotPhase.TakeoffRoll -> CriticalPhaseKind.Takeoff
+            PilotPhase.LandingRoll -> CriticalPhaseKind.LandingRoll
+            PilotPhase.AtStand,
+            PilotPhase.Base,
+            PilotPhase.ClearOfRunway,
+            PilotPhase.Climbing,
+            PilotPhase.Crosswind,
+            PilotPhase.Downwind,
+            PilotPhase.Final,
+            PilotPhase.HoldingShort,
+            PilotPhase.LinedUp,
+            PilotPhase.Parked,
+            PilotPhase.Taxiing,
+            PilotPhase.Vacating,
+            -> null
+        }
+
     private fun fact(
         scenarioId: String,
         origin: EvidenceFactOrigin,
@@ -551,3 +657,35 @@ object EvidenceFactAdapters {
 
     private const val FACTS_PER_RECORD: Int = 10
 }
+
+private data class CriticalPhaseSample(
+    val traceIndex: Int,
+    val kind: CriticalPhaseKind?,
+)
+
+private data class OpenCriticalWindow(
+    val aircraftId: AircraftId,
+    val phase: CriticalPhaseKind,
+    val start: Int,
+    val last: Int,
+) {
+    fun toSpec(): CriticalWindowSpec =
+        CriticalWindowSpec(
+            aircraftId = aircraftId,
+            phase = phase,
+            start = EvidenceSequence(start),
+            end = EvidenceSequence(last),
+        )
+}
+
+private data class CriticalWindowSpec(
+    val aircraftId: AircraftId,
+    val phase: CriticalPhaseKind,
+    val start: EvidenceSequence,
+    val end: EvidenceSequence,
+)
+
+private data class CriticalWindowBuild(
+    val open: OpenCriticalWindow?,
+    val closed: List<CriticalWindowSpec>,
+)
