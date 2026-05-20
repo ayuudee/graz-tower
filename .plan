@@ -241,6 +241,52 @@ Close when the pilot/comms trace exposes a typed notification-before-change
 fact or an explicit pilot-initiated frequency-change scenario.
 Impact: M | Effort: M
 
+**POLICY-1 — Source-mapped tests need typed operational policy concepts**
+FN46's ICAO 9432 programme map identifies source units whose correct controller
+or pilot behaviour depends on operational guidance, local procedure, controller
+discretion, or "whenever possible" conditions. These must not be encoded as one
+globally correct behaviour in source-mapped tests. Close when the evidence DSL
+and relevant sim/controller fixtures can declare typed policy concepts such as
+`ClearanceTimingPolicy`, `CriticalPhaseTransmissionPolicy`,
+`ControllerInterventionPolicy`, and `LocalProcedurePolicy`, with tests asserting
+behaviour under an explicit policy choice.
+Impact: H | Effort: M
+
+**PHRASE-1 — Source-mapped phraseology checks need rendered-transmission facts**
+FN46 maps many ICAO 9432 units to phraseology-only or phraseology-heavy
+requirements: callsign form, ALL STATIONS broadcasts, distress/urgency message
+formats, and reserved word usage. Current typed protocol tests can often prove
+instruction semantics but cannot yet reliably assert rendered RT phraseology as
+source-mapped evidence. Close when rendered pilot/controller transmissions are
+available as stable evidence facts with enough structure to check cited
+phraseology without brittle string scraping.
+Impact: H | Effort: H
+
+**VEHICLE-1 — Aerodrome vehicle and towing source units need a sim model**
+FN46 maps ICAO 9432 Chapter 5 vehicle/crossing/towing units to expected gaps.
+The current sim is aircraft-focused and does not model aerodrome vehicles,
+towing movements, vehicle callsigns, or vehicle runway/taxiway permissions as
+first-class traffic. Close when the world, controller, and evidence layers can
+represent vehicle/tow actors and source-mapped crossing/towing scenarios.
+Impact: M | Effort: H
+
+**PUSHBACK-1 — Pushback/powerback source units need explicit ground-movement model support**
+FN46 maps ICAO 9432 §4.3 pushback/powerback units mostly to model gaps. The
+current ground flow starts from stands and taxi clearances but does not model
+pushback approval, powerback, tug interaction, or stand-to-taxi transition as a
+source-mapped operational phase. Close when pushback/powerback can be authored
+as high-level scenarios with typed evidence.
+Impact: M | Effort: M
+
+**EMERGENCY-1 — Distress, urgency, emergency descent, and communication-failure source units need emergency scenario support**
+FN46 maps ICAO 9432 Chapter 9 units to expected gaps because the current sim
+does not yet model distress/urgency message workflows, emergency descent
+broadcasts, silence/imposition semantics, or radio-failure procedures as
+first-class high-level scenarios. Close when emergency/failure scenario
+primitives and evidence facts can support source-mapped tests without embedding
+implementation-specific hooks in the tests.
+Impact: H | Effort: H
+
 ### Research review findings (2026-04-30)
 
 **RRD-1 - FM import graph and living docs disagree** - DONE (2026-04-30)

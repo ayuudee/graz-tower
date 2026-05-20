@@ -11,3 +11,10 @@ This is a planning review, not an implementation review. It should decide whethe
 - [ ] The review identifies source units that are guidance/policy/example rather than mandatory behaviour.
 - [ ] The review confirms the first chunk can author tests without requiring implementation fixes in the same epic.
 - [ ] The review produces a final recommendation: proceed, revise map, or split/reorder chunks.
+
+## Done summary
+Reviewed and red-teamed the programme map. Verdict: proceed with the map as a planning baseline, but re-check each source quote during chunk test authoring; start with chunk-01 and preserve the testing/implementation firewall.
+## Evidence
+- Commits:
+- Tests:
+- PRs:

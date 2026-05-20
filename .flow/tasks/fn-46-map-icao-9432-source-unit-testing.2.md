@@ -11,3 +11,10 @@ Suggested operational areas: communications establishment, transfer/frequency, r
 - [ ] Every accepted unit has a current testability status: testable-now, needs-observation-fact, needs-policy-type, needs-sim-model, phraseology-later, expected-gap, or not-applicable.
 - [ ] Policy-sensitive units name the likely policy concept required in code.
 - [ ] The classification avoids overclaiming: no unit is marked testable-now unless the evidence needed to prove it is available or clearly authorable in the current test harness.
+
+## Done summary
+Classified all 166 accepted ICAO 9432 units by operational area, chunk, normative kind, current testability, evidence target, policy concept, and blocker. The first pass is intentionally conservative and treats phraseology, policy, vehicles, pushback, emergency, and observation gaps as explicit blockers.
+## Evidence
+- Commits:
+- Tests:
+- PRs:

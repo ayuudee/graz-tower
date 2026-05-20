@@ -11,3 +11,10 @@ The first chunk should be chosen for high learning value and manageable blast ra
 - [ ] The first chunk is nominated with rationale and clear boundaries.
 - [ ] Any required `.plan` backlog additions are identified for observation facts, policy concepts, or model gaps.
 - [ ] The plan preserves the testing/implementation firewall: test-authoring epics do not include behaviour fixes.
+
+## Done summary
+Drafted eight proposed chunk epics covering all 166 accepted ICAO 9432 units, recommended chunk-01 communications/readback/transfer as the first test-authoring epic, and added new .plan blockers for policy, phraseology, vehicle, pushback, and emergency model gaps.
+## Evidence
+- Commits:
+- Tests:
+- PRs:

@@ -11,3 +11,10 @@ Capture at minimum: source unit id, section/window, title/summary if available, 
 - [ ] The inventory includes enough text/summary context to classify without reopening every JSON file.
 - [ ] Counts by section are reported.
 - [ ] Pending/rejected ICAO 9432 units are not mixed into the accepted programme, but their counts are noted separately if easy to derive.
+
+## Done summary
+Inventoried all accepted ICAO 9432 source units from the registry using documentId=icao9432-extracted and lifecycle.state=accepted; produced inventory CSV/JSON and section counts.
+## Evidence
+- Commits:
+- Tests:
+- PRs:
