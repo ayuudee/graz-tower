@@ -159,7 +159,7 @@ class EvidenceMappedHarnessSpikeTest {
         EvidenceMappedCase(
             id = "icao9432-essential-aerodrome-information-model-gap",
             basis = EvidenceBasis.SourceMapped(
-                sources = listOf(SourceUnitRef("icao9432-extracted::aerodrome_information_gap::spike")),
+                sources = listOf(SourceUnitRef("icao9432-extracted::essential_aerodrome_information_4_10_en::1aa5cb7e758055bc")),
             ),
             samples = emptyList(),
         ) {
@@ -173,7 +173,7 @@ class EvidenceMappedHarnessSpikeTest {
         EvidenceMappedCase(
             id = "icao9432-critical-phase-radio-silence-model-gap",
             basis = EvidenceBasis.SourceMapped(
-                sources = listOf(SourceUnitRef("icao9432-extracted::critical_phase_radio_silence_gap::spike")),
+                sources = listOf(SourceUnitRef("icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4")),
             ),
             samples = emptyList(),
         ) {

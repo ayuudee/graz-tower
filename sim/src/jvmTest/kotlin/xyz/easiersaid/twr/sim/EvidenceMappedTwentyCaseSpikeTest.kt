@@ -174,7 +174,7 @@ class EvidenceMappedTwentyCaseSpikeTest {
 
             sourceCase(
                 id = "essential aerodrome information remains explicit gap",
-                "icao9432-extracted::aerodrome_information_gap::spike",
+                "icao9432-extracted::essential_aerodrome_information_4_10_en::1aa5cb7e758055bc",
             ) {
                 expect {
                     expectedGap(
@@ -186,7 +186,7 @@ class EvidenceMappedTwentyCaseSpikeTest {
 
             sourceCase(
                 id = "critical phase radio silence remains explicit gap",
-                "icao9432-extracted::critical_phase_radio_silence_gap::spike",
+                "icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4",
             ) {
                 expect {
                     expectedGap(

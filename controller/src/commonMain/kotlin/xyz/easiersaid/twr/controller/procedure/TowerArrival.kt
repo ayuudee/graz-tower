@@ -13,6 +13,7 @@ import xyz.easiersaid.twr.controller.bdi.CommitmentKind
 import xyz.easiersaid.twr.controller.bdi.ContinueApproachAction
 import xyz.easiersaid.twr.controller.bdi.ExtendDownwindAction
 import xyz.easiersaid.twr.controller.bdi.GoAroundAction
+import xyz.easiersaid.twr.controller.bdi.GoAroundAlreadyIssuedThisAttempt
 import xyz.easiersaid.twr.controller.bdi.GoAroundEvent
 import xyz.easiersaid.twr.controller.bdi.GoAroundInProgressOnRunway
 import xyz.easiersaid.twr.controller.bdi.HandoffAction
@@ -301,6 +302,7 @@ private val obstructionGoAroundRuleAwaitApproach: AtcRule = AtcRule(
         // path (`applyCommittedOutputWitnesses`), NOT at candidate-emit
         // time — see fn-12 task spec § R7-no-refire.
         Not(ObstructionGoAroundAlreadyIssuedThisAttempt),
+        Not(GoAroundAlreadyIssuedThisAttempt),
     )),
     action = ObstructionGoAroundAction,
     nextStage = TowerArrivalStage.AwaitDownwind,
@@ -325,6 +327,7 @@ private val obstructionGoAroundRulePostClearance: AtcRule = AtcRule(
         // path (`applyCommittedOutputWitnesses`), NOT at candidate-emit
         // time — see fn-12 task spec § R7-no-refire.
         Not(ObstructionGoAroundAlreadyIssuedThisAttempt),
+        Not(GoAroundAlreadyIssuedThisAttempt),
     )),
     action = ObstructionGoAroundAction,
     nextStage = TowerArrivalStage.AwaitDownwind,
@@ -567,6 +570,8 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                     AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
                     RunwayAccessGranted,
                     Not(RunwayPhysicallyClear),
+                    Not(GoAroundInProgressOnRunway),
+                    Not(GoAroundAlreadyIssuedThisAttempt),
                 )),
                 action = GoAroundAction,
                 nextStage = TowerArrivalStage.AwaitDownwind,
@@ -595,7 +600,7 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
             // separation-concern is below INTERVENTION — a downwind aircraft
             // ~30s behind a GA-active runway might not register as a
             // separation concern at all). Once the GA belief clears
-            // (pattern-rejoin report / 60s timeout / next cycle), this
+            // (pattern-rejoin report / bounded timeout / next cycle), this
             // rule's guard returns false and the existing ARR-TURN-BASE
             // rule's guard `Not(GoAroundInProgressOnRunway)` passes,
             // emitting TurnBase to B in the SAME cycle. The existing
@@ -785,6 +790,8 @@ fun towerArrivalProcedure(): ProcedureSpec = ProcedureSpec(
                 guard = AllOf(listOf(
                     AnyOf(listOf(OnApproach, OnCircuitLeg(LegName.FINAL))),
                     Not(RunwayPhysicallyClear),
+                    Not(GoAroundInProgressOnRunway),
+                    Not(GoAroundAlreadyIssuedThisAttempt),
                 )),
                 action = GoAroundAction,
                 nextStage = TowerArrivalStage.AwaitDownwind,

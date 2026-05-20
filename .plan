@@ -194,7 +194,7 @@ Close when the evidence fact adapter emits phase-window and safety-necessity
 facts suitable for source-backed activation and adequacy reporting.
 Impact: M | Effort: M
 
-**SIM-RED-1 — Broad sim JVM suite is red in reactive/emergency goldens**
+**SIM-RED-1 — Broad sim JVM suite is red in reactive/emergency goldens** — DONE (2026-05-20)
 During FN43 completion review, the focused evidence DSL suites and detekt were
 green, but broad `:sim:jvmTest` failed in pre-existing reactive/emergency
 goldens: `G0AbortTakeoffEngineFailureTest`,
@@ -204,7 +204,23 @@ existing behaviour paths, not evidence DSL report assertions. Close by
 reproducing the full `:sim:jvmTest` failure set and either repairing the
 reactive/emergency behaviour or splitting any intentionally obsolete golden
 expectation into an explicit design decision.
+Closed by fn-45: restored abort-takeoff post-abort phase handling, made
+go-around attempt witnesses suppress duplicate same-attempt GA instructions,
+extended the bounded GA belief timeout to cover normal recovery circuits, and
+narrowed reactive golden assertions to the authored exceedance / named-witness
+window. Verified `:sim:jvmTest`, `:controller:jvmTest`, and `detekt`.
 Impact: H | Effort: M
+
+**RADIO-1 — Future queued transmissions are invisible to listen-before-talk**
+G3b reactive go-around debugging exposed a radio-model gap: a pilot
+`TransmissionStart` can be accepted even when an already-queued future
+controller transmission will overlap it, so the controller may never receive
+the pilot report. A target-pilot reservation experiment made G3b stronger but
+created controller backlog/timeouts in G3a, so the fix needs a principled
+frequency-level scheduling/reservation model rather than a local per-target
+patch. Until then, reactive goldens should only require controller-stage
+regression when the transmission was actually delivered.
+Impact: H | Effort: H
 
 **FN44-GAP-1 — Evidence facts need controller-advised frequency-transfer projection**
 FN44 can cite ICAO 9432 §2.8.2.1's controller-advised frequency-change source

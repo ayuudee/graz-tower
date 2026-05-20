@@ -47,7 +47,7 @@ class EvidenceMappedFacadeSpikeTest {
 
             sourceCase(
                 id = "critical phase radio silence currently lacks observation facts",
-                "icao9432-extracted::critical_phase_radio_silence_gap::spike",
+                "icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4",
             ) {
                 expect {
                     expectedGap(

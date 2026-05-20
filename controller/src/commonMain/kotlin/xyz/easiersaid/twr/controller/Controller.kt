@@ -82,6 +82,7 @@ import xyz.easiersaid.twr.controller.procedure.reconcileGroundArrivalStage
 import xyz.easiersaid.twr.controller.procedure.reconcileGroundDepartureStage
 import xyz.easiersaid.twr.controller.procedure.towerArrivalProcedure
 import xyz.easiersaid.twr.controller.procedure.towerDepartureProcedure
+import xyz.easiersaid.twr.controller.procedure.TransitionKind
 import xyz.easiersaid.twr.core.world.AviationWorld
 import xyz.easiersaid.twr.core.world.WeatherObservation
 
@@ -520,6 +521,8 @@ private fun reconcileTowerArrival(
     val stage = cleared.stage as? TowerArrivalStage ?: return cleared
     val position = classifyArrivalPosition(ac, worldIndex)
     val reconciled = reconcileArrivalStage(stage, position)
+    val goAroundDetectedThisCycle = hasGoAroundDetected(events, acId)
+    val stageUpdate = towerArrivalStageUpdate(stage, reconciled, goAroundDetectedThisCycle)
     // fn-8.3 Phase 2 (B2): sticky witness for genuine touchdown during
     // this commitment lifetime.
     val touchedDownNow = ac.entities.any { it is xyz.easiersaid.twr.core.world.EntityRef.RunwayRef } &&
@@ -527,18 +530,26 @@ private fun reconcileTowerArrival(
     val touchdownFlag = cleared.touchedDownDuringCommitment || touchedDownNow
     // fn-8.3 Phase 4 (B5-α): sticky witness recording every
     // PositionReported event during this commitment lifetime.
-    val reportsThisCycle = events.asSequence()
-        .filterIsInstance<xyz.easiersaid.twr.controller.observe.ControllerEvent.PositionReported>()
-        .filter { it.aircraft == acId }
-        .map { it.event }
-        .toSet()
+    val reportsThisCycle = towerArrivalReportsThisCycle(events, acId, includeReports = !stageUpdate.radioGoAround)
     val reportsFlag = if (reportsThisCycle.isEmpty()) {
         cleared.observedReportsDuringCommitment
     } else {
         cleared.observedReportsDuringCommitment + reportsThisCycle
     }
-    val baseStage = if (reconciled.stage != stage) {
-        cleared.copy(stage = reconciled.stage, lastTransition = reconciled.transition)
+    val baseStage = if (stageUpdate.stage != stage) {
+        val transitioned = cleared.copy(
+            stage = stageUpdate.stage,
+            lastTransition = stageUpdate.transition,
+        )
+        if (isStageRegression(stage, stageUpdate.stage)) {
+            transitioned.copy(
+                touchedDownDuringCommitment = false,
+                pilotReadyDuringCommitment = false,
+                observedReportsDuringCommitment = emptySet(),
+            )
+        } else {
+            transitioned
+        }
     } else cleared
     val withTouchdown = if (touchdownFlag != baseStage.touchedDownDuringCommitment) {
         baseStage.copy(touchedDownDuringCommitment = touchdownFlag)
@@ -585,27 +596,103 @@ private fun reconcileTowerArrival(
     // Downwind from the recovery circuit; the re-arm fires correctly
     // because the stage is now `AwaitDownwind`. Symmetric for the
     // obstruction-GA witness on the same recovery path.
-    val downwindReportedThisCycle = events.any { ev ->
-        ev is xyz.easiersaid.twr.controller.observe.ControllerEvent.PositionReported &&
-            ev.aircraft == acId &&
-            ev.event is xyz.easiersaid.twr.protocol.ReportEvent.Downwind
-    }
+    val downwindReportedThisCycle = hasDownwindReported(events, acId)
     val stageAllowsRearm = withReports.stage == TowerArrivalStage.AwaitDownwind
     val needsObstructionGaRearm =
         downwindReportedThisCycle && stageAllowsRearm &&
             withReports.obstructionGoAroundIssuedThisAttempt
+    val needsGenericGaRearm =
+        downwindReportedThisCycle && stageAllowsRearm &&
+            withReports.goAroundIssuedThisAttempt
     val needsContinueApproachRearm =
         downwindReportedThisCycle && stageAllowsRearm &&
             withReports.continueApproachIssuedThisAttempt
-    return when {
-        needsObstructionGaRearm && needsContinueApproachRearm -> withReports.copy(
-            obstructionGoAroundIssuedThisAttempt = false,
-            continueApproachIssuedThisAttempt = false,
+    val withGoAroundWitness = if (goAroundDetectedThisCycle) {
+        withReports.copy(
+            goAroundIssuedThisAttempt = true,
+            touchedDownDuringCommitment = false,
+            pilotReadyDuringCommitment = false,
+            observedReportsDuringCommitment = emptySet(),
         )
-        needsObstructionGaRearm -> withReports.copy(obstructionGoAroundIssuedThisAttempt = false)
-        needsContinueApproachRearm -> withReports.copy(continueApproachIssuedThisAttempt = false)
-        else -> withReports
+    } else withReports
+    return when {
+        needsObstructionGaRearm || needsGenericGaRearm || needsContinueApproachRearm ->
+            withGoAroundWitness.copy(
+                obstructionGoAroundIssuedThisAttempt =
+                    if (needsObstructionGaRearm) false else withGoAroundWitness.obstructionGoAroundIssuedThisAttempt,
+                goAroundIssuedThisAttempt =
+                    if (needsGenericGaRearm) false else withGoAroundWitness.goAroundIssuedThisAttempt,
+                continueApproachIssuedThisAttempt =
+                    if (needsContinueApproachRearm) false else withGoAroundWitness.continueApproachIssuedThisAttempt,
+            )
+        else -> withGoAroundWitness
     }
+}
+
+private data class TowerArrivalStageUpdate(
+    val stage: TowerArrivalStage,
+    val transition: TransitionKind,
+    val radioGoAround: Boolean,
+)
+
+private fun hasGoAroundDetected(
+    events: List<xyz.easiersaid.twr.controller.observe.ControllerEvent>,
+    acId: AircraftId,
+): Boolean = events.any { ev ->
+    ev is xyz.easiersaid.twr.controller.observe.ControllerEvent.GoAroundDetected &&
+        ev.aircraft == acId
+}
+
+private fun hasDownwindReported(
+    events: List<xyz.easiersaid.twr.controller.observe.ControllerEvent>,
+    acId: AircraftId,
+): Boolean = events.any { ev ->
+    ev is xyz.easiersaid.twr.controller.observe.ControllerEvent.PositionReported &&
+        ev.aircraft == acId &&
+        ev.event is xyz.easiersaid.twr.protocol.ReportEvent.Downwind
+}
+
+private fun towerArrivalStageUpdate(
+    stage: TowerArrivalStage,
+    reconciled: xyz.easiersaid.twr.controller.procedure.ReconciledStage<TowerArrivalStage>,
+    goAroundDetectedThisCycle: Boolean,
+): TowerArrivalStageUpdate =
+    if (goAroundDetectedThisCycle && stage.canRegressOnGoAroundReport()) {
+        TowerArrivalStageUpdate(
+            stage = TowerArrivalStage.AwaitDownwind,
+            transition = TransitionKind.EXPECTED,
+            radioGoAround = true,
+        )
+    } else {
+        TowerArrivalStageUpdate(
+            stage = reconciled.stage,
+            transition = reconciled.transition,
+            radioGoAround = false,
+        )
+    }
+
+private fun towerArrivalReportsThisCycle(
+    events: List<xyz.easiersaid.twr.controller.observe.ControllerEvent>,
+    acId: AircraftId,
+    includeReports: Boolean,
+): Set<ReportEvent> =
+    if (!includeReports) {
+        emptySet()
+    } else {
+        events.asSequence()
+            .filterIsInstance<xyz.easiersaid.twr.controller.observe.ControllerEvent.PositionReported>()
+            .filter { it.aircraft == acId }
+            .map { it.event }
+            .toSet()
+    }
+
+private fun TowerArrivalStage.canRegressOnGoAroundReport(): Boolean = when (this) {
+    is TowerArrivalStage.AwaitApproach,
+    is TowerArrivalStage.LandingClearanceIssued,
+    is TowerArrivalStage.AwaitLandedObserved -> true
+    is TowerArrivalStage.AwaitDownwind,
+    is TowerArrivalStage.AwaitVacating,
+    is TowerArrivalStage.Complete -> false
 }
 
 /**
@@ -852,7 +939,12 @@ private fun applyCommittedOutputWitnesses(
             // the witness survives — the obstruction witness is
             // approach-attempt-scoped and is meaningful on the regressed
             // commitment.
-            current.copy(obstructionGoAroundIssuedThisAttempt = true)
+            current.copy(
+                obstructionGoAroundIssuedThisAttempt = true,
+                goAroundIssuedThisAttempt = true,
+            )
+        "ARR-GO-AROUND", "ARR-GO-AROUND-CLEARANCE-ISSUED" ->
+            current.copy(goAroundIssuedThisAttempt = true)
         "ARR-CONTINUE-APPROACH-OBSTRUCTION" ->
             // nextStage = null on this rule → commitment stage unchanged →
             // the witness is the only suppression mechanism preventing the

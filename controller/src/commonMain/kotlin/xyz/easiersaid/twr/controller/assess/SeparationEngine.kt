@@ -241,10 +241,23 @@ fun reactiveInterventions(
     val safetyAircraft = committedOutputs
         .filter { it.urgency == xyz.easiersaid.twr.protocol.Urgency.SAFETY }
         .map { it.target }.toSet()
+    val aircraftAlreadyGoingAround = beliefs.goAroundInProgressByRunway.values
+        .map { it.aircraftId }
+        .toSet()
+    val aircraftWithPendingGoAround = beliefs.coordinations
+        .filterValues { outstanding ->
+            outstanding.any { coordination ->
+                coordination.instruction is xyz.easiersaid.twr.protocol.GoAround ||
+                    coordination.instruction is xyz.easiersaid.twr.protocol.BreakOff
+            }
+        }
+        .keys
 
     return beliefs.separationAssessments.mapNotNull { assessment ->
         if (!assessment.concern.isSeverityAtLeast(SeparationConcern.Severity.INTERVENTION)) return@mapNotNull null
         if (assessment.other in safetyAircraft) return@mapNotNull null // dedup
+        if (assessment.other in aircraftAlreadyGoingAround) return@mapNotNull null
+        if (assessment.other in aircraftWithPendingGoAround) return@mapNotNull null
         val follower = beliefs.trackedAircraft[assessment.other] ?: return@mapNotNull null
         val intervention = selectIntervention(assessment, follower, beliefs) ?: return@mapNotNull null
         assessment to intervention

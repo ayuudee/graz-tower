@@ -139,7 +139,7 @@ object DefaultPilot : PilotAgent {
      */
     private fun onTakeoffRoll(ac: AircraftState, worldIndex: WorldIndex): PilotIntent {
         val route = ac.route as? PilotRoute.Airborne
-            ?: return PilotIntent(0.0, PilotPhase.AtStand, PilotRoute.None)
+            ?: return PilotIntent(0.0, PilotPhase.TakeoffRoll, PilotRoute.None)
         if (ac.speedMps >= ac.type.kinematics.rotationSpeedMps) {
             val phase = phaseForAirborneLeg(route.waypoints.head, worldIndex, default = PilotPhase.Climbing)
             return PilotIntent(

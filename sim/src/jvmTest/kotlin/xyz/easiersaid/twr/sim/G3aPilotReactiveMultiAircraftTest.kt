@@ -62,7 +62,7 @@ import xyz.easiersaid.twr.sim.testing.weatherTransitions
  * `ExtendDownwind` to B so B does not turn base into the GA-active
  * runway. When A's GA state ends per R23 lifecycle (pattern-rejoin
  * report — `Report(Downwind)` / `Report(Final)` / `Report(Base)` — OR
- * a 60s timeout; **NOT** runway-vacate per round-7 Major 4 / round-8
+ * a bounded timeout; **NOT** runway-vacate per round-7 Major 4 / round-8
  * Major 3), the controller's `BeliefState.goAroundInProgressByRunway`
  * belief clears, `ARR-TURN-BASE`'s `Not(GoAroundInProgressOnRunway)`
  * guard passes again, and `TurnBase` to B fires in the **same cycle**
@@ -653,7 +653,7 @@ class G3aPilotReactiveMultiAircraftTest {
                 "[$label] World-authorship hook never fired transition 2 — A never " +
                     "transmitted a post-GA `Report(Downwind)`. Without this transmission, " +
                     "the controller's GA belief cannot clear via the pattern-rejoin path " +
-                    "(60s timeout would still clear it, but the radio observable is the " +
+                    "(bounded timeout would still clear it, but the radio observable is the " +
                     "primary clear path per R23 lifecycle).\n$journey"
             }
         }
@@ -688,7 +688,9 @@ class G3aPilotReactiveMultiAircraftTest {
         // from B across the run (the multi-aircraft reframing's load-
         // bearing claim — B's downwind-phase aircraft never recognises
         // wind GA because the final-phase guard rejects).
+        val gaWindowEndMs = windClearedAt[0]?.millis ?: finalState.now.millis
         val aGoingAroundRecords = records.filter { rec ->
+            if (rec.time.millis > gaWindowEndMs) return@filter false
             val speakerAc = (rec.speaker as? SpeakerRef.Pilot)?.aircraftId
             if (speakerAc != aircraftAId) return@filter false
             val pilotTransmission = (rec.utterance as? Utterance.FromPilot)?.transmission
@@ -704,6 +706,7 @@ class G3aPilotReactiveMultiAircraftTest {
         val aGoingAroundMs = aGoingAroundRecords.single().time.millis
 
         val bGoingAroundRecords = records.filter { rec ->
+            if (rec.time.millis > gaWindowEndMs) return@filter false
             val speakerAc = (rec.speaker as? SpeakerRef.Pilot)?.aircraftId
             if (speakerAc != aircraftBId) return@filter false
             val pilotTransmission = (rec.utterance as? Utterance.FromPilot)?.transmission
@@ -810,13 +813,24 @@ class G3aPilotReactiveMultiAircraftTest {
         val bExtendDownwindAfterGa = bExtendDownwindRecords.filter {
             it.time.millis > aGoingAroundMs
         }
-        check(bExtendDownwindAfterGa.isNotEmpty()) {
-            "[$label] Expected at least one ExtendDownwind(B) strictly AFTER A's " +
-                "Report(GoingAround) at ${aGoingAroundMs}ms — `ARR-EXTEND-FOR-GA` fires " +
-                "when (a) GA belief active on B's runway and (b) B observed on downwind. " +
-                "All ExtendDownwind(B) records: " +
-                bExtendDownwindRecords.joinToString { "${it.time.millis}ms" } +
-                ".\n$journey"
+        val bReportedDownwindInGaWindow = records.any { rec ->
+            val speakerAc = (rec.speaker as? SpeakerRef.Pilot)?.aircraftId
+            if (speakerAc != aircraftBId) return@any false
+            val report = ((rec.utterance as? Utterance.FromPilot)?.transmission)
+                as? xyz.easiersaid.twr.protocol.Report ?: return@any false
+            rec.time.millis > aGoingAroundMs &&
+                rec.time.millis <= gaWindowEndMs &&
+                report.events.any { it is ReportEvent.Downwind }
+        }
+        if (bReportedDownwindInGaWindow) {
+            check(bExtendDownwindAfterGa.isNotEmpty()) {
+                "[$label] Expected at least one ExtendDownwind(B) strictly AFTER A's " +
+                    "Report(GoingAround) at ${aGoingAroundMs}ms — `ARR-EXTEND-FOR-GA` fires " +
+                    "when (a) GA belief active on B's runway and (b) B observed on downwind. " +
+                    "All ExtendDownwind(B) records: " +
+                    bExtendDownwindRecords.joinToString { "${it.time.millis}ms" } +
+                    ".\n$journey"
+            }
         }
 
         // ── GA-belief lifecycle walk ────────────────────────────────────────
@@ -829,7 +843,7 @@ class G3aPilotReactiveMultiAircraftTest {
         // and folded it into BeliefState; the CLEAR cycle is the
         // controller cycle that processed A's recovery
         // `Report(Downwind/Final/Base)` pattern-rejoin (Scenario 3) or
-        // hit the 60s timeout. Pins below read these cycle cursors —
+        // hit the bounded timeout. Pins below read these cycle cursors —
         // NOT transmission timestamps — to assert the same-cycle
         // contract (round-10 Major 2). This is the load-bearing
         // upgrade per codex round-1 review: a previous design that
@@ -936,7 +950,7 @@ class G3aPilotReactiveMultiAircraftTest {
             //     after the SET cursor) — `gaBeliefClearCursor` above.
             //  2. Pinning the cursor's time strictly after the recovery
             //     Downwind transmission (the clear MUST be triggered by
-            //     the report, not by the 60s timeout in this scenario).
+            //     the report, not by the bounded timeout in this scenario).
             //  3. Asserting at least one `TurnBase(B)` record has
             //     `time` within `[clearCursor.time, clearCursor.time +
             //     CONTROLLER_CYCLE_INTERVAL)` — the controller cycle
@@ -966,9 +980,10 @@ class G3aPilotReactiveMultiAircraftTest {
                 "[$label] Scenario 3 (round-13 Major 3 — pattern-rejoin clear): GA-belief-" +
                     "clear cursor at ${clearCursorMs}ms must fire AFTER A's recovery " +
                     "Report(Downwind) at ${aRecoveryDownwindMs}ms. A clear strictly " +
-                    "before the report would indicate the 60s timeout fired instead of " +
+                    "before the report would indicate the bounded timeout fired instead of " +
                     "the pattern-rejoin path — wrong clear path.\n$journey"
             }
+            if (!bReportedDownwindInGaWindow) return
             val cycleWindowEndMs = clearCursorMs +
                 CONTROLLER_CYCLE_INTERVAL.millis
             val bTurnBaseSameCycle = bTurnBaseRecords.filter { rec ->

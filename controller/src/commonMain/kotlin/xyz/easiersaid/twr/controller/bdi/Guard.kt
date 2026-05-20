@@ -575,6 +575,17 @@ data object ObstructionGoAroundAlreadyIssuedThisAttempt : RuleGuard {
 }
 
 /**
+ * A go-around has already been initiated for this aircraft on the current
+ * approach attempt. Covers both pilot-initiated `Report(GoingAround)` and
+ * controller-issued `GoAround` instructions.
+ */
+data object GoAroundAlreadyIssuedThisAttempt : RuleGuard {
+    override val failureMessage = "GA has not been issued this approach attempt"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Boolean =
+        commitment.goAroundIssuedThisAttempt
+}
+
+/**
  * fn-13.1 (R6): the controller has already issued an obstruction-driven
  * CONTINUE APPROACH for this aircraft on the **current** approach attempt.
  * Reads [Commitment.continueApproachIssuedThisAttempt] — the sticky witness

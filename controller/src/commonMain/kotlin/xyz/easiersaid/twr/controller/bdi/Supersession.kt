@@ -60,7 +60,7 @@ val SUPERSESSION_RELATIONS: List<SupersessionRelation> = listOf(
     // fn-28.4 (R23) audit: this row is the cancel-output for the new
     // `ARR-EXTEND-FOR-GA` rule's prior ExtendDownwind coordination.
     // When the GA belief clears (Observe.withGoAroundInProgress fold —
-    // pattern-rejoin transmission `receivedAt > setAtTime`, OR 60s
+    // pattern-rejoin transmission `receivedAt > setAtTime`, OR bounded
     // timeout), ARR-TURN-BASE's guard `Not(GoAroundInProgressOnRunway)`
     // passes again and TURN BASE fires; this relation drops the
     // pending ExtendDownwind on the same cycle. NO new supersession
@@ -198,4 +198,3 @@ fun applySupersessionCleanup(
         else -> beliefs
     }
 }
-

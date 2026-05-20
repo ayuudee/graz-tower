@@ -174,7 +174,7 @@ data class BeliefState(
      *    strict-inequality guard prevents a same-cycle stale Final report
      *    (arriving alongside the GoAround in the same event batch) from
      *    immediately clearing what was just set.
-     *  - 60s deterministic timeout from `setAtTime`. Bounded to recover
+     *  - 5-minute deterministic timeout from `setAtTime`. Bounded to recover
      *    if no pattern-rejoin transmission is heard (radio failure,
      *    aircraft diverted, etc.).
      *  - concrete cancel-output emission (`TurnBase` to the trailing
@@ -206,12 +206,13 @@ data class BeliefState(
         /** Cooldown before concern severity can drop, in milliseconds. */
         const val CONCERN_COOLDOWN_MS = 15_000L
         /**
-         * fn-28.4 (R23): GA-belief timeout. After 60s with no observable
+         * fn-28.4 (R23): GA-belief timeout. After 5 minutes with no observable
          * pattern-rejoin transmission, the belief clears deterministically.
          * Bounded so a radio failure / diverted GA doesn't strand the
-         * trailing-aircraft sequencing.
+         * trailing-aircraft sequencing, but long enough for a normal light-
+         * aircraft recovery circuit to clear via the radio observable first.
          */
-        const val GO_AROUND_TIMEOUT_MS = 60_000L
+        const val GO_AROUND_TIMEOUT_MS = 5 * 60_000L
         /**
          * Time window for the [recentRadio] slice. 5 sim-minutes — bounded
          * by ATC's working-memory horizon. Real controllers remember recent

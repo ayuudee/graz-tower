@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-20T07:03:19.508535Z",
+  "depends_on": [],
+  "epic": "fn-45-restore-broad-sim-jvm-suite",
+  "id": "fn-45-restore-broad-sim-jvm-suite.1",
+  "priority": 1,
+  "spec_path": ".flow/tasks/fn-45-restore-broad-sim-jvm-suite.1.md",
+  "status": "todo",
+  "title": "Reproduce and classify SIM-RED-1 failures",
+  "updated_at": "2026-05-20T07:03:19.508638Z"
+}

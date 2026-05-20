@@ -148,7 +148,7 @@ class MiniConformanceMonitorSpikeTest {
         MiniSourceContract(
             id = "monitor-icao9432-essential-aerodrome-information-gap",
             basis = EvidenceBasis.SourceMapped(
-                sources = listOf(SourceUnitRef("icao9432-extracted::aerodrome_information_gap::spike")),
+                sources = listOf(SourceUnitRef("icao9432-extracted::essential_aerodrome_information_4_10_en::1aa5cb7e758055bc")),
             ),
             requiredCapabilities = setOf(MiniCapability.AerodromeInformation),
             expectedGapPlanId = "FN39-CONF-1",
@@ -160,7 +160,7 @@ class MiniConformanceMonitorSpikeTest {
         MiniSourceContract(
             id = "monitor-icao9432-critical-phase-radio-silence-gap",
             basis = EvidenceBasis.SourceMapped(
-                sources = listOf(SourceUnitRef("icao9432-extracted::critical_phase_radio_silence_gap::spike")),
+                sources = listOf(SourceUnitRef("icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4")),
             ),
             requiredCapabilities = setOf(MiniCapability.CriticalPhase),
             expectedGapPlanId = "FN39-CONF-1",

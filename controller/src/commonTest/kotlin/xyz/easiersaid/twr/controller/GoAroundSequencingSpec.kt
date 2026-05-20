@@ -49,7 +49,7 @@ import kotlin.test.Test
  *  - **Tie-breaking** (R23 round-7 Minor 1): first-writer-wins until cleared.
  *  - **CLEAR on pattern-rejoin** (round-13 Major 3): `Report(Downwind/Final/Base)`
  *    with `receivedAt > setAtTime` clears; same-cycle stale Final does NOT.
- *  - **CLEAR on 60s timeout** (R23): bounded recovery without observable
+ *  - **CLEAR on bounded timeout** (R23): bounded recovery without observable
  *    pattern-rejoin.
  *  - **`ARR-EXTEND-FOR-GA` fires** (firewall: controller-observable predicates
  *    only — no `PilotPhase` reads): trailing downwind aircraft on the same runway.
@@ -223,11 +223,11 @@ class GoAroundSequencingSpec {
     }
 
     @Test
-    fun `fold CLEAR 60s timeout drops stale entries even without events`() {
+    fun `fold CLEAR bounded timeout drops stale entries even without events`() {
         // R23 lifecycle: entries older than GO_AROUND_TIMEOUT_MS clear
         // deterministically regardless of events.
         val setAt = SimTime.ofMillis(1_000)
-        val laterByTimeout = SimTime.ofMillis(1_000 + BeliefState.GO_AROUND_TIMEOUT_MS) // exactly 60s
+        val laterByTimeout = SimTime.ofMillis(1_000 + BeliefState.GO_AROUND_TIMEOUT_MS)
         val seeded = BeliefState.EMPTY.copy(
             commitments = mapOf(AC_A to commitment(AC_A, runway = RWY)),
             goAroundInProgressByRunway = mapOf(RWY to GoAroundInProgress(AC_A, setAt)),
@@ -237,7 +237,7 @@ class GoAroundSequencingSpec {
             now = laterByTimeout,
         )
         check(updated.goAroundInProgressByRunway.isEmpty()) {
-            "Expected belief CLEARED at 60s timeout; got ${updated.goAroundInProgressByRunway}"
+            "Expected belief CLEARED at bounded timeout; got ${updated.goAroundInProgressByRunway}"
         }
     }
 
@@ -491,9 +491,9 @@ class GoAroundSequencingSpec {
     }
 
     @Test
-    fun `ARR-TURN-BASE fires once GA belief clears via 60s timeout`() {
+    fun `ARR-TURN-BASE fires once GA belief clears via bounded timeout`() {
         // Same concrete-cancel-output contract as pattern-rejoin path but
-        // via the 60s timeout — bounded recovery if the GA-aircraft's
+        // via the bounded timeout — bounded recovery if the GA-aircraft's
         // pattern-rejoin transmission is lost / radio failure.
         //
         // fn-32.2: same 2-aircraft fixture rationale as the pattern-rejoin
@@ -502,14 +502,14 @@ class GoAroundSequencingSpec {
         // fires. PT_LONG_DOWNWIND gives the COMFORTABLE margin needed.
         val previous = baseBeliefs(trailingAircraft = AC_B, leaderAircraft = AC_A).copy(
             goAroundInProgressByRunway = mapOf(
-                // setAt = 1ms; view.time below is >= 60_000ms → timeout fires.
+                // setAt = 1ms; view.time below is >= GO_AROUND_TIMEOUT_MS → timeout fires.
                 RWY to GoAroundInProgress(AC_A, SimTime.ofMillis(1)),
             ),
         )
         val view = baseView(
             trailingAircraft = AC_B,
             point = PT_LONG_DOWNWIND,
-            time = SimTime.ofMillis(60_001),
+            time = SimTime.ofMillis(1 + BeliefState.GO_AROUND_TIMEOUT_MS),
             leaderAircraft = AC_A,
         )
         val result = controllerDecide(view, previous, worldWithRunway())

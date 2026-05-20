@@ -185,6 +185,20 @@ data class Commitment(
      */
     val obstructionGoAroundIssuedThisAttempt: Boolean = false,
     /**
+     * Approach-attempt-scoped witness that any go-around has already been
+     * initiated for this aircraft on the current attempt, whether pilot-
+     * initiated (`Report(GoingAround)`) or controller-issued (`GoAround`).
+     *
+     * This is broader than [obstructionGoAroundIssuedThisAttempt]: the
+     * runway-scoped go-around-in-progress belief may clear by timeout before
+     * the aircraft physically rejoins the pattern, but the same approach
+     * attempt must not receive another generic runway-not-clear go-around.
+     * Re-armed by the next `Report(Downwind)` while the commitment is at
+     * [TowerArrivalStage.AwaitDownwind], matching the sibling obstruction
+     * witness lifecycle.
+     */
+    val goAroundIssuedThisAttempt: Boolean = false,
+    /**
      * fn-13.1 (R6): approach-attempt-scoped witness that the controller has
      * already issued an obstruction-driven `ContinueApproach` for this
      * aircraft on the **current** approach attempt. Read by the
