@@ -14,6 +14,8 @@ class EvidenceSourceCatalogTest {
             setOf(
                 "icao9432-extracted::readback_2_8_3_en::15940532b37f8528",
                 "icao9432-extracted::readback_2_8_3_en::25c245bc4728ed60",
+                "icao9432-extracted::readback_2_8_3_en::58594a8ee6243296",
+                "icao9432-extracted::readback_2_8_3_en::4b6ece953649da07",
                 "icao9432-extracted::taxi_4_4_en::417f64324f7495bf",
                 "icao9432-extracted::taxi_4_4_en::b9e7fc3605fe616e",
                 "icao9432-extracted::final_approach_landing_4_7_en::0ece166e11d7728e",

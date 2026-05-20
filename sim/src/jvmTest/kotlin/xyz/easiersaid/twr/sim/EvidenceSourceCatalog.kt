@@ -94,8 +94,25 @@ object ICAO9432 {
             claimScope = EvidenceSourceClaimScope.StructuralProtocol,
         )
 
+        val AtcRouteClearancesRequiredReadback: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::readback_2_8_3_en::58594a8ee6243296",
+            title = "ATC route clearances shall always be read back",
+            claimScope = EvidenceSourceClaimScope.StructuralProtocol,
+        )
+
+        val OtherClearancesAcknowledged: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::readback_2_8_3_en::4b6ece953649da07",
+            title = "Other clearances or instructions shall be read back or acknowledged",
+            claimScope = EvidenceSourceClaimScope.StructuralProtocol,
+        )
+
         val RequiredItems: Set<EvidenceSourceRef> =
-            setOf(RunwayOperationsRequiredReadback, OperationalParametersRequiredReadback)
+            setOf(
+                RunwayOperationsRequiredReadback,
+                OperationalParametersRequiredReadback,
+                AtcRouteClearancesRequiredReadback,
+                OtherClearancesAcknowledged,
+            )
     }
 
     object Taxi {

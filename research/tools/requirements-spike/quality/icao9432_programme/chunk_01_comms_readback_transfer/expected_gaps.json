@@ -1,0 +1,142 @@
+[
+  {
+    "source_unit_id": "icao9432-extracted::communications_2_8_1_en::0a964f42b6100596",
+    "section_id": "communications_2_8_1_en",
+    "claim_text": "If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either in full or in part.",
+    "planned_coverage_state": "expected-gap",
+    "blocking_item": "COMMS-1",
+    "policy_concept": "",
+    "test_authoring_notes": "Record expected gap for COMMS-1; current facts do not model doubtful reception or in-full/in-part repetition requests.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/communications_2_8_1_en/icao9432-extracted::communications_2_8_1_en::0a964f42b6100596.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca",
+    "section_id": "communications_2_8_1_en",
+    "claim_text": "When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the call \"ALL STATIONS\".",
+    "planned_coverage_state": "phraseology-later",
+    "blocking_item": "PHRASE-1",
+    "policy_concept": "",
+    "test_authoring_notes": "Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/communications_2_8_1_en/icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf",
+    "section_id": "communications_2_8_1_en",
+    "claim_text": "No reply is expected to such general calls unless individual stations are subsequently called upon to acknowledge receipt.",
+    "planned_coverage_state": "policy-blocked",
+    "blocking_item": "POLICY-1",
+    "policy_concept": "OperationalGuidancePolicy",
+    "test_authoring_notes": "Block on typed policy concept OperationalGuidancePolicy; do not assert one universal behaviour.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/communications_2_8_1_en/icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::communications_2_8_1_en::a685cef087951878",
+    "section_id": "communications_2_8_1_en",
+    "claim_text": "When establishing communications, an aircraft should use the full call sign of both the aircraft and the aeronautical station.",
+    "planned_coverage_state": "phraseology-later",
+    "blocking_item": "PHRASE-1",
+    "policy_concept": "",
+    "test_authoring_notes": "Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/communications_2_8_1_en/icao9432-extracted::communications_2_8_1_en::a685cef087951878.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510",
+    "section_id": "communications_2_8_1_en",
+    "claim_text": "When a ground station wishes to broadcast information, the message should be prefaced by the call \"ALL STATIONS\".",
+    "planned_coverage_state": "phraseology-later",
+    "blocking_item": "PHRASE-1",
+    "policy_concept": "",
+    "test_authoring_notes": "Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/communications_2_8_1_en/icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726",
+    "section_id": "readback_2_8_3_en",
+    "claim_text": "Whenever possible, controllers should pass a route clearance to an aircraft before start-up.",
+    "planned_coverage_state": "policy-blocked",
+    "blocking_item": "POLICY-1",
+    "policy_concept": "ClearanceTimingPolicy",
+    "test_authoring_notes": "Block on typed policy concept ClearanceTimingPolicy; do not assert one universal behaviour.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/readback_2_8_3_en/icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2",
+    "section_id": "readback_2_8_3_en",
+    "claim_text": "Controllers should pass a clearance slowly and clearly, avoid passing clearances during complicated taxiing, and on no occasion should a clearance be passed when the pilot is engaged in line up or take-off manoeuvres.",
+    "planned_coverage_state": "expected-gap",
+    "blocking_item": "FN33-MODEL-1",
+    "policy_concept": "",
+    "test_authoring_notes": "Record expected gap for FN33-MODEL-1 with accepted source id and quote.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/readback_2_8_3_en/icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649",
+    "section_id": "readback_2_8_3_en",
+    "claim_text": "The words 'TAKE OFF' are used only when an aircraft is cleared for take-off, or when canceling a take-off clearance; at other times, the word 'DEPARTURE' or 'AIRBORNE' is used.",
+    "planned_coverage_state": "phraseology-later",
+    "blocking_item": "PHRASE-1",
+    "policy_concept": "",
+    "test_authoring_notes": "Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/readback_2_8_3_en/icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9",
+    "section_id": "readback_2_8_3_en",
+    "claim_text": "An ATC route clearance is not an instruction to take off or enter an active runway.",
+    "planned_coverage_state": "phraseology-later",
+    "blocking_item": "PHRASE-1",
+    "policy_concept": "",
+    "test_authoring_notes": "Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/readback_2_8_3_en/icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71",
+    "section_id": "readback_continuation_2_8_3_7_to_2_8_3_10_en",
+    "claim_text": "An aircraft should terminate the read-back by its call sign.",
+    "planned_coverage_state": "phraseology-later",
+    "blocking_item": "PHRASE-1",
+    "policy_concept": "",
+    "test_authoring_notes": "Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/readback_continuation_2_8_3_7_to_2_8_3_10_en/icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ce25c18f1b44a6a8",
+    "section_id": "readback_continuation_2_8_3_7_to_2_8_3_10_en",
+    "claim_text": "See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES",
+    "planned_coverage_state": "not-applicable",
+    "blocking_item": "none",
+    "policy_concept": "",
+    "test_authoring_notes": "Accepted source unit is an appendix cross-reference, not a behaviour claim for this simulator chunk.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/readback_continuation_2_8_3_7_to_2_8_3_10_en/icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ce25c18f1b44a6a8.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e",
+    "section_id": "transfer_communications_2_8_2_en",
+    "claim_text": "An aircraft shall be advised by the appropriate aeronautical station to change from one radio frequency to another in accordance with agreed procedures.",
+    "planned_coverage_state": "expected-gap",
+    "blocking_item": "FN44-GAP-1/FN44-GAP-2",
+    "policy_concept": "",
+    "test_authoring_notes": "Record expected gap for FN44-GAP-1/FN44-GAP-2 with accepted source id and quote.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/transfer_communications_2_8_2_en/icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
+    "section_id": "transfer_communications_2_8_2_en",
+    "claim_text": "Phraseology for frequency change includes 'CONTACT [Unit] [Frequency]' and readback 'Frequency Callsign'.",
+    "planned_coverage_state": "phraseology-later",
+    "blocking_item": "PHRASE-1",
+    "policy_concept": "",
+    "test_authoring_notes": "Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/transfer_communications_2_8_2_en/icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc.json"
+  },
+  {
+    "source_unit_id": "icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538",
+    "section_id": "transfer_communications_2_8_2_en",
+    "claim_text": "In the absence of such advice, the aircraft shall notify the aeronautical station before such a change takes place.",
+    "planned_coverage_state": "expected-gap",
+    "blocking_item": "FN44-GAP-1/FN44-GAP-2",
+    "policy_concept": "",
+    "test_authoring_notes": "Record expected gap for FN44-GAP-1/FN44-GAP-2 with accepted source id and quote.",
+    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/transfer_communications_2_8_2_en/icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538.json"
+  }
+]

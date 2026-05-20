@@ -2,7 +2,11 @@ package xyz.easiersaid.twr.controller.requirements
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.fail
+import xyz.easiersaid.twr.controller.observe.ReadbackVerdict
+import xyz.easiersaid.twr.controller.observe.classifyReadback
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AtomDefect
 import xyz.easiersaid.twr.protocol.BacktrackReadback
 import xyz.easiersaid.twr.protocol.BacktrackRunway
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
@@ -27,6 +31,7 @@ import xyz.easiersaid.twr.protocol.MaintainSpeed
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.PressureSetting
 import xyz.easiersaid.twr.protocol.PressureSettingReadback
+import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.RouteReadback
 import xyz.easiersaid.twr.protocol.RouteSpec
 import xyz.easiersaid.twr.protocol.RunwayId
@@ -34,6 +39,7 @@ import xyz.easiersaid.twr.protocol.RunwayInUseAdvisory
 import xyz.easiersaid.twr.protocol.RunwayInUseReadback
 import xyz.easiersaid.twr.protocol.SetPressure
 import xyz.easiersaid.twr.protocol.SetSquawk
+import xyz.easiersaid.twr.protocol.SimpleElement
 import xyz.easiersaid.twr.protocol.Speed
 import xyz.easiersaid.twr.protocol.SpeedReadback
 import xyz.easiersaid.twr.protocol.Squawk
@@ -124,6 +130,45 @@ class Icao9432ReadbackConformanceSpec {
                     ),
                 ),
             )
+        }.assertSatisfied()
+    }
+
+    @Test
+    fun `ICAO 9432 2_8_3_7 hearback classifies correct readback as acknowledged`() {
+        SourceBackedBehaviorCase(
+            id = "icao9432-hearback-correct-readback-acknowledged",
+            family = "icao9432_readback_continuation_2_8_3_7_to_2_8_3_10",
+            sourceUnits = setOf(
+                SourceUnitRef(
+                    "icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::17e1dfdf4ce57253",
+                ),
+            ),
+        ) {
+            val instruction = ClearedToLand(aircraft, runway)
+            val readback = Readback(listOf(SimpleElement(ClearedToLandReadback(runway))))
+
+            assertEquals(ReadbackVerdict.Correct, classifyReadback(instruction, readback))
+        }.assertSatisfied()
+    }
+
+    @Test
+    fun `ICAO 9432 2_8_3_8 hearback exposes discrepancy for correction`() {
+        SourceBackedBehaviorCase(
+            id = "icao9432-hearback-discrepancy-correction",
+            family = "icao9432_readback_continuation_2_8_3_7_to_2_8_3_10",
+            sourceUnits = setOf(
+                SourceUnitRef(
+                    "icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ace4ab7ff5d53a66",
+                ),
+            ),
+        ) {
+            val instruction = ClearedToLand(aircraft, runway)
+            val wrongRunway = RunwayId("34C")
+            val readback = Readback(listOf(SimpleElement(ClearedToLandReadback(wrongRunway))))
+            val verdict = classifyReadback(instruction, readback) as? ReadbackVerdict.Incorrect
+                ?: fail("Expected incorrect readback verdict for wrong runway readback")
+
+            assertEquals(listOf(AtomDefect.WrongAtom(ClearedToLandReadback(runway))), verdict.defects.all)
         }.assertSatisfied()
     }
 }

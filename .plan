@@ -262,6 +262,15 @@ available as stable evidence facts with enough structure to check cited
 phraseology without brittle string scraping.
 Impact: H | Effort: H
 
+**COMMS-1 — Doubtful-reception repetition requests need communication-quality evidence**
+FN47 maps ICAO 9432 §2.8.1's requirement to request repetition when there is
+doubt that a message was correctly received. The protocol has `SayAgain`, but
+current evidence facts do not model reception doubt, partial/in-full repetition
+scope, or controller/pilot decision points that trigger `SayAgain`. Close when
+communication-quality or reception-confidence facts let source-mapped tests
+prove that doubtful reception produces an explicit repetition request.
+Impact: M | Effort: M
+
 **VEHICLE-1 — Aerodrome vehicle and towing source units need a sim model**
 FN46 maps ICAO 9432 Chapter 5 vehicle/crossing/towing units to expected gaps.
 The current sim is aircraft-focused and does not model aerodrome vehicles,
