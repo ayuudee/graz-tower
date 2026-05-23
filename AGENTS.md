@@ -106,6 +106,15 @@ Kotlin Multiplatform targeting JVM. Modules: `protocol`, `core`, `migration`.
 ./gradlew build                                # full build
 ```
 
+If you have no system JDK on PATH, or your shell is sandboxed and cannot
+write to `~/.gradle/` or reach `services.gradle.org`, substitute
+`./gradlew-nix` for `./gradlew` in the commands above. It runs the
+nix-provided Gradle (pinned by `flake.nix` to the same version as the
+wrapper) and needs no download. In a sandboxed shell, also export
+`GRADLE_USER_HOME="$TMPDIR/gradle-home"` so the daemon's cache writes
+land in a writable path. See
+`.flow/memory/knowledge/tooling-decisions/gradlew-nix-wrapper-2026-05-18.md`.
+
 # X-Plane Data And Tooling
 
 - Parsers for X-Plane/OFM source formats live under `migration/src/commonMain/kotlin/xyz/easiersaid/twr/migration/{aptdat,cifp,ofmx}/`.

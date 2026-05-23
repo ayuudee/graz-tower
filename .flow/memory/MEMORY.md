@@ -11,6 +11,10 @@ via `flowctl memory search <token>`.
 - **`knowledge/best-practices/renumbering-grep-walk-2026-05-15.md`** — Grep walks for renumbering reconciliation must span the FULL affected range, not just the hypothesis's focal sections (fn-17 lesson).
 - **`knowledge/best-practices/pre-existing-failure-register-2026-05-15.md`** — Pre-existing test failures carried across 2+ epics must be promoted to named D-WORLD.N register entries (fn-16.2 → fn-19 lesson).
 
+## knowledge/tooling-decisions
+
+- **`knowledge/tooling-decisions/gradlew-nix-wrapper-2026-05-18.md`** — Agents & JDK-less / sandboxed shells: invoke `./gradlew-nix <args>` (runs nix-provided gradle from flake; matches wrapper version). Export `GRADLE_USER_HOME="$TMPDIR/gradle-home"` when `~/.gradle/` is not writable.
+
 ## knowledge/conventions
 
 - **`knowledge/conventions/rich-world-domain-2026-05-15.md`** — Time-varying state lives on the entity (`Aerodrome.weather`, `Runway.obstruction`); hard atomic cutover, no shims (fn-12 + fn-16 precedents).

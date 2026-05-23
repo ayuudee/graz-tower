@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# gradlew-nix — invoke Gradle through the project's nix devShell.
+#
+# Use this instead of ./gradlew when you don't have a system JDK installed,
+# or when running inside a sandbox that blocks ./gradlew's network download
+# of the Gradle distribution.
+#
+# It runs the nix-provided `gradle` (pinned to the same version as
+# gradle/wrapper/gradle-wrapper.properties via the flake's nixpkgs input), so
+# no wrapper-zip download is needed.
+#
+# If your environment forbids writes to ~/.gradle (e.g. a sandboxed agent),
+# export GRADLE_USER_HOME to a writable path before invoking, e.g.
+#   GRADLE_USER_HOME="$TMPDIR/gradle-home" ./gradlew-nix build
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "$0")" && pwd)"
+cd "$repo_root"
+
+exec nix \
+  --extra-experimental-features 'nix-command flakes' \
+  develop \
+  --command gradle "$@"
