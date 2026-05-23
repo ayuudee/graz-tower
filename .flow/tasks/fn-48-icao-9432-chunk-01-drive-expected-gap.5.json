@@ -1,0 +1,17 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-23T09:11:17.490773Z",
+  "depends_on": [
+    "fn-48-icao-9432-chunk-01-drive-expected-gap.3",
+    "fn-48-icao-9432-chunk-01-drive-expected-gap.4"
+  ],
+  "epic": "fn-48-icao-9432-chunk-01-drive-expected-gap",
+  "id": "fn-48-icao-9432-chunk-01-drive-expected-gap.5",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-48-icao-9432-chunk-01-drive-expected-gap.5.md",
+  "status": "todo",
+  "title": "Close chunk 01: coverage report + STRATEGY + AGENT_DIALOGUE closure entry + self-assessment",
+  "updated_at": "2026-05-23T09:53:28.028167Z"
+}

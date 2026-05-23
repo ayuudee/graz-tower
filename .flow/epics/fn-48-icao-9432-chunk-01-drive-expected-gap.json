@@ -1,0 +1,24 @@
+{
+  "branch_name": "fn-48-icao-9432-chunk-01-drive-expected-gap",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
+  "created_at": "2026-05-23T08:19:20.509631Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [
+    "fn-47-icao-9432-communications-transfer",
+    "fn-46-map-icao-9432-source-unit-testing",
+    "fn-44-pressure-test-source-mapped-evidence",
+    "fn-43-build-permanent-evidence-dsl-audit-core",
+    "fn-33-icao-9432-section-by-section"
+  ],
+  "id": "fn-48-icao-9432-chunk-01-drive-expected-gap",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-48-icao-9432-chunk-01-drive-expected-gap.md",
+  "status": "open",
+  "title": "ICAO 9432 chunk 01 - drive expected-gap units to closure",
+  "updated_at": "2026-05-23T13:41:45.571768Z"
+}
