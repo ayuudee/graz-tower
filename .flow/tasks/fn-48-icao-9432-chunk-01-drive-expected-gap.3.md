@@ -46,13 +46,13 @@ This task DOES add new sealed leaves to `EvidenceFactPayload` (and a new `Eviden
   simEvidence("icao9432-chunk01-reception-doubt") {
       observe { /* compose facts via fromTransmissionRecords or current sim trace */ }
       source("doubt-triggers-repetition-request") {
-          cites(ICAO9432.Communications.ReceptionDoubt)
+          cites(ICAO9432.Communications.ReceptionDoubtRepetitionRequested) <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.1 used ReceptionDoubtRepetitionRequested not ReceptionDoubt -->
           expect { receptionDoubt(aircraftId).requiresRepetitionResponse(…) /* returns fail() if empty */ }
       }
   }
   ```
-  Cite the new `ICAO9432.Communications.ReceptionDoubt` source ref (added in task .1).
-- **Test method assertion shape (covered-red)**: do NOT call `report.assertNoFailures()`. Instead: `assertTrue(report.results.any { it.sources.contains(ICAO9432.Communications.ReceptionDoubt) && it.outcome is EvidenceAuditOutcome.Fail })`. JUnit passes; audit honestly reports `Fail`.
+  Cite the new `ICAO9432.Communications.ReceptionDoubtRepetitionRequested` source ref (added in task .1). <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.1 used ReceptionDoubtRepetitionRequested not ReceptionDoubt -->
+- **Test method assertion shape (covered-red)**: do NOT call `report.assertNoFailures()`. Instead: `assertTrue(report.results.any { it.sources.contains(ICAO9432.Communications.ReceptionDoubtRepetitionRequested) && it.outcome is EvidenceAuditOutcome.Fail })`. JUnit passes; audit honestly reports `Fail`. <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.1 used ReceptionDoubtRepetitionRequested not ReceptionDoubt -->
 - **Covered-red spawn**: draft repair epic via `flowctl epic create`. Goal: "Add reception-doubt observation infrastructure to sim". Acceptance: this test transitions from `Fail` to `Pass` for the cited ref. `.plan` COMMS-1 REPLACED with one-line pointer.
 
 ## Investigation targets
@@ -88,7 +88,7 @@ The covered-red landing is the **honest** outcome here. The primitive ships (typ
 - [ ] `EvidenceFactKind.ReceptionDoubt` enum value added; every `when` consumer of `EvidenceFactKind` exhausts it. Every `when` consumer of `EvidenceFactPayload` exhausts the new leaf.
 - [ ] Adapter projection in `EvidenceFactAdapters` returns `EvidenceFactSet`; total under property tests over the speaker × utterance × payload matrix + boundary cases.
 - [ ] `EvidenceExpectContext.receptionDoubt(aircraftId)` selector added; covered by primitive-level unit tests.
-- [ ] `Icao9432Chunk01ReceptionDoubtEvidenceTest.kt` created with ONE test method using `simEvidence(...) { observe { … }; source("id") { cites(ICAO9432.Communications.ReceptionDoubt); expect { … } } }`. Cite ref is typed.
+- [ ] `Icao9432Chunk01ReceptionDoubtEvidenceTest.kt` created with ONE test method using `simEvidence(...) { observe { … }; source("id") { cites(ICAO9432.Communications.ReceptionDoubtRepetitionRequested); expect { … } } }`. Cite ref is typed. <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.1 used ReceptionDoubtRepetitionRequested not ReceptionDoubt -->
 - [ ] `./gradlew-nix :sim:jvmTest --tests "*.Icao9432Chunk01ReceptionDoubtEvidenceTest"` executes. Test method passes via direct `report.results` assertion (covered-red expected) OR via `report.assertNoFailures()` (covered-green if sim surprisingly produces doubt facts).
 - [ ] `./gradlew-nix :controller:jvmTest --tests "*.SourceUnitCitationValidationTest"` and `./gradlew-nix :sim:jvmTest --tests "*.EvidenceSourceCatalog*"` still green.
 - [ ] If covered-red (anticipated): named production-repair epic spec exists (Goal & Context + Acceptance Criteria + this test's `Fail` outcome as closure signal). `.plan` COMMS-1 REPLACED with one-line pointer to repair epic (NOT deleted).

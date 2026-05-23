@@ -60,8 +60,8 @@ The two TransferCommunications IDs (`40382df156ad071e`, `b49ae03cbbb2d538`) at `
 - [ ] Detekt clean on touched files: `./gradlew-nix detekt`.
 
 ## Done summary
-_(filled at task close)_
+Refined the Test Completer chunk-completion scope in AGENT_DIALOGUE.md (additive) and added two new typed `EvidenceSourceRef` constants to `EvidenceSourceCatalog` for COMMS-1 (`communications_2_8_1_en::0a964f42b6100596`, in a new `ICAO9432.Communications` sub-object) and FN33-MODEL-1 (`readback_2_8_3_en::ac9111d240cfd2c2`, under `ICAO9432.Readback`); both refs are wired into `EvidenceSourceCatalog.All` so `validateAgainstRegistry()` exercises them, and the pinned canonical-id assertion in `EvidenceSourceCatalogTest` is extended to match.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 1d4147920e991c4ef484a1bccc422945e3775122
+- Tests: ./gradlew-nix :sim:jvmTest --tests "*.EvidenceSourceCatalog*" --offline (BUILD SUCCESSFUL - 5 tests, 0 failures, 0 errors; includes validateAgainstRegistry().requireValid() and the exact canonical-id set assertion with the two new entries), ./gradlew-nix detekt --offline (BUILD SUCCESSFUL - detekt clean)
 - PRs:

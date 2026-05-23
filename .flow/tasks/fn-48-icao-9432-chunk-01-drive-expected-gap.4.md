@@ -46,12 +46,12 @@ If the sim turns out to lack the necessary phase signals at clearance-issue time
   simEvidence("icao9432-chunk01-clearance-pacing") {
       observe { /* compose facts via fromTransmissionRecords or scenario trace exposing clearance-issue moments + concurrent phase */ }
       source("clearance-pacing-during-complicated-or-critical-phases") {
-          cites(ICAO9432.Readback.ClearancePacing)
+          cites(ICAO9432.Readback.ClearancePacingAdvisory) <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.1 used ClearancePacingAdvisory not ClearancePacing -->
           expect { clearancePacing(aircraftId).whenIssuedDuring(PacingWindow.entries.filter { /* not Other */ }) /* returns advisory(violations) if observed, pass() if none */ }
       }
   }
   ```
-  Cite the new `ICAO9432.Readback.ClearancePacing` source ref (added in task .1).
+  Cite the new `ICAO9432.Readback.ClearancePacingAdvisory` source ref (added in task .1). <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.1 used ClearancePacingAdvisory not ClearancePacing -->
 - **Test method assertion shape**:
   - covered-green (Advisory observed): call `report.assertNoFailures()` — passes because `Advisory` is not `Fail`. Additionally `assertTrue(report.results.any { it.outcome is EvidenceAuditOutcome.Advisory })` to confirm the advisory was emitted (not vacuous).
   - covered-red (if sim lacks signals): direct assertion on `report.results` for `Fail`; spawn repair epic.
@@ -97,7 +97,7 @@ Per memory `dynamic-injection-sim-tests-must-gate-2026-05-16`: sim test gates on
 - [ ] `EvidenceFactKind.ClearancePacing` enum value added; every consumer exhausts it.
 - [ ] Adapter projection in `EvidenceFactAdapters` returns `EvidenceFactSet`; total under property tests over `{Controller, Pilot} speaker × {Controller, Pilot} utterance × PacingWindow.entries` (16 base combinations) + boundary cases.
 - [ ] `EvidenceExpectContext.clearancePacing(aircraftId)` selector added; primitive-level unit tests cover all `PacingWindow.entries`.
-- [ ] `Icao9432Chunk01ClearancePacingEvidenceTest.kt` created with ONE test method (sim-level) using `simEvidence(...) { observe { … }; source("id") { cites(ICAO9432.Readback.ClearancePacing); expect { … } } }`.
+- [ ] `Icao9432Chunk01ClearancePacingEvidenceTest.kt` created with ONE test method (sim-level) using `simEvidence(...) { observe { … }; source("id") { cites(ICAO9432.Readback.ClearancePacingAdvisory); expect { … } } }`. <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.1 used ClearancePacingAdvisory not ClearancePacing -->
 - [ ] `./gradlew-nix :sim:jvmTest --tests "*.Icao9432Chunk01ClearancePacingEvidenceTest"` executes. Test method passes via `report.assertNoFailures()` (covered-green, advisory observed) AND asserts `report.results.any { it.outcome is EvidenceAuditOutcome.Advisory }` to confirm Advisory was emitted; OR (covered-red fallback) direct `Fail` assertion on `report.results`.
 - [ ] `./gradlew-nix :controller:jvmTest --tests "*.SourceUnitCitationValidationTest"` and `./gradlew-nix :sim:jvmTest --tests "*.EvidenceSourceCatalog*"` still green.
 - [ ] No external NDJSON / side-effect files introduced.
