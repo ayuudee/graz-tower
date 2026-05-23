@@ -18,6 +18,16 @@ share this file but never the same epic.
   epic, implementing, reviewing, and committing. Never edits the Test
   Writer's tests to make them pass; if a test is wrong, raise a
   `QUESTION:` here and wait.
+  - **Chunk-completion scope (refined 2026-05-23).** When the chunk's
+    test-authoring phase leaves named expected-gap units without
+    matching tests because the supporting primitives don't yet exist,
+    the Test Completer's chunk-completion role explicitly covers
+    **building those named blocker primitives + authoring the matching
+    expected-gap tests**, not solely driving pre-existing failing tests
+    to green. The two outcomes (`covered-green` and `covered-red` per
+    `docs/deferments-CONVENTION.md`) are both acceptable terminal
+    landings; `covered-red` spawns a named flow-next production-repair
+    epic, never a silent deferment.
 
 Neither role downgrades scope on the other's behalf. If a repair turns out
 to require a regulation or design decision the Test Completer cannot make
@@ -63,6 +73,17 @@ The chunk workflow has two phases with distinct owners:
    `flow-next`. Plan, implement, self-assess, review (where the work
    warrants it), commit. Update the chunk's coverage matrix when a
    group moves to `covered-green`.
+   - **Expected-gap closure (refined 2026-05-23).** Where the chunk
+     enters completion with named `expected-gap` units whose blockers
+     are missing primitives (not just missing implementation behind an
+     already-written test), the Test Completer also builds the named
+     blocker primitives and authors the matching source-mapped
+     expected-gap tests within the chunk-closure epic. Each unit lands
+     in `covered-green` or `covered-red`; `covered-red` landings spawn
+     a named production-repair epic and replace (not delete) the
+     `.plan` blocker with a one-line pointer to that epic. PHRASE-1 /
+     POLICY-1 cross-chunk infrastructure stays out of scope and
+     remains named-visible debt.
 
 The two phases share AGENT_DIALOGUE.md but never share an epic.
 

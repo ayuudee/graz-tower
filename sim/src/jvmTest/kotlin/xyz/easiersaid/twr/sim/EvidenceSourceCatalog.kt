@@ -81,6 +81,17 @@ private fun source(
     EvidenceSourceRef(EvidenceSourceRecord(canonicalId = canonicalId, title = title, claimScope = claimScope))
 
 object ICAO9432 {
+    object Communications {
+        val ReceptionDoubtRepetitionRequested: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::communications_2_8_1_en::0a964f42b6100596",
+            title = "Doubtful reception shall trigger a repetition request",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val RequiredProcedures: Set<EvidenceSourceRef> =
+            setOf(ReceptionDoubtRepetitionRequested)
+    }
+
     object Readback {
         val RunwayOperationsRequiredReadback: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::readback_2_8_3_en::15940532b37f8528",
@@ -106,6 +117,12 @@ object ICAO9432 {
             claimScope = EvidenceSourceClaimScope.StructuralProtocol,
         )
 
+        val ClearancePacingAdvisory: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2",
+            title = "Controllers should pace clearances and avoid line-up/take-off windows",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
         val RequiredItems: Set<EvidenceSourceRef> =
             setOf(
                 RunwayOperationsRequiredReadback,
@@ -113,6 +130,9 @@ object ICAO9432 {
                 AtcRouteClearancesRequiredReadback,
                 OtherClearancesAcknowledged,
             )
+
+        val AdvisoryItems: Set<EvidenceSourceRef> =
+            setOf(ClearancePacingAdvisory)
     }
 
     object Taxi {
@@ -243,7 +263,9 @@ object EvidenceGaps {
 
 object EvidenceSourceCatalog {
     val All: Set<EvidenceSourceRef> =
-        ICAO9432.Readback.RequiredItems +
+        ICAO9432.Communications.RequiredProcedures +
+            ICAO9432.Readback.RequiredItems +
+            ICAO9432.Readback.AdvisoryItems +
             ICAO9432.Taxi.HoldingPointLimit +
             ICAO9432.FinalApproachLanding.TouchAndGo +
             ICAO9432.TransferCommunications.RequiredProcedures +
