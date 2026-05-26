@@ -150,6 +150,32 @@ sealed interface EvidenceFactPayload {
         override val kind: EvidenceFactKind = EvidenceFactKind.FrequencyTransfer
     }
 
+    /**
+     * Reception-doubt observation about a transmission instance.
+     *
+     * Cites ICAO 9432 §2.8.1.4 — *"If there is doubt that a message has been
+     * correctly received, a repetition of the messages shall be requested
+     * either in full or in part."*
+     *
+     * Doubt is scoped to a single transmission instance (`transmissionRef`),
+     * not a channel-quality window. Time-decay semantics are deferred.
+     *
+     * The trigger (doubt) and the response ([SayAgainRef]) are distinct types
+     * linked by an optional typed reference: when the receiver requests a
+     * repetition for the doubtful transmission, [resolvedBy] points to the
+     * `SayAgain` instance that closed the loop. There is no back-reference
+     * from `SayAgain` to the doubt fact — `SayAgain` itself stays unchanged
+     * (no retroactive mutability).
+     */
+    data class ReceptionDoubt(
+        val aircraftId: AircraftId,
+        val transmissionRef: TransmissionId,
+        val doubtSource: ReceptionDoubtSource,
+        val resolvedBy: SayAgainRef? = null,
+    ) : EvidenceFactPayload {
+        override val kind: EvidenceFactKind = EvidenceFactKind.ReceptionDoubt
+    }
+
     data class SampleFact(
         val name: String,
         val displayValue: String,
@@ -173,6 +199,7 @@ enum class EvidenceFactKind {
     CriticalPhaseWindow,
     CriticalPhaseTransmission,
     FrequencyTransfer,
+    ReceptionDoubt,
     Sample,
 }
 
@@ -209,6 +236,55 @@ enum class TransmissionNecessity {
 enum class FrequencyTransferMode {
     ControllerAdvised,
     PilotNotifiedAbsentAdvice,
+}
+
+/**
+ * Reason the receiver could not satisfy a message-correctness expectation
+ * for a single transmission instance. Closed sealed sub-type — every
+ * `when` consumer must exhaust the leaves.
+ *
+ * Source: ICAO 9432 §2.8.1.4 (doubtful reception triggers repetition).
+ */
+sealed interface ReceptionDoubtSource {
+    val label: String
+
+    /** Reception interrupted mid-transmission; part of the message missing. */
+    data object PartialReception : ReceptionDoubtSource {
+        override val label: String = "partial-reception"
+    }
+
+    /** Transmission heard but the content could not be parsed / understood. */
+    data object Unintelligibility : ReceptionDoubtSource {
+        override val label: String = "unintelligibility"
+    }
+
+    /** Two transmissions overlapped on the frequency; this one was "stepped on". */
+    data object SteppedOn : ReceptionDoubtSource {
+        override val label: String = "stepped-on"
+    }
+
+    /** Catch-all for doubt sources outside the named leaves (still typed). */
+    data class Other(val detail: String) : ReceptionDoubtSource {
+        init {
+            require(detail.isNotBlank()) { "reception doubt 'Other' detail must not be blank" }
+        }
+
+        override val label: String = "other:$detail"
+    }
+}
+
+/**
+ * Typed reference to a `protocol.SayAgain` response transmission that
+ * resolved a [EvidenceFactPayload.ReceptionDoubt] observation.
+ *
+ * Thin wrapper around the originating transmission id. Carrying a typed
+ * ref (rather than a raw long) keeps `EvidenceFactPayload.ReceptionDoubt`
+ * honest at the type boundary: the doubt fact references the *response*
+ * by id without modifying `SayAgain` itself.
+ */
+@JvmInline
+value class SayAgainRef(val transmissionId: TransmissionId) {
+    override fun toString(): String = "SayAgain@${transmissionId.value}"
 }
 
 sealed interface FrequencyTransferTarget {
@@ -446,7 +522,16 @@ object EvidenceFactAdapters {
                     instruction = output.instruction,
                     targetAircraft = output.target,
                 )
-                listOf(instructionFact) + listOfNotNull(frequencyTransferFact)
+                val receptionDoubtFact = receptionDoubtFact(
+                    scenarioId = scenarioId,
+                    recordIndex = recordIndex,
+                    record = record,
+                    aircraftId = output.target,
+                    extractionSlot = "controller.instruction",
+                )
+                listOf(instructionFact) +
+                    listOfNotNull(frequencyTransferFact) +
+                    listOfNotNull(receptionDoubtFact)
             }
 
             is ControllerOutput.Respond -> emptyList()
@@ -463,8 +548,9 @@ object EvidenceFactAdapters {
      *
      * Sequence offset `+3` is reserved for this projection so that the unique-
      * sequence invariant on [EvidenceFactSet] holds when the same record also
-     * emits the base instruction fact at offset `+0`. Task .3 reserves `+5`
-     * (ReceptionDoubt); task .4 reserves `+6` (ClearancePacing).
+     * emits the base instruction fact at offset `+0`. Offset `+5` is reserved
+     * for ReceptionDoubt facts (task .3); task .4 reserves `+6`
+     * (ClearancePacing).
      */
     private fun controllerAdvisedFrequencyTransferFact(
         scenarioId: String,
@@ -552,10 +638,18 @@ object EvidenceFactAdapters {
             pilot = pilot,
             transmission = transmission,
         )
+        val receptionDoubtFact = receptionDoubtFact(
+            scenarioId = scenarioId,
+            recordIndex = recordIndex,
+            record = record,
+            aircraftId = pilot.aircraftId,
+            extractionSlot = "pilot.transmission",
+        )
         return listOf(transmissionFact) +
             reportFacts +
             listOfNotNull(aerodromeInformationFact) +
-            listOfNotNull(frequencyChangeFact)
+            listOfNotNull(frequencyChangeFact) +
+            listOfNotNull(receptionDoubtFact)
     }
 
     /**
@@ -606,6 +700,63 @@ object EvidenceFactAdapters {
                 target = target,
             ),
         )
+    }
+
+    /**
+     * Project a reception-doubt fact for a transmission instance when the
+     * sim trace observably signals reception trouble (partial reception,
+     * unintelligibility, stepped-on by overlapping traffic, or another typed
+     * source).
+     *
+     * Cites ICAO 9432 §2.8.1.4 — *"If there is doubt that a message has been
+     * correctly received, a repetition of the messages shall be requested
+     * either in full or in part."*
+     *
+     * Sequence offset `+5` is reserved for this projection so that the
+     * unique-sequence invariant on [EvidenceFactSet] holds alongside the
+     * base instruction/transmission facts (`+0`), report facts (`+1`),
+     * aerodrome-information facts (`+2`), controller-advised
+     * frequency-transfer facts (`+3`), and pilot-notified frequency-change
+     * facts (`+4`). Task .4 reserves `+6` (ClearancePacing).
+     *
+     * **Honest covered-red landing.** The current sim has no
+     * reception-quality signal infrastructure: [TransmissionRecord] models
+     * speaker / receiver / utterance but does *not* model reception
+     * confidence, partial-reception markers, or overlapping-transmission
+     * detection. This adapter is therefore total — it is wired into both
+     * the controller and pilot speaker arms and exercises the full
+     * speaker × utterance × payload matrix — but it returns `null` for
+     * every record produced by today's sim. The audit honestly reports
+     * `Fail` for the cited source ref via the
+     * [EvidenceExpectContext.receptionDoubt] selector. The spawned
+     * production-repair epic adds the missing reception-quality input to
+     * `TransmissionRecord`; when that lands, this projection starts
+     * observing real doubt and the chunk-01 test transitions to
+     * covered-green.
+     *
+     * Per AGENTS.md commandment 4 (tests prove the real job), we do NOT
+     * fabricate doubt facts from `fromProjectedPayloads` to claim a synthetic
+     * covered-green. The trigger (doubt) and the response
+     * (`protocol.SayAgain` via [SayAgainRef]) are distinct types linked by
+     * a typed optional reference; `SayAgain` itself is not modified by this
+     * projection.
+     */
+    @Suppress("UnusedParameter")
+    private fun receptionDoubtFact(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        aircraftId: AircraftId,
+        extractionSlot: String,
+    ): EvidenceFact? {
+        // No reception-quality signal exists on TransmissionRecord today.
+        // Returning null is the honest current observation. When the
+        // production-repair epic adds reception-quality input, branch this
+        // function on the new typed input to emit
+        // EvidenceFactPayload.ReceptionDoubt(...) at sequence offset
+        // `recordIndex * FACTS_PER_RECORD + 5`, extraction path
+        // "sim.records[$recordIndex].$extractionSlot.receptionDoubt".
+        return null
     }
 
     private fun aerodromeInformationFact(

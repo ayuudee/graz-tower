@@ -622,6 +622,297 @@ class EvidenceFactsTest {
         }
     }
 
+    // COMMS-1: reception-doubt evidence primitive (R1, R12).
+    //
+    // The current sim has no reception-quality signal infrastructure, so the
+    // adapter projection [EvidenceFactAdapters.receptionDoubtFact] returns
+    // null for every record. These primitive-level tests pin that honest
+    // current behaviour across the full speaker × utterance × payload matrix
+    // + boundary cases. They also pin the typed-payload shape (sealed
+    // ReceptionDoubtSource leaves, optional resolvedBy: SayAgainRef?) and
+    // the selector's expected outcomes when the sim eventually emits
+    // doubt facts via fromProjectedPayloads — those construction-site tests
+    // prove the type is wired correctly without claiming covered-green for
+    // the source unit (per AGENTS.md commandment 4: tests prove the real
+    // job, not the synthetic type).
+
+    @Test
+    fun `reception-doubt payload accepts all sealed source leaves and optional SayAgain resolution`() {
+        val aircraft = AircraftId("OE-ABC")
+        val partial = EvidenceFactPayload.ReceptionDoubt(
+            aircraftId = aircraft,
+            transmissionRef = TransmissionId(401),
+            doubtSource = ReceptionDoubtSource.PartialReception,
+        )
+        val unintelligible = EvidenceFactPayload.ReceptionDoubt(
+            aircraftId = aircraft,
+            transmissionRef = TransmissionId(402),
+            doubtSource = ReceptionDoubtSource.Unintelligibility,
+            resolvedBy = SayAgainRef(TransmissionId(502)),
+        )
+        val steppedOn = EvidenceFactPayload.ReceptionDoubt(
+            aircraftId = aircraft,
+            transmissionRef = TransmissionId(403),
+            doubtSource = ReceptionDoubtSource.SteppedOn,
+        )
+        val other = EvidenceFactPayload.ReceptionDoubt(
+            aircraftId = aircraft,
+            transmissionRef = TransmissionId(404),
+            doubtSource = ReceptionDoubtSource.Other("garbled-callsign"),
+        )
+
+        assertEquals(EvidenceFactKind.ReceptionDoubt, partial.kind)
+        assertEquals("partial-reception", partial.doubtSource.label)
+        assertNull(partial.resolvedBy)
+        assertEquals("unintelligibility", unintelligible.doubtSource.label)
+        assertEquals(TransmissionId(502), unintelligible.resolvedBy?.transmissionId)
+        assertEquals("stepped-on", steppedOn.doubtSource.label)
+        assertEquals("other:garbled-callsign", other.doubtSource.label)
+    }
+
+    @Test
+    fun `reception-doubt 'Other' source rejects blank detail`() {
+        assertFailsWith<IllegalArgumentException> {
+            ReceptionDoubtSource.Other(detail = "")
+        }
+        assertFailsWith<IllegalArgumentException> {
+            ReceptionDoubtSource.Other(detail = "   ")
+        }
+    }
+
+    @Test
+    fun `reception-doubt projections are total over the explicit speaker x utterance x payload matrix`() {
+        // R12: every (speaker, utterance, payload) combination is exercised by the adapter
+        // and produces no reception-doubt facts under today's sim (which has no reception-
+        // quality signal infrastructure). This is the honest covered-red landing: the
+        // projection is total, but observes nothing.
+        val aircraft = AircraftId("OE-ABC")
+        val controllerId = ControllerId("LOWG_TWR")
+        val matchingContactFrequency = ContactFrequency(
+            target = aircraft,
+            role = RoleName.TOWER,
+            frequency = Frequency.unsafe("118.500"),
+        )
+        val nonMatchingInstruction = NumberInSequence.unsafe(target = aircraft, number = 1)
+        val matchingPilotTransmission: PilotTransmission =
+            Request(RequestFrequencyChange(frequency = Frequency.unsafe("123.500")))
+        val nonMatchingPilotTransmission: PilotTransmission = Report(events = listOf(ReportEvent.Ready))
+
+        val matchingControllerOutput = ControllerOutput.Instruct.fromMissedHandoffReissue(
+            instruction = matchingContactFrequency,
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("DOUBT-MATRIX-TEST", "doubt matrix test ContactFrequency", emptyList()),
+        )
+        val nonMatchingControllerOutput = ControllerOutput.Instruct.fromAdministrative(
+            instruction = nonMatchingInstruction,
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("DOUBT-MATRIX-TEST", "doubt matrix test NumberInSequence", emptyList()),
+        )
+
+        val matrix = listOf(
+            "controller-speaker / controller-utterance / matching-payload" to controllerOutputRecord(
+                index = 0,
+                targetAircraft = aircraft,
+                output = matchingControllerOutput,
+            ),
+            "controller-speaker / controller-utterance / non-matching-payload" to controllerOutputRecord(
+                index = 0,
+                targetAircraft = aircraft,
+                output = nonMatchingControllerOutput,
+            ),
+            "controller-speaker / pilot-utterance / matching-payload" to TransmissionRecord(
+                transmissionId = TransmissionId(910),
+                time = SimTime.ZERO,
+                speaker = SpeakerRef.Controller(controllerId),
+                receiver = ReceiverRef.Pilot(aircraft),
+                utterance = Utterance.FromPilot(matchingPilotTransmission),
+            ),
+            "controller-speaker / pilot-utterance / non-matching-payload" to TransmissionRecord(
+                transmissionId = TransmissionId(911),
+                time = SimTime.ZERO,
+                speaker = SpeakerRef.Controller(controllerId),
+                receiver = ReceiverRef.Pilot(aircraft),
+                utterance = Utterance.FromPilot(nonMatchingPilotTransmission),
+            ),
+            "pilot-speaker / controller-utterance / matching-payload" to TransmissionRecord(
+                transmissionId = TransmissionId(912),
+                time = SimTime.ZERO,
+                speaker = SpeakerRef.Pilot(aircraft),
+                receiver = ReceiverRef.Controller(controllerId),
+                utterance = Utterance.FromController(matchingControllerOutput),
+            ),
+            "pilot-speaker / controller-utterance / non-matching-payload" to TransmissionRecord(
+                transmissionId = TransmissionId(913),
+                time = SimTime.ZERO,
+                speaker = SpeakerRef.Pilot(aircraft),
+                receiver = ReceiverRef.Controller(controllerId),
+                utterance = Utterance.FromController(nonMatchingControllerOutput),
+            ),
+            "pilot-speaker / pilot-utterance / matching-payload" to pilotTransmissionRecord(
+                index = 0,
+                aircraft = aircraft,
+                transmission = matchingPilotTransmission,
+            ),
+            "pilot-speaker / pilot-utterance / non-matching-payload" to pilotTransmissionRecord(
+                index = 0,
+                aircraft = aircraft,
+                transmission = nonMatchingPilotTransmission,
+            ),
+        )
+
+        matrix.forEach { (label, record) ->
+            val facts = EvidenceFactAdapters.fromTransmissionRecords(
+                scenarioId = "doubt-matrix::$label",
+                records = listOf(record),
+            )
+            assertTrue(
+                facts.facts.none { it.payload is EvidenceFactPayload.ReceptionDoubt },
+                "today's sim has no reception-quality signal — expected no ReceptionDoubt facts for $label",
+            )
+        }
+    }
+
+    @Test
+    fun `reception-doubt projection on empty input emits no facts`() {
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "doubt-boundary-empty",
+            records = emptyList(),
+        )
+        assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.ReceptionDoubt })
+    }
+
+    @Test
+    fun `reception-doubt projection on single unrelated record emits no doubt facts`() {
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "doubt-boundary-unrelated",
+            records = listOf(reportRecord(index = 0, time = SimTime.ZERO, event = ReportEvent.Ready)),
+        )
+        assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.ReceptionDoubt })
+    }
+
+    @Test
+    fun `reception-doubt projection on multiple mixed records emits no doubt facts under current sim`() {
+        val aircraft = AircraftId("OE-ABC")
+        val records = listOf(
+            controllerInstructionRecord(
+                index = 0,
+                instruction = ContactFrequency(
+                    target = aircraft,
+                    role = RoleName.TOWER,
+                    frequency = Frequency.unsafe("118.500"),
+                ),
+            ),
+            reportRecord(index = 1, time = SimTime.ZERO, event = ReportEvent.Ready),
+            pilotTransmissionRecord(
+                index = 2,
+                aircraft = aircraft,
+                transmission = Request(RequestFrequencyChange(frequency = Frequency.unsafe("123.500"))),
+            ),
+        )
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "doubt-boundary-mixed",
+            records = records,
+        )
+
+        assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.ReceptionDoubt })
+        // Other projections still fire on the same records — confirms doubt's null return
+        // is local to this projection (not a record-level filter that suppresses everything).
+        assertTrue(facts.facts.any { it.payload is EvidenceFactPayload.FrequencyTransfer })
+    }
+
+    @Test
+    fun `reception-doubt selector returns Fail when no doubt facts present (today's sim covered-red)`() {
+        val aircraft = AircraftId("OE-ABC")
+        val report = simEvidence("doubt-selector-missing") {
+            observe {
+                EvidenceFactAdapters.fromTransmissionRecords(
+                    scenarioId = "doubt-selector-missing",
+                    records = emptyList(),
+                )
+            }
+            source("reception doubt missing") {
+                cites(ICAO9432.Communications.ReceptionDoubtRepetitionRequested)
+                expect { receptionDoubt(aircraft).requiresRepetitionResponse() }
+            }
+        }
+
+        report.results.forEach { result ->
+            assertTrue(
+                result.outcome is EvidenceAuditOutcome.Fail,
+                "expected Fail for ${result.id} but got ${result.outcome}",
+            )
+        }
+    }
+
+    @Test
+    fun `reception-doubt selector returns Pass when doubt facts all carry SayAgain resolution`() {
+        // Construction-site test for the selector's pass-path: when the sim
+        // eventually emits doubt facts via the production-repair epic and
+        // every doubt is resolved by a SayAgain, the selector passes.
+        // Uses fromProjectedPayloads — proves the type wiring, NOT that the
+        // sim observes doubt in real traces.
+        val aircraft = AircraftId("OE-ABC")
+        val report = simEvidence("doubt-selector-resolved") {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = "doubt-selector-resolved",
+                    payloads = listOf(
+                        EvidenceFactPayload.ReceptionDoubt(
+                            aircraftId = aircraft,
+                            transmissionRef = TransmissionId(601),
+                            doubtSource = ReceptionDoubtSource.PartialReception,
+                            resolvedBy = SayAgainRef(TransmissionId(701)),
+                        ),
+                    ),
+                )
+            }
+            source("reception doubt resolved") {
+                cites(ICAO9432.Communications.ReceptionDoubtRepetitionRequested)
+                expect { receptionDoubt(aircraft).requiresRepetitionResponse() }
+            }
+        }
+
+        report.assertNoFailures()
+    }
+
+    @Test
+    fun `reception-doubt selector returns Fail when any doubt fact lacks SayAgain resolution`() {
+        val aircraft = AircraftId("OE-ABC")
+        val report = simEvidence("doubt-selector-unresolved") {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = "doubt-selector-unresolved",
+                    payloads = listOf(
+                        EvidenceFactPayload.ReceptionDoubt(
+                            aircraftId = aircraft,
+                            transmissionRef = TransmissionId(602),
+                            doubtSource = ReceptionDoubtSource.SteppedOn,
+                            resolvedBy = SayAgainRef(TransmissionId(702)),
+                        ),
+                        EvidenceFactPayload.ReceptionDoubt(
+                            aircraftId = aircraft,
+                            transmissionRef = TransmissionId(603),
+                            doubtSource = ReceptionDoubtSource.Unintelligibility,
+                            resolvedBy = null,
+                        ),
+                    ),
+                )
+            }
+            source("reception doubt partially unresolved") {
+                cites(ICAO9432.Communications.ReceptionDoubtRepetitionRequested)
+                expect { receptionDoubt(aircraft).requiresRepetitionResponse() }
+            }
+        }
+
+        report.results.forEach { result ->
+            assertTrue(
+                result.outcome is EvidenceAuditOutcome.Fail,
+                "expected Fail for ${result.id} but got ${result.outcome}",
+            )
+        }
+    }
+
     private fun reportRecord(
         index: Long,
         time: SimTime,

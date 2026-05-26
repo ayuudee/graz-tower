@@ -373,6 +373,13 @@ class EvidenceExpectContext internal constructor(
             facts = facts.orderedFacts(),
             activate = { factId -> activated += factId },
         )
+
+    fun receptionDoubt(aircraftId: AircraftId): AuditReceptionDoubtSubject =
+        AuditReceptionDoubtSubject(
+            aircraftId = aircraftId,
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
 }
 
 class AuditAircraftSubject internal constructor(
@@ -547,6 +554,76 @@ class AuditFrequencyTransferSubject internal constructor(
                 "${payload.mode}:$target@${fact.provenance.sequence.value}"
             },
         )
+    }
+}
+
+/**
+ * Audit selector over [EvidenceFactPayload.ReceptionDoubt] facts filtered
+ * by aircraft.
+ *
+ * Source: ICAO 9432 §2.8.1.4 — *"If there is doubt that a message has been
+ * correctly received, a repetition of the messages shall be requested
+ * either in full or in part."*
+ *
+ * §2.8.1.4 is mandatory ("shall"). The single branch
+ * [requiresRepetitionResponse] returns:
+ *
+ * - [EvidenceAuditOutcome.Fail] when **no** reception-doubt fact exists
+ *   for the aircraft. This is the honest covered-red landing while the
+ *   sim has no reception-quality signal infrastructure: regulation
+ *   cannot be satisfied without an observation.
+ * - [EvidenceAuditOutcome.Pass] when every doubt fact for the aircraft
+ *   has a matching `protocol.SayAgain` resolution via
+ *   [EvidenceFactPayload.ReceptionDoubt.resolvedBy]. The activation
+ *   carries the matched doubt fact ids.
+ * - [EvidenceAuditOutcome.Fail] when at least one doubt fact for the
+ *   aircraft has no `resolvedBy` link (regulation explicitly requires
+ *   "a repetition... shall be requested"). The failure evidence lists
+ *   the unresolved doubt fact ids.
+ *
+ * The trigger (doubt) and the response (`SayAgain`) are distinct types
+ * linked by a typed optional reference. The selector inspects the doubt
+ * fact's `resolvedBy: SayAgainRef?` — it does not require `SayAgain` to
+ * back-reference the doubt.
+ */
+class AuditReceptionDoubtSubject internal constructor(
+    private val aircraftId: AircraftId,
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun requiresRepetitionResponse(): EvidenceAuditOutcome {
+        val doubtFacts = facts.filter { fact ->
+            val payload = fact.payload as? EvidenceFactPayload.ReceptionDoubt ?: return@filter false
+            payload.aircraftId == aircraftId
+        }
+        if (doubtFacts.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing reception-doubt evidence for ${aircraftId.value}",
+                evidence = emptyList(),
+            )
+        }
+        val unresolved = doubtFacts.filter { fact ->
+            val payload = fact.payload as EvidenceFactPayload.ReceptionDoubt
+            payload.resolvedBy == null
+        }
+        return if (unresolved.isEmpty()) {
+            doubtFacts.forEach { fact -> activate(fact.id) }
+            EvidenceAuditOutcome.Pass(
+                evidence = doubtFacts.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.ReceptionDoubt
+                    val resolution = checkNotNull(payload.resolvedBy)
+                    "${payload.doubtSource.label}@${fact.provenance.sequence.value}->${resolution}"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Reception-doubt observations without repetition response for ${aircraftId.value}",
+                evidence = unresolved.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.ReceptionDoubt
+                    "${payload.doubtSource.label}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
     }
 }
 

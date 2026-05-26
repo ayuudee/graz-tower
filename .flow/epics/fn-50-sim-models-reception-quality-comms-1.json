@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-50-sim-models-reception-quality",
+  "created_at": "2026-05-26T08:00:04.458385Z",
+  "depends_on_epics": [],
+  "id": "fn-50-sim-models-reception-quality-comms-1",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-50-sim-models-reception-quality-comms-1.md",
+  "status": "open",
+  "title": "Sim models reception quality (COMMS-1 closure)",
+  "updated_at": "2026-05-26T08:01:04.020289Z"
+}
