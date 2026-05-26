@@ -112,8 +112,8 @@ Per memory `bug/test-failures/audit-selectors-must-activate-examined-2026-05-26`
 - [ ] If design pressure pushes into POLICY-1 territory: HALT, raise `QUESTION:` in AGENT_DIALOGUE.md, do NOT silently expand scope.
 
 ## Done summary
-_(filled at task close)_
+Closed FN33-MODEL-1 (covered-green via Advisory) for ICAO 9432 §2.8.3.2 by adding a typed EvidenceAuditOutcome.Advisory audit-outcome leaf and an EvidenceFactPayload.ClearancePacing projection wired through ControllerOutput.Instruct only; the chunk-01 source-mapped test Icao9432Chunk01ClearancePacingEvidenceTest lands the §2.8.3.2 advisory source unit icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2 covered-green by observing real LOWG circuit-training clearances during sensitive pilot phases without blocking the build. The .plan FN33-MODEL-1 paragraph was rewritten to reflect the partial closure. Codex impl-review SHIP on first pass.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: c2d0a51a0567e9f4dd3b6f508422dcee935e5c96
+- Tests: ./gradlew-nix :sim:jvmTest --tests "*.Icao9432Chunk01ClearancePacingEvidenceTest" — 1 test green, ./gradlew-nix :sim:jvmTest --tests "*.EvidenceFactsTest" — 37 tests green (9 new clearance-pacing), ./gradlew-nix :sim:jvmTest --tests "*.EvidenceSourceCatalog*" --tests "*.EvidenceDslTest" --tests "*.EvidenceSelectorTest" — all green, ./gradlew-nix :controller:jvmTest --tests "*.SourceUnitCitationValidationTest" — green, ./gradlew-nix :sim:jvmTest --tests "*.Icao9432Chunk01*" — all 5 chunk-01 evidence tests green, ./gradlew-nix detekt — clean, Pre-existing sandbox failure: EvidenceReportWriterTest fails on Files.createTempDirectory (macOS TMPDIR sandbox); reproduces on master — not a regression
 - PRs:
