@@ -1,6 +1,6 @@
 ---
 name: graz-tower
-last_updated: 2026-05-16
+last_updated: 2026-05-26
 generator: flow-next-strategy
 ---
 
@@ -44,7 +44,7 @@ _Why it serves the approach:_ The runtime is the thing students see; it must be 
 
 ### Requirements registry (`research/tools/requirements-spike`)
 
-Ollama-first ingestion of ICAO / SERA / CAP / EGAST / H01 regulations into a typed, source-grounded registry. Declared 46-window slice now landed (CAP 413: 8, ICAO 4444: 7, ICAO 9432: 1, plus EGAST + H01). Four-stage adjudication (challenger → defender → bundle gate → judge) generalises across five source families with only mechanical budget bumps. Section-disposition ledger keeps scope explicit.
+Ollama-first ingestion of ICAO / SERA / CAP / EGAST / H01 regulations into a typed, source-grounded registry. Declared 46-window slice now landed (CAP 413: 8, ICAO 4444: 7, ICAO 9432: 1, plus EGAST + H01). Four-stage adjudication (challenger → defender → bundle gate → judge) generalises across five source families with only mechanical budget bumps. Section-disposition ledger keeps scope explicit. ICAO 9432 chunk 01 (communications, transfer, readback) closed at `fn-48`: FN44-GAP-1 and FN33-MODEL-1 landed `covered-green` (the latter via the new `EvidenceAuditOutcome.Advisory` audit-outcome leaf for §2.8.3.2's "should" semantics); FN44-GAP-2 and COMMS-1 landed `covered-red` and are tracked by `fn-49-sim-emits-pilot-notified-frequency` and `fn-50-sim-models-reception-quality-comms-1` respectively; 7 phraseology-later units remain pending PHRASE-1 and 2 policy-blocked pending POLICY-1.
 
 _Why it serves the approach:_ Without a typed, citation-grounded source for "what does the regulation actually say", the controller's regulation database drifts into folklore; the registry is the load-bearing input that makes citation discipline real.
 

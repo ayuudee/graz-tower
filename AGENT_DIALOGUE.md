@@ -134,3 +134,188 @@ Test Completer specifically — **no debt, no surprises**:
   full `AGENTS.md` commandments and a no-debt / no-surprises posture.
   See the new **Actors**, **Workflow**, and **Standing Constraints**
   sections above.
+
+### 2026-05-26 — Chunk 01 CLOSURE (Test Completer)
+
+`fn-48-icao-9432-chunk-01-drive-expected-gap` is **closed**. The four
+chunk-specific expected-gap units land in terminal states; no new
+programme-level deferments introduced.
+
+**Verification command**:
+
+```bash
+./gradlew-nix :sim:jvmTest --tests "*Icao9432*" :controller:jvmTest --tests "*Icao9432*"
+./gradlew-nix detekt
+```
+
+**Result**: BUILD SUCCESSFUL for both. All 9 `*Icao9432*` test classes
+green (sim: `Icao9432Chunk01ReadbackEvidenceTest`,
+`Icao9432Chunk01FrequencyTransferEvidenceTest`,
+`Icao9432Chunk01ReceptionDoubtEvidenceTest`,
+`Icao9432Chunk01ClearancePacingEvidenceTest`,
+`Icao9432TaxiSourceBackedScenarioTest`,
+`Icao9432ModelGapSourceUnitSpecTest`,
+`Icao9432TouchAndGoSourceBackedScenarioTest`,
+`Icao9432ReadbackSourceUnitSpecTest`; controller:
+`Icao9432ReadbackConformanceSpec`). Detekt clean.
+
+**Pre-existing sandbox failure — NOT a chunk-01 regression**: running
+`./gradlew-nix build` (full suite, unfiltered) surfaces three
+`java.nio.file.FileSystemException` failures in
+`EvidenceReportWriterTest` (2 cases at lines 24 + 83) and
+`EvidencePermanentTwentyCaseTest` (1 case at line 170). All three are
+`Files.createTempDirectory(...)` calls that try to use the macOS
+system `java.io.tmpdir` from a forked Gradle test JVM and hit the
+sandbox write deny. The test files predate fn-48 (last touched in
+commits `9e728ce6` and `514c371e`, well upstream of any chunk-01
+work); they reproduce on master baseline. Recording as a known
+pre-existing finding — sandbox / test-environment concern, not a
+chunk-01 closure blocker. Honest close-out per memory
+`honest-close-out-dont-assert-green-on-2026-05-17`: chunk-01 evidence
+suite is GREEN end-to-end; the build-gate red is bounded to
+pre-existing, fn-48-out-of-scope test infrastructure.
+
+**New coverage tally** (full table in
+`research/tools/requirements-spike/quality/icao9432_programme/chunk_01_comms_readback_transfer/coverage_report.md`):
+
+| Final state | Units |
+|---|---:|
+| `covered-green` | 8 |
+| `covered-red` | 2 |
+| `expected-gap` | 0 |
+| `phraseology-later` | 7 |
+| `policy-blocked` | 2 |
+| `not-applicable` | 1 |
+
+Final landings:
+
+- **FN44-GAP-1** → `covered-green`. Existing `ContactFrequency`
+  controller emission in the LOWG circuit + new controller-advised
+  adapter projection. `.plan` paragraph DELETED.
+- **FN44-GAP-2** → `covered-red`. Typed
+  `EvidenceFactPayload.FrequencyTransfer(PilotNotifiedAbsentAdvice)`
+  adapter + test asserting on `report.results`. Spawned repair
+  epic: **`fn-49-sim-emits-pilot-notified-frequency`**. `.plan`
+  paragraph REPLACED with one-line pointer.
+- **COMMS-1** → `covered-red`. New
+  `EvidenceFactPayload.ReceptionDoubt` sealed leaf + typed
+  `SayAgainRef` linkage + `AuditReceptionDoubtSubject` selector +
+  chunk-01 source-mapped test asserting on `report.results`.
+  Spawned repair epic:
+  **`fn-50-sim-models-reception-quality-comms-1`**. `.plan`
+  paragraph REPLACED with one-line pointer.
+- **FN33-MODEL-1** → `covered-green` *via Advisory*. New
+  `EvidenceAuditOutcome.Advisory` sealed audit-outcome leaf + new
+  `EvidenceFactPayload.ClearancePacing` payload + `PacingWindow`
+  enum + adapter projection +
+  `Icao9432Chunk01ClearancePacingEvidenceTest`. §2.8.3.2 ("should")
+  semantics surface as Advisory observations, ignored by
+  `assertNoFailures()`. `.plan` paragraph **partially rewritten,
+  not deleted** — the two other source units it references
+  (route-clearance timing `…::36e6ad16cffe8726`, now `policy-blocked`
+  against POLICY-1; and TAKE OFF phraseology `…::f06dfa1cefd2d649`,
+  now `phraseology-later` against PHRASE-1) remain
+  `blocked_by_model_gap` against PHRASE-1 / POLICY-1 cross-chunk
+  infrastructure.
+
+**Spawned production-repair epics**:
+
+- `fn-49-sim-emits-pilot-notified-frequency` — closes FN44-GAP-2
+  red by adding sim `RequestFrequencyChange` emission so §2.8.2.1
+  fallback lands `covered-green`.
+- `fn-50-sim-models-reception-quality-comms-1` — closes COMMS-1
+  red by adding typed reception-quality input to
+  `TransmissionRecord` so §2.8.1.4 lands `covered-green`.
+
+**`.plan` accounting verified**: FN44-GAP-1 deleted; FN44-GAP-2
+replaced with pointer to `fn-49`; COMMS-1 replaced with pointer to
+`fn-50`; FN33-MODEL-1 partially rewritten with §2.8.3.2 closure note
++ retained reference to the two `blocked_by_model_gap` source units.
+PHRASE-1 and POLICY-1 entries UNCHANGED; no new programme-level
+deferments introduced (verified by absence of new `D-*` entries in
+`docs/deferments.md`).
+
+**STRATEGY.md**: chunk-01 closure sentence ADDED to the
+Requirements-registry track (single sentence, no restructure;
+`last_updated` bumped to 2026-05-26).
+
+**Chunk 02 (ground movement, pushback, taxi) is READY for the Test
+Writer.**
+
+#### Principal-agent self-assessment — `fn-48` close-out
+
+Per `AGENTS.md` §Self-assessment before review, walked against the
+8 criteria. Each criterion gets a one-line check-result.
+
+1. **Totality** — PASS. Three sealed-type extensions landed across
+   tasks .2/.3/.4 (`EvidenceFactPayload.FrequencyTransfer` variants,
+   `EvidenceFactPayload.ReceptionDoubt`,
+   `EvidenceFactPayload.ClearancePacing`,
+   `EvidenceAuditOutcome.Advisory`). Every `when` consumer was
+   grep-walked at introduction; no `else -> Unit` or `else -> null`
+   added. `PacingWindow` declared as `enum class` for free `.entries`
+   per memory `predicate-guards-over-sealed-types-must-2026-05-16`.
+2. **Reversal completeness** — PASS / NA. No production state
+   transitions added; primitives are pure observation projections
+   over existing sim traces. Reversal of "primitive removal" was
+   considered: removing any of the three new payload leaves restores
+   the prior `expected-gap` classification without leaking partial
+   test references (verified by the partial closure of FN33-MODEL-1
+   which keeps the paragraph rather than half-deleting it).
+3. **Interaction coverage** — PASS. The new Advisory outcome leaf
+   was traced through every consumer
+   (`assertNoFailures()`, report formatter, test-DSL helpers,
+   `EvidenceAuditCase.toCase` activation guard). The activation
+   discipline lesson surfaced in .3's review (entry
+   `bug/test-failures/audit-selectors-must-activate-examined-2026-05-26`)
+   was applied pre-emptively on the .4 Advisory + Pass selector
+   paths and landed Codex SHIP on first pass — concrete evidence the
+   captured lesson works as a forward guard. See criterion 4 + 7
+   below.
+4. **Test coverage for known features** — PASS. Each of the 4
+   chunk-01 source units has a paired chunk-01 source-mapped test
+   citing the accepted source-unit id verbatim. Property-test matrix
+   per R12 (speaker × utterance × payload × boundary) lives
+   alongside each primitive. Captured lesson: **selectors must call
+   `activate(fact.id)` for every consulted fact on ALL non-empty
+   paths** — without this, `AuditEvidenceCaseBuilder.toCase`
+   silently overrides the selector's specific outcome with a generic
+   "did not activate any evidence facts" `Fail`. Discipline applied
+   pre-emptively on Advisory + Pass paths in .4.
+5. **New-field audit** — PASS. New fields on new sealed leaves:
+   `ReceptionDoubt.transmissionRef / doubtSource / resolvedBy`,
+   `ClearancePacing.clearanceRef / issuedDuring`,
+   `Advisory.violations / reason`. Each field's mutation surface is
+   the projection emit site only — no state-class mutations. Catalog
+   refs added to `EvidenceSourceCatalog.All` so
+   `validateAgainstRegistry()` walks them (verified by `:sim:jvmTest`
+   `*EvidenceSourceCatalog*` green).
+6. **Operational correctness** — PASS. Each primitive maps to its
+   cited ICAO 9432 §section and edition (4th ed 2007). §2.8.1.4
+   "shall" → mandatory, modelled as `Fail`-eligible (COMMS-1).
+   §2.8.2.1 "shall" twice → mandatory, modelled as `Fail`-eligible
+   (FN44-GAP-1 + FN44-GAP-2). §2.8.3.2 "should" → advisory, modelled
+   as `Advisory` (FN33-MODEL-1).
+7. **Error handling honesty** — PASS. `error()` reserved for
+   provably-impossible states (none added in this epic). The
+   covered-red landings use **typed Fail outcomes inside the audit
+   report**, not exceptions: tests assert on `report.results` rather
+   than calling `assertNoFailures()`, so the JUnit gate is green
+   while the audit honestly reports `Fail`. The activation-discipline
+   memory captured during .3's NEEDS_WORK → SHIP cycle is exactly
+   the "no silent override" guard for this pattern.
+8. **Deferment honesty** — PASS. Two named flow-next production-repair
+   epics spawned (`fn-49`, `fn-50`) for the `covered-red` landings,
+   each with a `.plan` pointer (bucket 3 of the four-bucket model)
+   replacing — not deleting — the original blocker paragraph. The
+   pre-existing sandbox failure on `EvidenceReportWriterTest` +
+   `EvidencePermanentTwentyCaseTest` is recorded explicitly in this
+   closure entry as a known pre-existing finding, not silently
+   carved out. PHRASE-1 + POLICY-1 stay as named, visible
+   cross-chunk debt in `.plan`. No new `D-*` entries in
+   `docs/deferments.md`.
+
+No findings deferred to `.plan` from this self-assessment — the
+captured lesson from .3 was the only mid-epic discipline finding
+and it landed as a memory entry during the .3 fix-loop, then was
+applied pre-emptively in .4. Chunk 01 closes honestly.

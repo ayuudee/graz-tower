@@ -6,25 +6,51 @@ Chunk: ICAO 9432 communications, transfer, and readback.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 6 |
-| `expected-gap` | 4 |
+| `covered-green` | 8 |
+| `covered-red` | 2 |
+| `expected-gap` | 0 |
 | `not-applicable` | 1 |
 | `phraseology-later` | 7 |
 | `policy-blocked` | 2 |
 
+Closed at `fn-48-icao-9432-chunk-01-drive-expected-gap` (2026-05-26).
+Two units landed `covered-green` (FN44-GAP-1 + FN33-MODEL-1) and two
+units landed `covered-red` (FN44-GAP-2 + COMMS-1), each tied to a
+named spawned production-repair epic.
+
 Focused verification run:
 
 ```bash
-nix-shell --run './gradlew :sim:jvmTest --tests "*.Icao9432Chunk01ReadbackEvidenceTest" :controller:jvmTest --tests "*.Icao9432ReadbackConformanceSpec"'
+./gradlew-nix :sim:jvmTest --tests "*Icao9432*" :controller:jvmTest --tests "*Icao9432*"
 ```
 
-Result: green.
+Result: GREEN. All chunk-01 evidence tests pass
+(`Icao9432Chunk01ReadbackEvidenceTest`,
+`Icao9432Chunk01FrequencyTransferEvidenceTest`,
+`Icao9432Chunk01ReceptionDoubtEvidenceTest`,
+`Icao9432Chunk01ClearancePacingEvidenceTest` on the sim side;
+`Icao9432ReadbackConformanceSpec` on the controller side; plus the
+adjacent `Icao9432*SourceUnitSpec` / `Icao9432*SourceBackedScenario`
+classes the `*Icao9432*` wildcard also captures). The `covered-red`
+landings (FN44-GAP-2, COMMS-1) emit honest `Fail` outcomes inside the
+audit reports while the JUnit assertions on `report.results` pass —
+contractually green at the JUnit/Kotest layer.
+
+Pre-existing sandbox failure, NOT a chunk-01 regression:
+`EvidenceReportWriterTest` (2 cases) and `EvidencePermanentTwentyCaseTest`
+(1 case) fail on `java.nio.file.FileSystemException` when calling
+`Files.createTempDirectory(...)` under the macOS sandbox / agent
+environment used to run the chunk-01 closure verification. The tests
+predate fn-48 (last touched in commits `9e728ce6` and `514c371e`,
+well upstream of any chunk-01 work) and reproduce on master baseline.
+They are out of chunk-01 scope and tracked separately as a sandbox /
+test-environment concern, not as a chunk closure blocker.
 
 ## Coverage Table
 
 | Source unit | Final state | Test / blocker | Claim |
 |---|---|---|---|
-| `icao9432-extracted::communications_2_8_1_en::0a964f42b6100596` | `expected-gap` | `COMMS-1` | If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either ... |
+| `icao9432-extracted::communications_2_8_1_en::0a964f42b6100596` | `covered-red` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ReceptionDoubtEvidenceTest.kt` — spawned: `fn-50-sim-models-reception-quality-comms-1` | If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either ... |
 | `icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca` | `phraseology-later` | `PHRASE-1` | When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the c... |
 | `icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf` | `policy-blocked` | `POLICY-1` | No reply is expected to such general calls unless individual stations are subsequently called upon to acknowledge rec... |
 | `icao9432-extracted::communications_2_8_1_en::a685cef087951878` | `phraseology-later` | `PHRASE-1` | When establishing communications, an aircraft should use the full call sign of both the aircraft and the aeronautical... |
@@ -34,28 +60,72 @@ Result: green.
 | `icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726` | `policy-blocked` | `POLICY-1` | Whenever possible, controllers should pass a route clearance to an aircraft before start-up. |
 | `icao9432-extracted::readback_2_8_3_en::4b6ece953649da07` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ReadbackEvidenceTest.kt` | Other clearances or instructions, including conditional clearances, shall be read back or acknowledged in a manner to... |
 | `icao9432-extracted::readback_2_8_3_en::58594a8ee6243296` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ReadbackEvidenceTest.kt` | ATC route clearances shall always be read back. |
-| `icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2` | `expected-gap` | `FN33-MODEL-1` | Controllers should pass a clearance slowly and clearly, avoid passing clearances during complicated taxiing, and on n... |
+| `icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ClearancePacingEvidenceTest.kt` (via new `EvidenceAuditOutcome.Advisory` leaf) | Controllers should pass a clearance slowly and clearly, avoid passing clearances during complicated taxiing, and on n... |
 | `icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649` | `phraseology-later` | `PHRASE-1` | The words 'TAKE OFF' are used only when an aircraft is cleared for take-off, or when canceling a take-off clearance; ... |
 | `icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9` | `phraseology-later` | `PHRASE-1` | An ATC route clearance is not an instruction to take off or enter an active runway. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::17e1dfdf4ce57253` | `covered-green` | `controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/requirements/Icao9432ReadbackConformanceSpec.kt` | The controller shall listen to the read-back to ascertain that the clearance or instruction has been correctly acknow... |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71` | `phraseology-later` | `PHRASE-1` | An aircraft should terminate the read-back by its call sign. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ace4ab7ff5d53a66` | `covered-green` | `controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/requirements/Icao9432ReadbackConformanceSpec.kt` | The controller shall take immediate action to correct any discrepancies revealed by the read-back. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ce25c18f1b44a6a8` | `not-applicable` | `none` | See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES |
-| `icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e` | `expected-gap` | `FN44-GAP-1/FN44-GAP-2` | An aircraft shall be advised by the appropriate aeronautical station to change from one radio frequency to another in... |
+| `icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01FrequencyTransferEvidenceTest.kt` (controller-advised path via existing `ContactFrequency` emission) | An aircraft shall be advised by the appropriate aeronautical station to change from one radio frequency to another in... |
 | `icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc` | `phraseology-later` | `PHRASE-1` | Phraseology for frequency change includes 'CONTACT [Unit] [Frequency]' and readback 'Frequency Callsign'. |
-| `icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538` | `expected-gap` | `FN44-GAP-1/FN44-GAP-2` | In the absence of such advice, the aircraft shall notify the aeronautical station before such a change takes place. |
+| `icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538` | `covered-red` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01FrequencyTransferEvidenceTest.kt` — spawned: `fn-49-sim-emits-pilot-notified-frequency` | In the absence of such advice, the aircraft shall notify the aeronautical station before such a change takes place. |
 
 ## Repair / Follow-Up Handoff
 
-- `COMMS-1`: add reception-doubt / repetition-request evidence before testing ICAO 9432 §2.8.1 doubtful reception.
-- `POLICY-1`: add typed policy concepts before asserting guidance such as no-reply general calls and route-clearance timing.
-- `PHRASE-1`: add rendered-transmission phraseology facts before covering ALL STATIONS, full callsign, TAKE OFF word-use, readback callsign termination, and CONTACT phraseology units.
-- `FN33-MODEL-1`: add clearance timing/workload evidence for complicated taxiing / line-up / take-off clearance delivery guidance.
-- `FN44-GAP-1` / `FN44-GAP-2`: add frequency-transfer facts for controller-advised and pilot-notified transfer claims.
+- `COMMS-1`: CLOSED `covered-red` at fn-48 via typed
+  `EvidenceFactPayload.ReceptionDoubt` + `AuditReceptionDoubtSubject`
+  selector + chunk-01 source-mapped test asserting on `report.results`.
+  Sim model gap (no reception-quality signal) tracked by
+  `fn-50-sim-models-reception-quality-comms-1`. `.plan` paragraph
+  replaced with a one-line pointer to that epic.
+- `POLICY-1`: UNCHANGED. Still cross-chunk infrastructure; covers
+  no-reply general calls and route-clearance timing
+  (`readback_2_8_3_en::36e6ad16cffe8726`). Tracked in `.plan`.
+- `PHRASE-1`: UNCHANGED. Still cross-chunk infrastructure; covers
+  ALL STATIONS, full callsign, TAKE OFF word-use
+  (`readback_2_8_3_en::f06dfa1cefd2d649`), readback callsign
+  termination, CONTACT phraseology units. Tracked in `.plan`.
+- `FN33-MODEL-1`: PARTIALLY CLOSED. The §2.8.3.2 advisory-pacing
+  source unit (`readback_2_8_3_en::ac9111d240cfd2c2`) landed
+  `covered-green` at fn-48 via the new
+  `EvidenceAuditOutcome.Advisory` audit-outcome leaf +
+  `EvidenceFactPayload.ClearancePacing` projection +
+  `Icao9432Chunk01ClearancePacingEvidenceTest`. The two other
+  source units the `.plan` paragraph references — route-clearance
+  timing (`readback_2_8_3_en::36e6ad16cffe8726`, now classified
+  `policy-blocked` against POLICY-1) and TAKE OFF phraseology
+  (`readback_2_8_3_en::f06dfa1cefd2d649`, classified
+  `phraseology-later` against PHRASE-1) — remain
+  `blocked_by_model_gap` and the `.plan` paragraph stays as a
+  partial-closure record, not deleted.
+- `FN44-GAP-1`: CLOSED `covered-green` at fn-48 via existing
+  `ContactFrequency` controller emission in LOWG circuit + new
+  controller-advised adapter projection. `.plan` paragraph deleted.
+- `FN44-GAP-2`: CLOSED `covered-red` at fn-48 via typed
+  `EvidenceFactPayload.FrequencyTransfer(PilotNotifiedAbsentAdvice)`
+  adapter + chunk-01 source-mapped test asserting on
+  `report.results`. Sim model gap (no `RequestFrequencyChange`
+  emission) tracked by `fn-49-sim-emits-pilot-notified-frequency`.
+  `.plan` paragraph replaced with a one-line pointer to that epic.
 
 ## Review Considerations
 
-- FP / type safety: permanent coverage reporting should use typed coverage states; this report is the chunk handoff artifact.
-- Test architecture: green tests cover structural readback and hearback classification only. Phraseology, policy, frequency transfer, and reception-quality units remain blocked.
-- Impact: no production behaviour was changed in this chunk.
-- Operational correctness: each covered/blocked row keeps the accepted ICAO 9432 source-unit id visible.
+- FP / type safety: permanent coverage reporting uses typed
+  coverage states; the chunk-01 closure exercises a new
+  `EvidenceAuditOutcome.Advisory` sealed leaf — every `when` over
+  `EvidenceAuditOutcome` (audit report formatting,
+  `assertNoFailures`, test-DSL helpers) was audited for the new
+  branch.
+- Test architecture: green tests cover structural readback and
+  hearback classification (pre-existing) PLUS frequency-transfer
+  (FN44-GAP-1 covered-green, FN44-GAP-2 covered-red),
+  reception-doubt (COMMS-1 covered-red), and clearance pacing
+  (FN33-MODEL-1 covered-green Advisory). Phraseology, policy, and
+  the two remaining FN33-MODEL-1 source units stay blocked.
+- Impact: no production behaviour was changed in this chunk. Two
+  `covered-red` landings spawn `fn-49` and `fn-50` as the named
+  production-repair epics.
+- Operational correctness: each covered/blocked row keeps the
+  accepted ICAO 9432 source-unit id visible and cites the new
+  `Icao9432Chunk01*EvidenceTest` files where applicable.
