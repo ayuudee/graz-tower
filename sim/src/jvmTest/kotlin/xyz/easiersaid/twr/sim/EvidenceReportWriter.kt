@@ -77,6 +77,18 @@ object EvidenceReportWriter {
                 appendLine("- Closure trigger: ${gap.closureTrigger}")
                 appendLine("- Tracking: `${gap.tracking.id}`")
             }
+            (result.outcome as? EvidenceAuditOutcome.Advisory)?.let { advisory ->
+                appendLine("- Advisory reason: ${advisory.reason}")
+                if (advisory.violations.isNotEmpty()) {
+                    appendLine("- Advisory violations:")
+                    advisory.violations.forEach { violation ->
+                        appendLine(
+                            "  - clearance `${violation.clearanceRef.value}` " +
+                                "issued during `${violation.observedWindow}`",
+                        )
+                    }
+                }
+            }
             appendLine()
         }
     }
@@ -115,6 +127,25 @@ object EvidenceReportWriter {
                     },
                 )
             }
+            (result.outcome as? EvidenceAuditOutcome.Advisory)?.let { advisory ->
+                put(
+                    "advisory",
+                    buildJsonObject {
+                        put("reason", advisory.reason)
+                        put(
+                            "violations",
+                            JsonArray(
+                                advisory.violations.map { violation ->
+                                    buildJsonObject {
+                                        put("clearanceRef", violation.clearanceRef.value)
+                                        put("observedWindow", violation.observedWindow.name)
+                                    }
+                                },
+                            ),
+                        )
+                    },
+                )
+            }
         }
 
     private fun sampleJson(sample: EvidenceSample<*>): JsonObject =
@@ -145,6 +176,7 @@ object EvidenceReportWriter {
 
 private fun EvidenceAuditOutcome.kind(): String =
     when (this) {
+        is EvidenceAuditOutcome.Advisory -> "advisory"
         is EvidenceAuditOutcome.ExpectedGap -> "expected_gap"
         is EvidenceAuditOutcome.Fail -> "fail"
         is EvidenceAuditOutcome.Pass -> "pass"
@@ -154,6 +186,7 @@ private fun EvidenceAuditOutcome.kind(): String =
 private fun EvidenceAuditOutcome.expectedGapMetadata(): EvidenceGapMetadata? =
     when (this) {
         is EvidenceAuditOutcome.ExpectedGap -> gap.metadata
+        is EvidenceAuditOutcome.Advisory,
         is EvidenceAuditOutcome.Fail,
         is EvidenceAuditOutcome.Pass,
         is EvidenceAuditOutcome.Vacuous,
@@ -184,6 +217,7 @@ private fun EvidenceAuditResult.adequacy(): String =
         outcome is EvidenceAuditOutcome.ExpectedGap -> "blocked-by-typed-gap"
         outcome is EvidenceAuditOutcome.Vacuous -> "vacuous"
         outcome is EvidenceAuditOutcome.Fail -> "failed"
+        outcome is EvidenceAuditOutcome.Advisory -> "advisory-observed"
         activationFactIds.isNotEmpty() -> "activated-facts-present"
         claimKind == EvidenceClaimKind.StructuralProtocolRequirement -> "structural-only"
         else -> "not-source-backed"

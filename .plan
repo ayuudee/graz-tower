@@ -99,16 +99,18 @@ re-extraction resolves them. Evidence:
 Impact: M | Effort: H
 
 **FN33-MODEL-1 — Source-unit conformance exposes phraseology/timing model gaps**
-The FN33 ICAO 9432 readback slice classified three accepted source units as
+Two FN33 ICAO 9432 readback slice source units remain classified as
 `blocked_by_model_gap`: route-clearance timing before start-up
-(`icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726`), communication
-delivery/workload constraints during complicated taxiing or line-up
-(`...::ac9111d240cfd2c2`), and literal phraseology linting for `TAKE OFF` vs
-`DEPARTURE` / `AIRBORNE` (`...::f06dfa1cefd2d649`). Current typed protocol
-tests can pin readback atoms, but cannot yet express timing/workload policy or
-rendered phraseology constraints. This should become a scoped phraseology /
-communication-policy layer if FN33 synthesis recommends continuing source-unit
-conformance beyond typed instruction behavior.
+(`icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726`) and literal
+phraseology linting for `TAKE OFF` vs `DEPARTURE` / `AIRBORNE`
+(`...::f06dfa1cefd2d649`). Current typed protocol tests can pin readback
+atoms, but cannot yet express clearance-timing policy or rendered phraseology
+constraints. This should become a scoped phraseology / communication-policy
+layer if FN33 synthesis recommends continuing source-unit conformance beyond
+typed instruction behavior. The §2.8.3.2 advisory-pacing source unit
+(`...::ac9111d240cfd2c2`) is now closed covered-green via the
+`EvidenceAuditOutcome.Advisory` audit-outcome leaf and `EvidenceFactPayload.ClearancePacing`
+projection landed in `fn-48-icao-9432-chunk-01-drive-expected-gap.4`.
 Impact: M | Effort: M
 
 **FN37-SPEC-1 — Source-unit spec harness needs black-box target and typed generated domains**

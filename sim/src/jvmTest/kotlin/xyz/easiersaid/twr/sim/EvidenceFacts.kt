@@ -5,6 +5,7 @@ import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.Clearance
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.InitialContact
@@ -176,6 +177,38 @@ sealed interface EvidenceFactPayload {
         override val kind: EvidenceFactKind = EvidenceFactKind.ReceptionDoubt
     }
 
+    /**
+     * Clearance-pacing observation: a single controller-issued clearance
+     * (carried via [clearanceRef]) was observed being issued while the
+     * pilot was in a regulation-relevant operational window
+     * ([issuedDuring]).
+     *
+     * Cites ICAO 9432 §2.8.3.2 — *"Controllers should pass a clearance
+     * slowly and clearly … should avoid passing a clearance to a pilot
+     * engaged in complicated taxiing manoeuvres … on no occasion should
+     * a clearance be passed when the pilot is engaged in line up or
+     * take-off manoeuvres."*
+     *
+     * The leaf observes *conditions* (clearance issued during phase X),
+     * not *prescriptive rules* (controller MUST wait). Future POLICY-1
+     * work may layer prescriptive policy concepts on top; this primitive
+     * stays observational so the advisory audit ("did this happen?")
+     * remains evaluable without policy commitment.
+     *
+     * [issuedDuring] is the regulation-relevant [PacingWindow]
+     * classification, not a 1:1 mirror of
+     * [xyz.easiersaid.twr.pilot.PilotPhase]. The adapter maps the
+     * observed `PilotPhase` to `PacingWindow` so future phase additions
+     * are absorbed at the projection boundary, not at the payload.
+     */
+    data class ClearancePacing(
+        val aircraftId: AircraftId,
+        val clearanceRef: TransmissionId,
+        val issuedDuring: PacingWindow,
+    ) : EvidenceFactPayload {
+        override val kind: EvidenceFactKind = EvidenceFactKind.ClearancePacing
+    }
+
     data class SampleFact(
         val name: String,
         val displayValue: String,
@@ -200,7 +233,33 @@ enum class EvidenceFactKind {
     CriticalPhaseTransmission,
     FrequencyTransfer,
     ReceptionDoubt,
+    ClearancePacing,
     Sample,
+}
+
+/**
+ * Regulation-relevant operational window the pilot was in at the moment a
+ * controller-issued clearance was observed.
+ *
+ * Source: ICAO 9432 §2.8.3.2.
+ *
+ * Closed enumeration. The adapter maps `PilotPhase` to `PacingWindow` so
+ * predicate guards in tests can exhaust via `PacingWindow.entries` (per
+ * memory `predicate-guards-over-sealed-types-must-2026-05-16`). Future
+ * `PilotPhase` additions are absorbed at the projection boundary by
+ * extending the mapping function, not by widening the audit payload.
+ *
+ * - [ComplicatedTaxi] — pilot engaged in taxiing (§2.8.3.2 "should avoid").
+ * - [LineUp] — pilot lined up on the runway (§2.8.3.2 "on no occasion").
+ * - [TakeoffRoll] — pilot on the takeoff roll (§2.8.3.2 "on no occasion").
+ * - [Other] — non-sensitive window (no advisory hit when a clearance is
+ *   issued during this window).
+ */
+enum class PacingWindow {
+    ComplicatedTaxi,
+    LineUp,
+    TakeoffRoll,
+    Other,
 }
 
 enum class AerodromeInformationTimingContext {
@@ -368,11 +427,19 @@ object EvidenceFactAdapters {
     }
 
     fun fromLowgCircuitTrace(trace: LowgCircuitTrace): EvidenceFactSet {
+        // Build a per-transmission phase lookup from the SimTrace so the
+        // ClearancePacing projection can observe the pilot phase at the
+        // moment each clearance was issued. The trace step closest at or
+        // before the record's time is the authoritative state — phases
+        // advance forward in sim time only.
+        val phaseAtTransmission: Map<TransmissionId, PilotPhase> =
+            phaseAtTransmissionLookup(records = trace.records, trace = trace.trace)
         val transmissionFacts = fromTransmissionRecords(
             scenarioId = trace.scenarioId,
             records = trace.records,
             finalAircraft = trace.finalAircraft,
             diagnostic = trace.diagnostic,
+            phaseAtTransmission = phaseAtTransmission,
         )
         val nextSequence = EvidenceSequence(
             transmissionFacts.facts.maxOfOrNull { fact -> fact.provenance.sequence.value }?.plus(1) ?: 0,
@@ -391,12 +458,14 @@ object EvidenceFactAdapters {
         records: List<TransmissionRecord>,
         finalAircraft: Map<AircraftId, ObservedAircraft> = emptyMap(),
         diagnostic: String = "Projected evidence facts",
+        phaseAtTransmission: Map<TransmissionId, PilotPhase> = emptyMap(),
     ): EvidenceFactSet {
         val transmissionFacts = records.flatMapIndexed { index, record ->
             recordFacts(
                 scenarioId = scenarioId,
                 recordIndex = index,
                 record = record,
+                phaseAtTransmission = phaseAtTransmission,
             )
         }
         val aircraftFacts = finalAircraft.entries
@@ -467,6 +536,7 @@ object EvidenceFactAdapters {
         scenarioId: String,
         recordIndex: Int,
         record: TransmissionRecord,
+        phaseAtTransmission: Map<TransmissionId, PilotPhase>,
     ): List<EvidenceFact> =
         when (val utterance = record.utterance) {
             is Utterance.FromController -> when (val speaker = record.speaker) {
@@ -476,6 +546,7 @@ object EvidenceFactAdapters {
                     record = record,
                     controller = speaker,
                     output = utterance.output,
+                    phaseAtTransmission = phaseAtTransmission,
                 )
 
                 is SpeakerRef.Pilot -> emptyList()
@@ -499,6 +570,7 @@ object EvidenceFactAdapters {
         record: TransmissionRecord,
         controller: SpeakerRef.Controller,
         output: ControllerOutput,
+        phaseAtTransmission: Map<TransmissionId, PilotPhase>,
     ): List<EvidenceFact> {
         // Reception-doubt observation is a property of the transmission
         // instance itself (per ICAO 9432 §2.8.1.4 — doubt about message
@@ -542,7 +614,17 @@ object EvidenceFactAdapters {
                     instruction = output.instruction,
                     targetAircraft = output.target,
                 )
-                listOf(instructionFact) + listOfNotNull(frequencyTransferFact)
+                val clearancePacingFact = clearancePacingFact(
+                    scenarioId = scenarioId,
+                    recordIndex = recordIndex,
+                    record = record,
+                    instruction = output.instruction,
+                    targetAircraft = output.target,
+                    phaseAtTransmission = phaseAtTransmission,
+                )
+                listOf(instructionFact) +
+                    listOfNotNull(frequencyTransferFact) +
+                    listOfNotNull(clearancePacingFact)
             }
 
             is ControllerOutput.Respond -> emptyList()
@@ -713,6 +795,174 @@ object EvidenceFactAdapters {
                 target = target,
             ),
         )
+    }
+
+    /**
+     * Project a clearance-pacing fact for a controller-issued [Clearance]
+     * when the sim trace observably reports the pilot phase at the moment
+     * the clearance was issued.
+     *
+     * Cites ICAO 9432 §2.8.3.2 — *"Controllers should pass a clearance
+     * slowly and clearly … should avoid passing a clearance to a pilot
+     * engaged in complicated taxiing manoeuvres … on no occasion should
+     * a clearance be passed when the pilot is engaged in line up or
+     * take-off manoeuvres."*
+     *
+     * Sequence offset `+6` is reserved for this projection so that the
+     * unique-sequence invariant on [EvidenceFactSet] holds alongside the
+     * base instruction fact (`+0`), report facts (`+1`), aerodrome-info
+     * facts (`+2`), controller-advised frequency-transfer facts (`+3`),
+     * pilot-notified frequency-change facts (`+4`), and reception-doubt
+     * facts (`+5`).
+     *
+     * **Wiring scope**: clearance-pacing observation is a property of
+     * controller-issued clearances, NOT of arbitrary controller
+     * transmissions or pilot transmissions. The projection is wired
+     * through `ControllerOutput.Instruct` ONLY. Contrast with
+     * [receptionDoubtFact] which is wired through both controller and
+     * pilot arms because reception doubt is a property of any
+     * transmission instance.
+     *
+     * Returns null when:
+     * - The instruction is not a [xyz.easiersaid.twr.protocol.Clearance]
+     *   (§2.8.3.2 talks about *clearances*; non-clearance instructions
+     *   like vectors / level changes are out of scope here).
+     * - No phase observation is available in [phaseAtTransmission] for
+     *   this transmission id (covered-red leg: sim genuinely lacked the
+     *   phase signal at the clearance-issue moment).
+     *
+     * The window mapping (`phaseToPacingWindow`) maps observable
+     * [xyz.easiersaid.twr.pilot.PilotPhase] values to the
+     * regulation-relevant [PacingWindow] classification. Phases outside
+     * the §2.8.3.2 sensitive set map to [PacingWindow.Other] so the
+     * projection is *total* (every clearance with a phase observation
+     * produces a fact) — the advisory branch decision happens in the
+     * selector, not the adapter.
+     */
+    private fun clearancePacingFact(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        instruction: AtcInstruction,
+        targetAircraft: AircraftId,
+        phaseAtTransmission: Map<TransmissionId, PilotPhase>,
+    ): EvidenceFact? {
+        // §2.8.3.2 scopes the obligation to clearances specifically.
+        if (instruction !is Clearance) return null
+        // No phase signal observed at this transmission's time → no fact.
+        // Honest covered-red leg when sim lacks the signal; covered-green
+        // leg is when sim has phase info (LOWG circuit-training traces
+        // produce it for AtStand/Taxiing/HoldingShort/LinedUp/TakeoffRoll/etc.).
+        val phase = phaseAtTransmission[record.transmissionId] ?: return null
+        return fact(
+            scenarioId = scenarioId,
+            origin = EvidenceFactOrigin.SimRun,
+            sequence = EvidenceSequence(recordIndex * FACTS_PER_RECORD + 6),
+            simTime = record.time,
+            sourceTransmissionId = record.transmissionId,
+            extractionPath = EvidenceExtractionPath(
+                "sim.records[$recordIndex].controller.clearancePacing",
+            ),
+            payload = EvidenceFactPayload.ClearancePacing(
+                aircraftId = targetAircraft,
+                clearanceRef = record.transmissionId,
+                issuedDuring = phaseToPacingWindow(phase),
+            ),
+        )
+    }
+
+    /**
+     * Map an observed [PilotPhase] to the regulation-relevant
+     * [PacingWindow] classification per ICAO 9432 §2.8.3.2.
+     *
+     * The mapping is closed over `PilotPhase` (Kotlin sealed-interface
+     * exhaustiveness check will catch any future phase additions). Phases
+     * outside the §2.8.3.2 sensitive set map to [PacingWindow.Other] —
+     * the adapter is total; the selector's `whenIssuedDuring(...)`
+     * decides which windows are violations.
+     *
+     * Mapping rationale:
+     * - [PilotPhase.Taxiing] → [PacingWindow.ComplicatedTaxi]. The
+     *   regulation talks about "complicated taxiing manoeuvres"; the sim
+     *   does not distinguish *complicated* from simple taxi, so every
+     *   taxi-phase observation surfaces as the regulation-sensitive
+     *   window. Future refinement can split via a typed taxi-complexity
+     *   signal; until then the observation is the upper bound on what
+     *   §2.8.3.2 cares about.
+     * - [PilotPhase.LinedUp] → [PacingWindow.LineUp].
+     * - [PilotPhase.TakeoffRoll] → [PacingWindow.TakeoffRoll].
+     * - All others → [PacingWindow.Other].
+     */
+    private fun phaseToPacingWindow(phase: PilotPhase): PacingWindow =
+        when (phase) {
+            PilotPhase.Taxiing -> PacingWindow.ComplicatedTaxi
+            PilotPhase.LinedUp -> PacingWindow.LineUp
+            PilotPhase.TakeoffRoll -> PacingWindow.TakeoffRoll
+            PilotPhase.AtStand,
+            PilotPhase.Base,
+            PilotPhase.ClearOfRunway,
+            PilotPhase.Climbing,
+            PilotPhase.Crosswind,
+            PilotPhase.Downwind,
+            PilotPhase.Final,
+            PilotPhase.HoldingShort,
+            PilotPhase.LandingRoll,
+            PilotPhase.Parked,
+            PilotPhase.Vacating,
+            -> PacingWindow.Other
+        }
+
+    /**
+     * Build a per-transmission phase lookup table from a [SimTrace].
+     *
+     * For each controller-issued [TransmissionRecord], find the trace
+     * step at or before the record's time and look up the target
+     * aircraft's phase in that step's state. Returns a map keyed by
+     * [TransmissionId] for fast O(1) lookup during projection.
+     *
+     * Why "at or before the record's time": the sim's event scheduler is
+     * monotone (per [SimTrace] invariant). The state immediately before
+     * the controller's transmission step is the state at which the
+     * controller decided to issue the clearance; the post-step state may
+     * already reflect the side-effects of the transmission itself
+     * (e.g., a `LineUpAndWait` issuance is followed by the pilot's phase
+     * transitioning to `LinedUp` later). Using "at or before" pins the
+     * observation to the actual pacing moment.
+     *
+     * Records without a phase observation (no trace step at or before
+     * the record's time, or the target aircraft missing from that
+     * state) are omitted from the map — the projection returns null for
+     * them.
+     */
+    private fun phaseAtTransmissionLookup(
+        records: List<TransmissionRecord>,
+        trace: SimTrace,
+    ): Map<TransmissionId, PilotPhase> {
+        val controllerRecords = records.filter { record ->
+            record.speaker is SpeakerRef.Controller &&
+                record.utterance is Utterance.FromController
+        }
+        if (controllerRecords.isEmpty()) return emptyMap()
+        // Pre-collect (time, state) snapshots in order so we can scan
+        // efficiently. trace.initial counts as the pre-event snapshot.
+        val timedStates: List<Pair<SimTime, SimState>> =
+            listOf(trace.initial.now to trace.initial) +
+                trace.steps.map { step -> step.state.now to step.state }
+        val result = mutableMapOf<TransmissionId, PilotPhase>()
+        controllerRecords.forEach { record ->
+            val target = (record.utterance as Utterance.FromController).output.let { output ->
+                when (output) {
+                    is ControllerOutput.Instruct -> output.target
+                    is ControllerOutput.Respond -> output.target
+                }
+            }
+            // Find the latest snapshot whose time <= record.time.
+            val snapshot = timedStates.lastOrNull { (time, _) -> time <= record.time }
+                ?: return@forEach
+            val phase = snapshot.second.aircraft[target]?.phase ?: return@forEach
+            result[record.transmissionId] = phase
+        }
+        return result
     }
 
     /**

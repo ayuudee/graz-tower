@@ -22,7 +22,48 @@ sealed interface EvidenceAuditOutcome {
     data class Fail(val reason: String, val evidence: List<String>) : EvidenceAuditOutcome
     data class Vacuous(val reason: String) : EvidenceAuditOutcome
     data class ExpectedGap(val gap: EvidenceGapId, val reason: String) : EvidenceAuditOutcome
+
+    /**
+     * Advisory outcome leaf for ICAO 9432 "should" / "avoid" / "on no occasion"
+     * obligations that observe behaviour without forcing a Pass/Fail dichotomy.
+     *
+     * Source: §2.8.3.2 (controllers *should* pace clearances; *should* avoid
+     * issuing clearances during complicated taxi manoeuvres; on no occasion
+     * during line-up or take-off). Advisory is observable-and-reported, never
+     * build-blocking.
+     *
+     * [EvidenceReport.assertNoFailures] continues to treat only [Fail] as
+     * failing; [Advisory] is reported, counted, and rendered distinctly but
+     * does not propagate into JUnit failures. The audit honestly records the
+     * advisory observation while keeping the build green.
+     *
+     * Carries a list of typed [AdvisoryViolation] records (one per observed
+     * regulation hit) plus a human-readable [reason] describing the selector's
+     * branch decision.
+     */
+    data class Advisory(
+        val violations: List<AdvisoryViolation>,
+        val reason: String,
+    ) : EvidenceAuditOutcome
 }
+
+/**
+ * One observation of an advisory-grade regulation hit. Used by
+ * [EvidenceAuditOutcome.Advisory] to carry per-clearance diagnostic records
+ * for §2.8.3.2-style "should" obligations.
+ *
+ * [clearanceRef] is the transmission instance carrying the clearance; the
+ * audit log links the advisory back to the originating instruction so future
+ * reviewers can reconstruct the per-clearance evidence chain.
+ *
+ * [observedWindow] names the pacing window the clearance was issued during —
+ * the regulation-relevant phase classification, not a 1:1 mirror of
+ * [xyz.easiersaid.twr.pilot.PilotPhase].
+ */
+data class AdvisoryViolation(
+    val clearanceRef: TransmissionId,
+    val observedWindow: PacingWindow,
+)
 
 data class EvidenceAuditCase(
     val id: String,
@@ -287,7 +328,8 @@ class AuditEvidenceCaseBuilder internal constructor(
                 requireSources &&
                 activationFactIds.isEmpty() &&
                 outcome !is EvidenceAuditOutcome.ExpectedGap &&
-                outcome !is EvidenceAuditOutcome.Vacuous
+                outcome !is EvidenceAuditOutcome.Vacuous &&
+                outcome !is EvidenceAuditOutcome.Advisory
             ) {
                 EvidenceAuditOutcome.Fail(
                     reason = "Source evidence case '$id' did not activate any evidence facts",
@@ -319,6 +361,20 @@ class EvidenceExpectContext internal constructor(
 
     fun expectedGap(gap: EvidenceGapId, reason: String): EvidenceAuditOutcome.ExpectedGap =
         EvidenceAuditOutcome.ExpectedGap(gap = gap, reason = reason)
+
+    /**
+     * Outcome builder for ICAO 9432 "should" / "avoid" obligations.
+     *
+     * Returns [EvidenceAuditOutcome.Advisory] — counted and rendered by the
+     * audit report but NOT propagated to JUnit failures by
+     * [EvidenceAuditReport.assertNoFailures]. Used for §2.8.3.2-style advisory
+     * observations (clearance pacing during sensitive phases).
+     *
+     * Pass [violations] for the per-clearance diagnostic records, and
+     * [reason] for the human-readable branch summary.
+     */
+    fun advisory(violations: List<AdvisoryViolation>, reason: String): EvidenceAuditOutcome.Advisory =
+        EvidenceAuditOutcome.Advisory(violations = violations, reason = reason)
 
     fun activationFactIds(): Set<FactId> =
         activated.toSet()
@@ -376,6 +432,13 @@ class EvidenceExpectContext internal constructor(
 
     fun receptionDoubt(aircraftId: AircraftId): AuditReceptionDoubtSubject =
         AuditReceptionDoubtSubject(
+            aircraftId = aircraftId,
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
+
+    fun clearancePacing(aircraftId: AircraftId): AuditClearancePacingSubject =
+        AuditClearancePacingSubject(
             aircraftId = aircraftId,
             facts = facts.orderedFacts(),
             activate = { factId -> activated += factId },
@@ -633,6 +696,96 @@ class AuditReceptionDoubtSubject internal constructor(
     }
 }
 
+/**
+ * Audit selector over [EvidenceFactPayload.ClearancePacing] facts filtered
+ * by aircraft.
+ *
+ * Source: ICAO 9432 §2.8.3.2 — *"Controllers should pass a clearance slowly
+ * and clearly … should avoid passing a clearance to a pilot engaged in
+ * complicated taxiing manoeuvres … on no occasion should a clearance be
+ * passed when the pilot is engaged in line up or take-off manoeuvres."*
+ *
+ * §2.8.3.2 is **advisory** ("should" / "avoid" / "on no occasion"). The
+ * single branch [whenIssuedDuring] returns:
+ *
+ * - [EvidenceAuditOutcome.Fail] when **no** clearance-pacing fact exists
+ *   for the aircraft — regulation cannot be evaluated without an
+ *   observation. This is the regulation-cannot-apply leg, surfaced as
+ *   Fail per the existing "missing evidence → Fail" convention.
+ * - [EvidenceAuditOutcome.Advisory] when at least one pacing fact for the
+ *   aircraft observes a clearance issued during the sensitive [windows]
+ *   passed in. Carries one [AdvisoryViolation] per offending clearance.
+ *   Does NOT propagate to JUnit failure via [EvidenceAuditReport.assertNoFailures].
+ * - [EvidenceAuditOutcome.Pass] when pacing facts exist but none fall into
+ *   the sensitive windows — the controller paced clearances acceptably.
+ *
+ * Activation discipline (per memory
+ * `bug/test-failures/audit-selectors-must-activate-examined-2026-05-26`):
+ * once the aircraft-filtered facts are determined, [activate] is called for
+ * every consulted fact BEFORE branching into Advisory / Pass / Fail.
+ * Otherwise [AuditEvidenceCaseBuilder.toCase] would override the
+ * regulation-specific outcome with the generic
+ * "did not activate any evidence facts" Fail. The "no facts at all → Fail"
+ * path stays un-activated because that path *correctly* surfaces as the
+ * generic activation-check Fail.
+ *
+ * **Distinctness from POLICY-1**: this selector observes *conditions*
+ * (clearances issued during phase X), NOT *prescriptive timing rules*
+ * (controller MUST wait until phase Y). If design pressure pushes toward
+ * encoding prescriptive timing, halt — POLICY-1 territory.
+ */
+class AuditClearancePacingSubject internal constructor(
+    private val aircraftId: AircraftId,
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun whenIssuedDuring(windows: List<PacingWindow>): EvidenceAuditOutcome {
+        val pacingFacts = facts.filter { fact ->
+            val payload = fact.payload as? EvidenceFactPayload.ClearancePacing ?: return@filter false
+            payload.aircraftId == aircraftId
+        }
+        if (pacingFacts.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing clearance-pacing evidence for ${aircraftId.value}",
+                evidence = emptyList(),
+            )
+        }
+        // Activate every pacing fact we examined so the source-case
+        // activation check (AuditEvidenceCaseBuilder.toCase) preserves
+        // this selector's specific Advisory/Pass outcome instead of
+        // replacing it with the generic "did not activate any evidence
+        // facts" Fail. Activation reflects "the selector consulted these
+        // facts", not "the regulation passed" — Advisory AND Pass paths
+        // activate.
+        pacingFacts.forEach { fact -> activate(fact.id) }
+        val sensitive = windows.toSet()
+        val violations = pacingFacts.mapNotNull { fact ->
+            val payload = fact.payload as EvidenceFactPayload.ClearancePacing
+            if (payload.issuedDuring in sensitive) {
+                AdvisoryViolation(
+                    clearanceRef = payload.clearanceRef,
+                    observedWindow = payload.issuedDuring,
+                )
+            } else {
+                null
+            }
+        }
+        return if (violations.isEmpty()) {
+            EvidenceAuditOutcome.Pass(
+                evidence = pacingFacts.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.ClearancePacing
+                    "${payload.issuedDuring}@${fact.provenance.sequence.value}"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Advisory(
+                violations = violations,
+                reason = "Clearance(s) issued during sensitive pacing window(s) for ${aircraftId.value}",
+            )
+        }
+    }
+}
+
 class AuditCriticalPhaseSubject internal constructor(
     private val aircraftId: AircraftId,
     private val facts: List<EvidenceFact>,
@@ -752,6 +905,7 @@ private fun auditReport(
 
 private fun EvidenceAuditOutcome.label(): String =
     when (this) {
+        is EvidenceAuditOutcome.Advisory -> "advisory(${violations.size}): $reason"
         is EvidenceAuditOutcome.ExpectedGap -> "expected_gap(${gap.metadata.id}): $reason"
         is EvidenceAuditOutcome.Fail -> "fail: $reason"
         is EvidenceAuditOutcome.Pass -> "pass: ${evidence.joinToString()}"

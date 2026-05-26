@@ -10,6 +10,7 @@ import kotlin.test.assertTrue
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.DecisionTrace
 import xyz.easiersaid.twr.pilot.CircuitOutcome
+import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
@@ -977,6 +978,458 @@ class EvidenceFactsTest {
             failOutcome.evidence.any { it.contains("unintelligibility") },
             "expected evidence to identify the unresolved doubt by source label; got ${failOutcome.evidence}",
         )
+    }
+
+    // FN33-MODEL-1: clearance-pacing advisory evidence primitive (R2, R12).
+    //
+    // The adapter projects ClearancePacing facts at controller-issued
+    // clearance moments (filtered to ControllerOutput.Instruct, instruction
+    // is Clearance) when phase information is available in the
+    // phaseAtTransmission lookup. Without that lookup (the default empty
+    // map used by fromTransmissionRecords callers), the projection emits
+    // no facts — verifying the wiring is total without leaking false
+    // observations into call sites that do not supply phase data.
+    //
+    // §2.8.3.2 is **advisory** ("should" / "avoid" / "on no occasion").
+    // Violations surface as EvidenceAuditOutcome.Advisory via the selector,
+    // not Fail.
+    //
+    // Per memory `predicate-guards-over-sealed-types-must-2026-05-16`:
+    // PacingWindow is an enum class so tests use PacingWindow.entries for
+    // exhaustion.
+
+    @Test
+    fun `clearance-pacing payload accepts every PacingWindow entry`() {
+        val aircraft = AircraftId("OE-ABC")
+        PacingWindow.entries.forEachIndexed { index, window ->
+            val payload = EvidenceFactPayload.ClearancePacing(
+                aircraftId = aircraft,
+                clearanceRef = TransmissionId(1100 + index.toLong()),
+                issuedDuring = window,
+            )
+            assertEquals(EvidenceFactKind.ClearancePacing, payload.kind)
+            assertEquals(window, payload.issuedDuring)
+        }
+    }
+
+    @Test
+    fun `clearance-pacing projection emits no facts on empty input`() {
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "pacing-boundary-empty",
+            records = emptyList(),
+        )
+        assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.ClearancePacing })
+    }
+
+    @Test
+    fun `clearance-pacing projection emits no facts when no phase lookup is supplied`() {
+        // R12: the default `fromTransmissionRecords` call surface (no
+        // phaseAtTransmission lookup) must observe NO ClearancePacing facts
+        // regardless of speaker × utterance × payload shape. This pins the
+        // wiring as total but observably silent without phase data —
+        // `fromLowgCircuitTrace` is the path that supplies the phase lookup
+        // and produces ClearancePacing facts in the integration test.
+        //
+        // The matrix below exercises every (speaker, utterance, payload-kind)
+        // combination that the adapter contract distinguishes, using only
+        // outputs constructible via the public `Instruct.fromAdministrative` /
+        // `Instruct.fromMissedHandoffReissue` factories. A real `Clearance`
+        // payload (e.g. `LineUpAndWait`) cannot be lifted into an `Instruct`
+        // outside the controller module without going through ActionCertifier;
+        // the LOWG-trace integration test (Icao9432Chunk01ClearancePacingEvidenceTest)
+        // exercises that path end-to-end.
+        val aircraft = AircraftId("OE-ABC")
+        val controllerId = ControllerId("LOWG_TWR")
+        val nonClearanceInstruction = NumberInSequence.unsafe(target = aircraft, number = 1)
+        val nonClearanceFrequencyInstruction = ContactFrequency(
+            target = aircraft,
+            role = RoleName.TOWER,
+            frequency = Frequency.unsafe("118.500"),
+        )
+        val pilotRequest: PilotTransmission =
+            Request(RequestFrequencyChange(frequency = Frequency.unsafe("123.500")))
+        val pilotReport: PilotTransmission = Report(events = listOf(ReportEvent.Ready))
+
+        val administrativeControllerOutput = ControllerOutput.Instruct.fromAdministrative(
+            instruction = nonClearanceInstruction,
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("PACING-MATRIX", "matrix NumberInSequence", emptyList()),
+        )
+        val frequencyControllerOutput = ControllerOutput.Instruct.fromMissedHandoffReissue(
+            instruction = nonClearanceFrequencyInstruction,
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("PACING-MATRIX", "matrix ContactFrequency", emptyList()),
+        )
+
+        val matrix = listOf(
+            "controller-speaker / controller-utterance / NumberInSequence" to controllerOutputRecord(
+                index = 0,
+                targetAircraft = aircraft,
+                output = administrativeControllerOutput,
+            ),
+            "controller-speaker / controller-utterance / ContactFrequency" to controllerOutputRecord(
+                index = 1,
+                targetAircraft = aircraft,
+                output = frequencyControllerOutput,
+            ),
+            "controller-speaker / pilot-utterance / RequestFrequencyChange" to TransmissionRecord(
+                transmissionId = TransmissionId(1210),
+                time = SimTime.ZERO,
+                speaker = SpeakerRef.Controller(controllerId),
+                receiver = ReceiverRef.Pilot(aircraft),
+                utterance = Utterance.FromPilot(pilotRequest),
+            ),
+            "controller-speaker / pilot-utterance / Report" to TransmissionRecord(
+                transmissionId = TransmissionId(1211),
+                time = SimTime.ZERO,
+                speaker = SpeakerRef.Controller(controllerId),
+                receiver = ReceiverRef.Pilot(aircraft),
+                utterance = Utterance.FromPilot(pilotReport),
+            ),
+            "pilot-speaker / controller-utterance / NumberInSequence" to TransmissionRecord(
+                transmissionId = TransmissionId(1212),
+                time = SimTime.ZERO,
+                speaker = SpeakerRef.Pilot(aircraft),
+                receiver = ReceiverRef.Controller(controllerId),
+                utterance = Utterance.FromController(administrativeControllerOutput),
+            ),
+            "pilot-speaker / controller-utterance / ContactFrequency" to TransmissionRecord(
+                transmissionId = TransmissionId(1213),
+                time = SimTime.ZERO,
+                speaker = SpeakerRef.Pilot(aircraft),
+                receiver = ReceiverRef.Controller(controllerId),
+                utterance = Utterance.FromController(frequencyControllerOutput),
+            ),
+            "pilot-speaker / pilot-utterance / RequestFrequencyChange" to pilotTransmissionRecord(
+                index = 0,
+                aircraft = aircraft,
+                transmission = pilotRequest,
+            ),
+            "pilot-speaker / pilot-utterance / Report" to pilotTransmissionRecord(
+                index = 1,
+                aircraft = aircraft,
+                transmission = pilotReport,
+            ),
+        )
+
+        matrix.forEach { (label, record) ->
+            val facts = EvidenceFactAdapters.fromTransmissionRecords(
+                scenarioId = "pacing-matrix::$label",
+                records = listOf(record),
+            )
+            assertTrue(
+                facts.facts.none { it.payload is EvidenceFactPayload.ClearancePacing },
+                "fromTransmissionRecords without phase lookup must observe no ClearancePacing facts for $label",
+            )
+        }
+    }
+
+    @Test
+    fun `clearance-pacing projection emits no fact for non-clearance instruction even with phase lookup`() {
+        // Boundary: a controller instruction that is NOT a Clearance (e.g. the
+        // administrative NumberInSequence used here, or a frequency
+        // ContactFrequency reissue) must not produce a ClearancePacing fact,
+        // even when phase info is supplied. §2.8.3.2 scopes the obligation to
+        // clearances specifically — the adapter's `if (instruction !is
+        // Clearance) return null` guard owns this contract.
+        val aircraft = AircraftId("OE-ABC")
+        val nonClearance = NumberInSequence.unsafe(target = aircraft, number = 1)
+        val output = ControllerOutput.Instruct.fromAdministrative(
+            instruction = nonClearance,
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("TEST-NC", "non-clearance pacing", emptyList()),
+        )
+        val record = controllerOutputRecord(index = 0, targetAircraft = aircraft, output = output)
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "pacing-boundary-non-clearance",
+            records = listOf(record),
+            phaseAtTransmission = mapOf(record.transmissionId to PilotPhase.LinedUp),
+        )
+        assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.ClearancePacing })
+
+        // Same expectation for ContactFrequency (FrequencyInstruction, not
+        // Clearance): the projection's Clearance guard filters it out even
+        // though both the controller arm and phase lookup are populated.
+        val frequencyOutput = ControllerOutput.Instruct.fromMissedHandoffReissue(
+            instruction = ContactFrequency(
+                target = aircraft,
+                role = RoleName.TOWER,
+                frequency = Frequency.unsafe("118.500"),
+            ),
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("TEST-NC", "non-clearance freq pacing", emptyList()),
+        )
+        val frequencyRecord = controllerOutputRecord(
+            index = 1,
+            targetAircraft = aircraft,
+            output = frequencyOutput,
+        )
+        val frequencyFacts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "pacing-boundary-non-clearance-freq",
+            records = listOf(frequencyRecord),
+            phaseAtTransmission = mapOf(frequencyRecord.transmissionId to PilotPhase.LinedUp),
+        )
+        assertTrue(frequencyFacts.facts.none { it.payload is EvidenceFactPayload.ClearancePacing })
+    }
+
+    @Test
+    fun `clearance-pacing projection emits one ClearancePacing fact per Clearance issuance via LOWG trace`() {
+        // R12 + R2: drive the projection end-to-end via the LOWG circuit-
+        // training trace, which is the only public path that synthesises real
+        // `Instruct(Clearance)` outputs (taxi clearances, line-up clearances,
+        // takeoff clearances) along with the per-step pilot phase state
+        // needed to populate `phaseAtTransmission`.
+        //
+        // The trace is expected to emit at least one controller-issued
+        // Clearance (e.g. taxi to holding point during ground phase,
+        // LineUpAndWait at HoldingShort, ClearedForTakeoff at LinedUp) with
+        // observable pilot phase. The adapter projects exactly one
+        // ClearancePacing fact per such issuance.
+        //
+        // Asserting "at least one fact" instead of an exact count keeps the
+        // test robust against future trace-content additions; the precise
+        // window distribution is the concern of the integration test in
+        // Icao9432Chunk01ClearancePacingEvidenceTest.
+        val facts = EvidenceFactAdapters.lowgCircuitTraining(
+            scenarioId = "pacing-lowg-projection",
+            outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop),
+            untilMinutes = 45L,
+        )
+        val pacingFacts = facts.facts.mapNotNull { fact ->
+            fact.payload as? EvidenceFactPayload.ClearancePacing
+        }
+        assertTrue(
+            pacingFacts.isNotEmpty(),
+            "expected LOWG circuit-training trace to produce at least one ClearancePacing fact; " +
+                "if the trace genuinely emits no controller-issued Clearances during phases with " +
+                "observable pilot state, this test pins the covered-red leg and the integration " +
+                "test in Icao9432Chunk01ClearancePacingEvidenceTest must also land covered-red",
+        )
+        // Every projected window must be one of the closed PacingWindow.entries
+        // (the projection is total over `PacingWindow.entries`).
+        val observedWindows = pacingFacts.map { it.issuedDuring }.toSet()
+        assertTrue(
+            observedWindows.all { window -> window in PacingWindow.entries },
+            "every projected window must be a PacingWindow.entries value; got $observedWindows",
+        )
+    }
+
+    @Test
+    fun `clearance-pacing projection is wired through controller Instruct only (not Respond, not pilot arm)`() {
+        // Per task spec wiring decision: ClearancePacing is a property of
+        // CONTROLLER-ISSUED clearances (`ControllerOutput.Instruct` carrying
+        // `instruction is Clearance`). Contrast with ReceptionDoubt which is
+        // a property of any transmission (wired through both arms). This
+        // test pins the wiring scope so a future refactor doesn't accidentally
+        // widen the projection.
+        //
+        // Two concrete regression guards:
+        //   1. `ControllerOutput.Respond` (Standby is a ControllerResponse,
+        //      not a Clearance) — no pacing fact even with phase observation.
+        //   2. A pilot-speaker record whose utterance side carries a
+        //      controller output — must not project even with phase observation.
+        //
+        // We cannot easily fabricate `Instruct(LineUpAndWait, …)` outside the
+        // controller module (no public factory), so the pilot-arm record uses
+        // `Instruct.fromMissedHandoffReissue(ContactFrequency)`. That output
+        // would not produce a pacing fact anyway (ContactFrequency is not a
+        // Clearance), so the test logic depends on the wiring guard, not the
+        // payload guard. The LOWG-trace integration test exercises the
+        // "real Clearance issuance produces pacing facts" path.
+        val aircraft = AircraftId("OE-ABC")
+        val respondOutput = ControllerOutput.Respond(
+            target = aircraft,
+            response = Standby(target = aircraft),
+            trace = DecisionTrace(
+                ruleId = "TEST-RespondPacing",
+                description = "test pacing wiring excludes Respond arm",
+                regulations = emptyList(),
+            ),
+        )
+        val respondRecord = TransmissionRecord(
+            transmissionId = TransmissionId(1820),
+            time = SimTime.ZERO,
+            speaker = SpeakerRef.Controller(ControllerId("LOWG_TWR")),
+            receiver = ReceiverRef.Pilot(aircraft),
+            utterance = Utterance.FromController(respondOutput),
+        )
+        val pilotArmRecord = TransmissionRecord(
+            transmissionId = TransmissionId(1821),
+            time = SimTime.ZERO,
+            speaker = SpeakerRef.Pilot(aircraft),
+            receiver = ReceiverRef.Controller(ControllerId("LOWG_TWR")),
+            utterance = Utterance.FromController(
+                ControllerOutput.Instruct.fromMissedHandoffReissue(
+                    instruction = ContactFrequency(
+                        target = aircraft,
+                        role = RoleName.TOWER,
+                        frequency = Frequency.unsafe("118.500"),
+                    ),
+                    urgency = Urgency.PROGRESSION,
+                    trace = DecisionTrace("TEST-PilotArm", "should not project", emptyList()),
+                ),
+            ),
+        )
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "pacing-wiring-scope",
+            records = listOf(respondRecord, pilotArmRecord),
+            phaseAtTransmission = mapOf(
+                respondRecord.transmissionId to PilotPhase.LinedUp,
+                pilotArmRecord.transmissionId to PilotPhase.LinedUp,
+            ),
+        )
+        assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.ClearancePacing })
+    }
+
+    @Test
+    fun `clearancePacing selector returns Pass when pacing facts all in non-sensitive windows`() {
+        // Construction-site test: when every clearance is issued in
+        // PacingWindow.Other (non-sensitive), the selector returns Pass.
+        // Activation discipline (per memory
+        // bug/test-failures/audit-selectors-must-activate-examined-2026-05-26):
+        // Pass path must activate examined facts so the framework's
+        // activation check does not override the outcome.
+        val aircraft = AircraftId("OE-ABC")
+        val report = simEvidence("pacing-selector-pass") {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = "pacing-selector-pass",
+                    payloads = listOf(
+                        EvidenceFactPayload.ClearancePacing(
+                            aircraftId = aircraft,
+                            clearanceRef = TransmissionId(2001),
+                            issuedDuring = PacingWindow.Other,
+                        ),
+                    ),
+                )
+            }
+            source("pacing all in non-sensitive window") {
+                cites(ICAO9432.Readback.ClearancePacingAdvisory)
+                expect {
+                    clearancePacing(aircraft).whenIssuedDuring(
+                        PacingWindow.entries.filter { it != PacingWindow.Other },
+                    )
+                }
+            }
+        }
+
+        report.assertNoFailures()
+        val result = report.results.single()
+        assertTrue(
+            result.outcome is EvidenceAuditOutcome.Pass,
+            "expected Pass when no clearance hits sensitive windows; got ${result.outcome}",
+        )
+        assertTrue(
+            result.activationFactIds.isNotEmpty(),
+            "Pass path must activate examined facts so framework activation check preserves the outcome",
+        )
+    }
+
+    @Test
+    fun `clearancePacing selector returns Advisory when pacing facts hit sensitive windows`() {
+        // Construction-site test: a clearance issued during LinedUp / TakeoffRoll
+        // produces Advisory (NOT Fail). assertNoFailures still passes because
+        // Advisory is not Fail. Activation discipline applies: Advisory path
+        // must activate examined facts.
+        val aircraft = AircraftId("OE-ABC")
+        val report = simEvidence("pacing-selector-advisory") {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = "pacing-selector-advisory",
+                    payloads = listOf(
+                        EvidenceFactPayload.ClearancePacing(
+                            aircraftId = aircraft,
+                            clearanceRef = TransmissionId(3001),
+                            issuedDuring = PacingWindow.LineUp,
+                        ),
+                        EvidenceFactPayload.ClearancePacing(
+                            aircraftId = aircraft,
+                            clearanceRef = TransmissionId(3002),
+                            issuedDuring = PacingWindow.TakeoffRoll,
+                        ),
+                        EvidenceFactPayload.ClearancePacing(
+                            aircraftId = aircraft,
+                            clearanceRef = TransmissionId(3003),
+                            issuedDuring = PacingWindow.Other,
+                        ),
+                    ),
+                )
+            }
+            source("pacing hits sensitive windows") {
+                cites(ICAO9432.Readback.ClearancePacingAdvisory)
+                expect {
+                    clearancePacing(aircraft).whenIssuedDuring(
+                        PacingWindow.entries.filter { it != PacingWindow.Other },
+                    )
+                }
+            }
+        }
+
+        // Advisory is NOT a JUnit failure. report.assertNoFailures() passes.
+        report.assertNoFailures()
+        val result = report.results.single()
+        val advisory = result.outcome
+        assertTrue(
+            advisory is EvidenceAuditOutcome.Advisory,
+            "expected Advisory when clearances hit sensitive windows; got $advisory",
+        )
+        advisory as EvidenceAuditOutcome.Advisory
+        // R12 / activation discipline: examined facts must activate on the
+        // Advisory path so AuditEvidenceCaseBuilder.toCase preserves the
+        // specific Advisory outcome (with its violations list) instead of
+        // overriding with the generic "did not activate any evidence facts"
+        // Fail.
+        assertTrue(
+            result.activationFactIds.isNotEmpty(),
+            "Advisory path must activate examined facts; got ${result.activationFactIds}",
+        )
+        // Advisory carries the selector's specific reason, not the generic
+        // activation-check string.
+        assertTrue(
+            advisory.reason.contains("sensitive pacing window"),
+            "expected selector-specific Advisory reason; got '${advisory.reason}'",
+        )
+        // Exactly two violations for the LinedUp + TakeoffRoll clearances; the
+        // PacingWindow.Other clearance is non-sensitive and must NOT appear.
+        assertEquals(2, advisory.violations.size)
+        val violationWindows = advisory.violations.map { it.observedWindow }.toSet()
+        assertEquals(setOf(PacingWindow.LineUp, PacingWindow.TakeoffRoll), violationWindows)
+        val violationRefs = advisory.violations.map { it.clearanceRef }.toSet()
+        assertEquals(setOf(TransmissionId(3001), TransmissionId(3002)), violationRefs)
+    }
+
+    @Test
+    fun `clearancePacing selector returns Fail when no pacing facts present`() {
+        // Honest covered-red leg: when sim genuinely lacks the phase signal
+        // (or no clearances were issued at all), the selector returns Fail
+        // because §2.8.3.2 cannot be evaluated without an observation. The
+        // "no facts at all" path stays un-activated — that path correctly
+        // surfaces as the generic activation-check Fail per memory
+        // bug/test-failures/audit-selectors-must-activate-examined-2026-05-26.
+        val aircraft = AircraftId("OE-ABC")
+        val report = simEvidence("pacing-selector-missing") {
+            observe {
+                EvidenceFactAdapters.fromTransmissionRecords(
+                    scenarioId = "pacing-selector-missing",
+                    records = emptyList(),
+                )
+            }
+            source("pacing missing") {
+                cites(ICAO9432.Readback.ClearancePacingAdvisory)
+                expect {
+                    clearancePacing(aircraft).whenIssuedDuring(
+                        PacingWindow.entries.filter { it != PacingWindow.Other },
+                    )
+                }
+            }
+        }
+
+        report.results.forEach { result ->
+            assertTrue(
+                result.outcome is EvidenceAuditOutcome.Fail,
+                "expected Fail when no pacing facts present; got ${result.outcome}",
+            )
+        }
     }
 
     private fun reportRecord(
