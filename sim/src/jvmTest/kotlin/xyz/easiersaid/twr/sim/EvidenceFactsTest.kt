@@ -30,6 +30,7 @@ import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
+import xyz.easiersaid.twr.protocol.Standby
 import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
 import xyz.easiersaid.twr.sim.testing.TransmissionRecord
 
@@ -791,6 +792,51 @@ class EvidenceFactsTest {
     }
 
     @Test
+    fun `reception-doubt projection is wired through controller Respond records (not only Instruct)`() {
+        // Regression for codex impl-review finding: receptionDoubtFact must
+        // execute for ControllerOutput.Respond records too — doubt is a
+        // property of the transmission instance, not the controller-output
+        // subtype. Today's sim has no reception-quality signal, so the
+        // projection returns null. The assertion is that the Respond arm
+        // produces no facts at all (the unprojected `Respond` arm still
+        // returns emptyList for instruction/frequency-transfer facts) —
+        // i.e., the code path is exercised without throwing or producing
+        // spurious facts. When the production-repair epic adds reception-
+        // quality input, ReceptionDoubt facts will start landing here.
+        val aircraft = AircraftId("OE-ABC")
+        val respondOutput = ControllerOutput.Respond(
+            target = aircraft,
+            response = Standby(target = aircraft),
+            trace = DecisionTrace(
+                ruleId = "TEST-RespondWiring",
+                description = "test that controller Respond arm runs the receptionDoubt projection",
+                regulations = emptyList(),
+            ),
+        )
+        // controllerOutputRecord helper only accepts Instruct; build the
+        // Respond TransmissionRecord directly.
+        val record = TransmissionRecord(
+            transmissionId = TransmissionId(820),
+            time = SimTime.ZERO,
+            speaker = SpeakerRef.Controller(ControllerId("LOWG_TWR")),
+            receiver = ReceiverRef.Pilot(aircraft),
+            utterance = Utterance.FromController(respondOutput),
+        )
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "respond-arm-doubt-projection-wired",
+            records = listOf(record),
+        )
+
+        // No ReceptionDoubt facts (sim has no reception-quality signal) — but the
+        // projection was reached. Also: no Instruction or FrequencyTransfer facts
+        // either, because Respond does not produce them.
+        assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.ReceptionDoubt })
+        assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.Instruction })
+        assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.FrequencyTransfer })
+    }
+
+    @Test
     fun `reception-doubt projection on multiple mixed records emits no doubt facts under current sim`() {
         val aircraft = AircraftId("OE-ABC")
         val records = listOf(
@@ -911,6 +957,26 @@ class EvidenceFactsTest {
                 "expected Fail for ${result.id} but got ${result.outcome}",
             )
         }
+        // Activation check: the selector activates every doubt fact it
+        // examined (resolved or not). Without this, AuditEvidenceCaseBuilder
+        // would override the selector's specific Fail with the generic
+        // "did not activate any evidence facts" message, hiding the real
+        // reason. Asserting non-empty activationFactIds + specific reason
+        // ensures the selector's outcome survives.
+        val unresolvedResult = report.results.single()
+        assertTrue(
+            unresolvedResult.activationFactIds.isNotEmpty(),
+            "expected unresolved-doubt Fail to activate the examined doubt facts; got ${unresolvedResult.activationFactIds}",
+        )
+        val failOutcome = unresolvedResult.outcome as EvidenceAuditOutcome.Fail
+        assertTrue(
+            failOutcome.reason.contains("without repetition response"),
+            "expected selector-specific reason, got '${failOutcome.reason}'",
+        )
+        assertTrue(
+            failOutcome.evidence.any { it.contains("unintelligibility") },
+            "expected evidence to identify the unresolved doubt by source label; got ${failOutcome.evidence}",
+        )
     }
 
     private fun reportRecord(

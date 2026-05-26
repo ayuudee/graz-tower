@@ -602,12 +602,18 @@ class AuditReceptionDoubtSubject internal constructor(
                 evidence = emptyList(),
             )
         }
+        // Activate every doubt fact we examined so the source-case
+        // activation check (AuditEvidenceCaseBuilder.toCase) preserves
+        // this selector's specific Pass/Fail outcome instead of replacing
+        // it with the generic "did not activate any evidence facts" Fail.
+        // Activation reflects "the selector consulted these facts", not
+        // "the regulation passed" — both Pass and Fail paths activate.
+        doubtFacts.forEach { fact -> activate(fact.id) }
         val unresolved = doubtFacts.filter { fact ->
             val payload = fact.payload as EvidenceFactPayload.ReceptionDoubt
             payload.resolvedBy == null
         }
         return if (unresolved.isEmpty()) {
-            doubtFacts.forEach { fact -> activate(fact.id) }
             EvidenceAuditOutcome.Pass(
                 evidence = doubtFacts.map { fact ->
                     val payload = fact.payload as EvidenceFactPayload.ReceptionDoubt

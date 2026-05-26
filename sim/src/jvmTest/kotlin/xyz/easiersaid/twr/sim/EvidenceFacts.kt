@@ -499,8 +499,28 @@ object EvidenceFactAdapters {
         record: TransmissionRecord,
         controller: SpeakerRef.Controller,
         output: ControllerOutput,
-    ): List<EvidenceFact> =
-        when (output) {
+    ): List<EvidenceFact> {
+        // Reception-doubt observation is a property of the transmission
+        // instance itself (per ICAO 9432 §2.8.1.4 — doubt about message
+        // correctness), independent of whether the controller emitted an
+        // Instruct or a Respond. Wire it at the controller-arm level so
+        // BOTH ControllerOutput subtypes carry the projection. Today's
+        // sim has no reception-quality signal so the function returns
+        // null on every record (covered-red); when the production-repair
+        // epic adds the signal, this single call site lights up doubt
+        // facts for instructions AND responses.
+        val (targetAircraft, extractionSlot) = when (output) {
+            is ControllerOutput.Instruct -> output.target to "controller.instruction"
+            is ControllerOutput.Respond -> output.target to "controller.response"
+        }
+        val receptionDoubtFact = receptionDoubtFact(
+            scenarioId = scenarioId,
+            recordIndex = recordIndex,
+            record = record,
+            aircraftId = targetAircraft,
+            extractionSlot = extractionSlot,
+        )
+        val outputFacts = when (output) {
             is ControllerOutput.Instruct -> {
                 val instructionFact = fact(
                     scenarioId = scenarioId,
@@ -522,20 +542,13 @@ object EvidenceFactAdapters {
                     instruction = output.instruction,
                     targetAircraft = output.target,
                 )
-                val receptionDoubtFact = receptionDoubtFact(
-                    scenarioId = scenarioId,
-                    recordIndex = recordIndex,
-                    record = record,
-                    aircraftId = output.target,
-                    extractionSlot = "controller.instruction",
-                )
-                listOf(instructionFact) +
-                    listOfNotNull(frequencyTransferFact) +
-                    listOfNotNull(receptionDoubtFact)
+                listOf(instructionFact) + listOfNotNull(frequencyTransferFact)
             }
 
             is ControllerOutput.Respond -> emptyList()
         }
+        return outputFacts + listOfNotNull(receptionDoubtFact)
+    }
 
     /**
      * Project a controller-advised frequency transfer fact from a
