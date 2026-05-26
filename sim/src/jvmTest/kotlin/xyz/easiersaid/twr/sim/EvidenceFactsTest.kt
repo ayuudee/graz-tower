@@ -14,6 +14,7 @@ import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.Clearance
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
@@ -1212,6 +1213,92 @@ class EvidenceFactsTest {
             observedWindows.all { window -> window in PacingWindow.entries },
             "every projected window must be a PacingWindow.entries value; got $observedWindows",
         )
+    }
+
+    @Test
+    fun `clearance-pacing projection covers every PacingWindow when phase forced via LOWG-derived Clearance records`() {
+        // R12 acceptance: the adapter is total over `PacingWindow.entries`.
+        // The matrix is exhaustive over the constructible inputs:
+        //   - {Controller, Pilot} speaker × {Controller, Pilot} utterance —
+        //     the existing no-phase matrix test above pins zero
+        //     ClearancePacing facts for every non-Clearance permutation.
+        //   - {Clearance utterance} × `PacingWindow.entries` (4 windows) —
+        //     THIS test pins one ClearancePacing(issuedDuring=X) per X by
+        //     reusing real Clearance Instruct records from the LOWG
+        //     circuit-training trace and forcing `phaseAtTransmission` to
+        //     map every clearance to a `PilotPhase` that resolves to the
+        //     target `PacingWindow`.
+        //
+        // The {Pilot speaker, Clearance utterance} combinations are vacuous
+        // — `Clearance` is sealed and only emitted by `ControllerOutput.
+        // Instruct`. The wiring-scope test below pins zero pacing facts
+        // when a pilot-speaker record carries a controller-output payload.
+        // Combined, the matrix is honestly exhausted at every constructible
+        // (speaker, utterance, window) triple.
+        //
+        // `Instruct(Clearance)` cannot be constructed outside the controller
+        // module (no public factory exposes Clearance instructions), so we
+        // extract real Clearance records from the LOWG trace rather than
+        // synthesise them.
+        val trace = LowgObservationPort.runCircuitTrainingTrace(
+            scenarioId = "pacing-window-matrix",
+            outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop),
+            untilMinutes = 45L,
+        )
+        val clearanceRecords = trace.records.filter { record ->
+            val utterance = record.utterance
+            val output = (utterance as? Utterance.FromController)?.output
+            val instruct = output as? ControllerOutput.Instruct
+            instruct != null && instruct.instruction is Clearance
+        }
+        assertTrue(
+            clearanceRecords.isNotEmpty(),
+            "expected LOWG trace to emit at least one Clearance Instruct; if " +
+                "this fails, the LOWG circuit-training scenario lost its " +
+                "clearance issuances and the chunk-01 closure must be re-verified",
+        )
+
+        // Inverse of the adapter's `pacingWindowFor(phase)` mapping at
+        // EvidenceFacts.kt: Taxiing → ComplicatedTaxi; LinedUp → LineUp;
+        // TakeoffRoll → TakeoffRoll; everything else → Other. `AtStand` is
+        // the representative non-sensitive phase for the `Other` row.
+        val windowToPhase = mapOf(
+            PacingWindow.ComplicatedTaxi to PilotPhase.Taxiing,
+            PacingWindow.LineUp to PilotPhase.LinedUp,
+            PacingWindow.TakeoffRoll to PilotPhase.TakeoffRoll,
+            PacingWindow.Other to PilotPhase.AtStand,
+        )
+        // Belt-and-braces: must cover EVERY PacingWindow.entries value
+        // (per `predicate-guards-over-sealed-types-must-2026-05-16` memory).
+        assertEquals(
+            PacingWindow.entries.toSet(),
+            windowToPhase.keys,
+            "windowToPhase must cover every PacingWindow.entries value",
+        )
+
+        PacingWindow.entries.forEach { window ->
+            val phase = windowToPhase.getValue(window)
+            val phaseMap = clearanceRecords.associate { it.transmissionId to phase }
+            val facts = EvidenceFactAdapters.fromTransmissionRecords(
+                scenarioId = "pacing-window-matrix::$window",
+                records = clearanceRecords,
+                phaseAtTransmission = phaseMap,
+            )
+            val pacingFacts = facts.facts.mapNotNull {
+                it.payload as? EvidenceFactPayload.ClearancePacing
+            }
+            assertTrue(
+                pacingFacts.isNotEmpty(),
+                "expected at least one ClearancePacing fact when phase forced " +
+                    "to $phase (→ $window); got none",
+            )
+            assertTrue(
+                pacingFacts.all { it.issuedDuring == window },
+                "every projected ClearancePacing fact must carry " +
+                    "issuedDuring=$window when phase=$phase forced for every " +
+                    "Clearance record; got ${pacingFacts.map { it.issuedDuring }.toSet()}",
+            )
+        }
     }
 
     @Test

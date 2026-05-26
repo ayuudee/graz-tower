@@ -581,17 +581,11 @@ object EvidenceFactAdapters {
         // null on every record (covered-red); when the production-repair
         // epic adds the signal, this single call site lights up doubt
         // facts for instructions AND responses.
-        val (targetAircraft, extractionSlot) = when (output) {
-            is ControllerOutput.Instruct -> output.target to "controller.instruction"
-            is ControllerOutput.Respond -> output.target to "controller.response"
-        }
-        val receptionDoubtFact = receptionDoubtFact(
-            scenarioId = scenarioId,
-            recordIndex = recordIndex,
-            record = record,
-            aircraftId = targetAircraft,
-            extractionSlot = extractionSlot,
-        )
+        // Wiring point for reception-doubt projection. Today the call
+        // returns null on every record (no reception-quality signal). The
+        // wiring still runs for both controller arms so that the production-
+        // repair epic can light it up with one signature change.
+        val receptionDoubtFact = receptionDoubtFact()
         val outputFacts = when (output) {
             is ControllerOutput.Instruct -> {
                 val instructionFact = fact(
@@ -733,13 +727,10 @@ object EvidenceFactAdapters {
             pilot = pilot,
             transmission = transmission,
         )
-        val receptionDoubtFact = receptionDoubtFact(
-            scenarioId = scenarioId,
-            recordIndex = recordIndex,
-            record = record,
-            aircraftId = pilot.aircraftId,
-            extractionSlot = "pilot.transmission",
-        )
+        // Wiring point for the pilot arm of the reception-doubt projection.
+        // Same semantics as the controller-arm call above: returns null
+        // today, lights up when the repair epic adds the input.
+        val receptionDoubtFact = receptionDoubtFact()
         return listOf(transmissionFact) +
             reportFacts +
             listOfNotNull(aerodromeInformationFact) +
@@ -1004,21 +995,25 @@ object EvidenceFactAdapters {
      * a typed optional reference; `SayAgain` itself is not modified by this
      * projection.
      */
-    @Suppress("UnusedParameter")
-    private fun receptionDoubtFact(
-        scenarioId: String,
-        recordIndex: Int,
-        record: TransmissionRecord,
-        aircraftId: AircraftId,
-        extractionSlot: String,
-    ): EvidenceFact? {
-        // No reception-quality signal exists on TransmissionRecord today.
-        // Returning null is the honest current observation. When the
-        // production-repair epic adds reception-quality input, branch this
-        // function on the new typed input to emit
+    private fun receptionDoubtFact(): EvidenceFact? {
+        // No reception-quality signal exists on TransmissionRecord today, so
+        // the projection emits nothing on every record (covered-red landing).
+        // The function is intentionally parameterless to keep the signature
+        // honest — no `@Suppress("UnusedParameter")` lie about unused inputs
+        // (per AGENTS.md commandment 1). The wiring sites (controller
+        // Instruct / controller Respond / pilot transmission) still call
+        // through here so the regression tests in EvidenceFactsTest pin the
+        // wiring path; today the call always returns null.
+        //
+        // When the production-repair epic adds reception-quality input to
+        // TransmissionRecord, restore the
+        // `(scenarioId, recordIndex, record, aircraftId, extractionSlot)`
+        // signature, branch on the new typed input to emit
         // EvidenceFactPayload.ReceptionDoubt(...) at sequence offset
         // `recordIndex * FACTS_PER_RECORD + 5`, extraction path
-        // "sim.records[$recordIndex].$extractionSlot.receptionDoubt".
+        // "sim.records[$recordIndex].$extractionSlot.receptionDoubt", and
+        // update the call sites in `controllerFacts` and `pilotFacts` to
+        // pass the params back.
         return null
     }
 
