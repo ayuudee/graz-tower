@@ -99,8 +99,8 @@ The STRATEGY.md update is **soft** — if it's hard to land cleanly, skipping is
 - [ ] Honest close-out: if any criterion fails honest review (per memory `honest-close-out-dont-assert-green-on-2026-05-17`), chunk closure is HALTED until the failure is resolved or filed with a named follow-up; closure entry records the halt, not a false-green.
 
 ## Done summary
-_(filled at task close)_
+Closed ICAO 9432 chunk 01 — communications, transfer, readback. Updated coverage_report.md with the 8 covered-green / 2 covered-red / 7 phraseology-later / 2 policy-blocked / 1 not-applicable terminal-state distribution and recorded spawned production-repair epics (fn-49 for FN44-GAP-2, fn-50 for COMMS-1) inline on the covered-red rows. Landed the chunk-01 closure sentence in STRATEGY.md's Requirements-registry track (soft contract, single additive sentence) with last_updated bumped. Wrote the AGENT_DIALOGUE.md closure entry — verification command + green result, full coverage tally, spawned epic IDs, Chunk 02 ready signal, and an 8-criterion principal-agent self-assessment sub-block. The pre-existing TMPDIR sandbox failure (EvidenceReportWriterTest + EvidencePermanentTwentyCaseTest, files predate fn-48 and reproduce on baseline) is recorded explicitly as a known pre-existing finding — not a chunk-01 regression. Codex impl-review SHIP on first pass; no introduced findings.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 0f0161bc1478d25833ee8a6bcd0275ea9e5b7aab
+- Tests: ./gradlew-nix :sim:jvmTest --tests "*Icao9432*" :controller:jvmTest --tests "*Icao9432*" — BUILD SUCCESSFUL (15 chunk-01/adjacent Icao9432 tests across 9 classes), ./gradlew-nix detekt — BUILD SUCCESSFUL (clean), ./gradlew-nix build — known pre-existing sandbox failures only (EvidenceReportWriterTest x2 + EvidencePermanentTwentyCaseTest x1; Files.createTempDirectory under macOS sandbox; both files predate fn-48 and reproduce on baseline; recorded in AGENT_DIALOGUE.md closure entry as pre-existing, NOT a chunk-01 regression), Codex impl-review SHIP on first pass (scoped diff from base 36298a3b)
 - PRs:
