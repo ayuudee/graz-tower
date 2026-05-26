@@ -1,7 +1,7 @@
 {
   "branch_name": "fn-48-icao-9432-chunk-01-drive-expected-gap",
-  "completion_review_status": "unknown",
-  "completion_reviewed_at": null,
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-05-26T13:58:45.502304Z",
   "created_at": "2026-05-23T08:19:20.509631Z",
   "default_impl": null,
   "default_review": null,
@@ -20,5 +20,5 @@
   "spec_path": ".flow/specs/fn-48-icao-9432-chunk-01-drive-expected-gap.md",
   "status": "open",
   "title": "ICAO 9432 chunk 01 - drive expected-gap units to closure",
-  "updated_at": "2026-05-23T13:41:45.571768Z"
+  "updated_at": "2026-05-26T13:58:45.502418Z"
 }
