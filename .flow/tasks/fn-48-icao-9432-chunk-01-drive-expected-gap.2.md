@@ -102,8 +102,8 @@ The likely covered-red landing is HONEST — it reflects what the sim currently 
 - [ ] No production-code changes outside the test tree and `.plan`.
 
 ## Done summary
-_(filled at task close)_
+Closed FN44-GAP-1 (covered-green) and FN44-GAP-2 (covered-red) by adding frequency-transfer projections (FACTS_PER_RECORD +3 controller-advised, +4 pilot-notified) to EvidenceFactAdapters, a frequencyTransfer(aircraftId) selector on EvidenceExpectContext, primitive property tests covering the full speaker x utterance x payload matrix plus boundary cases, and a paired source-mapped sim test Icao9432Chunk01FrequencyTransferEvidenceTest that lands each source unit per the covered-green / covered-red contract. Spawned production-repair epic fn-49-sim-emits-pilot-notified-frequency to track the pilot-side gap closure; .plan GAP-1 paragraph deleted, GAP-2 replaced with one-line pointer.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 0f10956e0149a987aafe160356ad1b0ee24def01
+- Tests: ./gradlew-nix :sim:jvmTest --tests "*.Icao9432Chunk01FrequencyTransferEvidenceTest" — 2 tests, 0 failures (covered-green: controller-advised; covered-red: pilot-notified), ./gradlew-nix :sim:jvmTest --tests "*.EvidenceFactsTest" — 18 tests, 0 failures (matrix + boundaries + selector primitives), ./gradlew-nix :sim:jvmTest --tests "*.EvidenceSourceCatalog*" — green, ./gradlew-nix :controller:jvmTest --tests "*.SourceUnitCitationValidationTest" — green, ./gradlew-nix detekt --rerun-tasks — green (jvmTest tree not in detekt scope; no production changes)
 - PRs:

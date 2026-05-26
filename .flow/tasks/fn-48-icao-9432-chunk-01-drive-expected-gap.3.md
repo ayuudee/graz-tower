@@ -25,7 +25,7 @@ This task DOES add new sealed leaves to `EvidenceFactPayload` (and a new `Eviden
 - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceFacts.kt` — new `ReceptionDoubt` payload + `EvidenceFactKind.ReceptionDoubt` + adapter projection.
 - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceDsl.kt` — new selector.
 - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ReceptionDoubtEvidenceTest.kt` — NEW test (one method targeting the COMMS-1 source unit).
-- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceFactsTest.kt` (or sibling) — primitive-level adapter property tests.
+- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceFactsTest.kt` — primitive-level adapter property tests (extend the existing file landed by task .2; mirror its 8-combination matrix layout, boundary-case methods, and selector-primitive `simEvidence(...) { … }` tests). <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.2 landed property tests in EvidenceFactsTest.kt with a specific matrix + boundary + selector-primitive shape -->
 - `.plan` — close COMMS-1 per rule (paragraph REPLACED with repair-epic pointer for covered-red).
 - IF covered-red: spawn `flow-next` repair epic.
 
@@ -40,7 +40,7 @@ This task DOES add new sealed leaves to `EvidenceFactPayload` (and a new `Eviden
   - `{Controller, Pilot} speaker × {Controller, Pilot} utterance × {has doubt-source observability, lacks doubt-source observability}` payload variants — 8 base combinations.
   - + boundary: empty input; single unrelated record; multiple records.
   - Real current behaviour: ALL combinations return empty `EvidenceFactSet` because sim has no doubt signal — that IS the test signal.
-- **Selector**: `EvidenceExpectContext.receptionDoubt(aircraftId)` at `EvidenceDsl.kt:304-369`.
+- **Selector**: `EvidenceExpectContext.receptionDoubt(aircraftId)` at `EvidenceDsl.kt:304-369`. Returns a new companion class `AuditReceptionDoubtSubject` (internal constructor, takes `aircraftId`, `facts: List<EvidenceFact>`, `activate: (FactId) -> Unit`) mirroring the established `AuditFrequencyTransferSubject` pattern landed by task .2 at `EvidenceDsl.kt:496-551`. Branch methods on the subject (e.g. `requiresRepetitionResponse()`) return `EvidenceAuditOutcome` and activate matching facts on success. <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.2 landed AuditFrequencyTransferSubject companion pattern not anticipated in the original plan -->
 - **Test shape** (sim-level, ONE test method targeting COMMS-1):
   ```kotlin
   simEvidence("icao9432-chunk01-reception-doubt") {
@@ -53,7 +53,7 @@ This task DOES add new sealed leaves to `EvidenceFactPayload` (and a new `Eviden
   ```
   Cite the new `ICAO9432.Communications.ReceptionDoubtRepetitionRequested` source ref (added in task .1). <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.1 used ReceptionDoubtRepetitionRequested not ReceptionDoubt -->
 - **Test method assertion shape (covered-red)**: do NOT call `report.assertNoFailures()`. Instead: `assertTrue(report.results.any { it.sources.contains(ICAO9432.Communications.ReceptionDoubtRepetitionRequested) && it.outcome is EvidenceAuditOutcome.Fail })`. JUnit passes; audit honestly reports `Fail`. <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.1 used ReceptionDoubtRepetitionRequested not ReceptionDoubt -->
-- **Covered-red spawn**: draft repair epic via `flowctl epic create`. Goal: "Add reception-doubt observation infrastructure to sim". Acceptance: this test transitions from `Fail` to `Pass` for the cited ref. `.plan` COMMS-1 REPLACED with one-line pointer.
+- **Covered-red spawn**: draft repair epic via `flowctl epic create`. Goal: "Add reception-doubt observation infrastructure to sim". Acceptance: this test transitions from `Fail` to `Pass` for the cited ref. `.plan` COMMS-1 REPLACED with one-line pointer using the format established by task .2's `fn-49-sim-emits-pilot-notified-frequency` spawn: `**COMMS-1 — …** — tracked by \`fn-NN-<verb>-<noun>\` (…). Impact: M | Effort: M`. Suggested naming: `fn-NN-sim-emits-reception-doubt` or `fn-NN-sim-models-reception-quality`. <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.2 established fn-49-sim-emits-pilot-notified-frequency as the spawn-naming precedent -->
 
 ## Investigation targets
 

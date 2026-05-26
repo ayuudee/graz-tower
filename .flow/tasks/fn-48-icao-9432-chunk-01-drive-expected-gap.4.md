@@ -21,7 +21,7 @@ If the sim turns out to lack the necessary phase signals at clearance-issue time
 - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceFacts.kt` — new `ClearancePacing` payload + `EvidenceFactKind.ClearancePacing` + `enum class PacingWindow` + adapter projection.
 - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceDsl.kt` — new `EvidenceAuditOutcome.Advisory` sealed leaf at `:20-24`; new `advisory(...)` helper at `:311-323`; update `assertNoFailures()` at `:60` (semantics already correct — `Advisory` is not `Fail` — but verify after adding the leaf); update report rendering to render `Advisory` distinctly; new `clearancePacing(aircraftId)` selector.
 - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ClearancePacingEvidenceTest.kt` — NEW source-mapped sim test (one method targeting FN33-MODEL-1).
-- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceFactsTest.kt` / `EvidenceDslTest.kt` — primitive-level tests for new leaves and helpers.
+- `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceFactsTest.kt` / `EvidenceDslTest.kt` — primitive-level tests for new leaves and helpers. Extend the existing `EvidenceFactsTest.kt` landed by task .2; mirror its matrix layout (here: speaker × utterance × `PacingWindow.entries`), boundary-case methods, and selector-primitive `simEvidence(...) { … }` tests. <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.2 landed property tests in EvidenceFactsTest.kt with a specific matrix + boundary + selector-primitive shape -->
 - `.plan` — close FN33-MODEL-1 per rule.
 - IF covered-red: spawn repair epic.
 
@@ -40,7 +40,7 @@ If the sim turns out to lack the necessary phase signals at clearance-issue time
 - **Adapter projection**: pure function emitting `ClearancePacing` facts into `EvidenceFactSet`. Reserve `FACTS_PER_RECORD` offset **`+6`** for `ClearancePacing` facts (recordIndex * 10 + 6). Existing offsets: 0, 1, 2; task .2 reserves 3 and 4 (FrequencyTransfer); task .3 reserves 5 (ReceptionDoubt). Preserves `EvidenceFactSet` unique-sequence invariant. Total under property tests over:
   - `{Controller, Pilot} speaker × {Controller, Pilot} utterance × {has phase=ComplicatedTaxi at issue, LineUp at issue, TakeoffRoll at issue, Other at issue}` payload variants — 16 base combinations. Use `PacingWindow.entries` for the inner enumeration.
   - + boundary: empty input; single clearance with no concurrent phase data; multiple clearances at different phases.
-- **Selector**: `EvidenceExpectContext.clearancePacing(aircraftId)`.
+- **Selector**: `EvidenceExpectContext.clearancePacing(aircraftId)`. Returns a new companion class `AuditClearancePacingSubject` (internal constructor, takes `aircraftId`, `facts: List<EvidenceFact>`, `activate: (FactId) -> Unit`) mirroring the established `AuditFrequencyTransferSubject` pattern landed by task .2 at `EvidenceDsl.kt:496-551`. Branch methods on the subject (e.g. `whenIssuedDuring(windows: List<PacingWindow>)`) return `EvidenceAuditOutcome` — `Advisory(...)` when violations observed, `Pass` when none, `Fail` when prerequisite facts absent. <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.2 landed AuditFrequencyTransferSubject companion pattern not anticipated in the original plan -->
 - **Test shape** (sim-level, ONE test method):
   ```kotlin
   simEvidence("icao9432-chunk01-clearance-pacing") {
@@ -56,7 +56,7 @@ If the sim turns out to lack the necessary phase signals at clearance-issue time
   - covered-green (Advisory observed): call `report.assertNoFailures()` — passes because `Advisory` is not `Fail`. Additionally `assertTrue(report.results.any { it.outcome is EvidenceAuditOutcome.Advisory })` to confirm the advisory was emitted (not vacuous).
   - covered-red (if sim lacks signals): direct assertion on `report.results` for `Fail`; spawn repair epic.
 - **No external files**: no NDJSON, no side effects. Advisory observations live entirely in audit-outcome surface.
-- **`.plan` rule**: covered-green → delete paragraph; covered-red → REPLACE with one-line pointer.
+- **`.plan` rule**: covered-green → delete paragraph; covered-red → REPLACE with one-line pointer using the format established by task .2's `fn-49-sim-emits-pilot-notified-frequency` spawn: `**FN33-MODEL-1 — …** — tracked by \`fn-NN-<verb>-<noun>\` (…). Impact: M | Effort: M`. Suggested naming if covered-red lands: `fn-NN-sim-emits-clearance-pacing-signals` or `fn-NN-sim-models-phase-at-clearance-issue`. <!-- Updated by plan-sync: fn-48-icao-9432-chunk-01-drive-expected-gap.2 established fn-49-sim-emits-pilot-notified-frequency as the spawn-naming precedent -->
 
 ## Investigation targets
 
