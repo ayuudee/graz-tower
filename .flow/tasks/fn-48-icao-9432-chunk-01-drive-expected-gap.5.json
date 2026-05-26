@@ -11,7 +11,7 @@
   "id": "fn-48-icao-9432-chunk-01-drive-expected-gap.5",
   "priority": null,
   "spec_path": ".flow/tasks/fn-48-icao-9432-chunk-01-drive-expected-gap.5.md",
-  "status": "todo",
+  "status": "done",
   "title": "Close chunk 01: coverage report + STRATEGY + AGENT_DIALOGUE closure entry + self-assessment",
   "updated_at": "2026-05-23T09:53:28.028167Z"
 }

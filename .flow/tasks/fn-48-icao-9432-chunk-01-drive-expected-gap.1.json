@@ -8,7 +8,7 @@
   "id": "fn-48-icao-9432-chunk-01-drive-expected-gap.1",
   "priority": null,
   "spec_path": ".flow/tasks/fn-48-icao-9432-chunk-01-drive-expected-gap.1.md",
-  "status": "todo",
+  "status": "done",
   "title": "Land two-actor doctrine refinement + new ICAO9432 source-refs",
   "updated_at": "2026-05-23T13:42:29.046110Z"
 }

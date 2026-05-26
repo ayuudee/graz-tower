@@ -10,7 +10,7 @@
   "id": "fn-48-icao-9432-chunk-01-drive-expected-gap.4",
   "priority": null,
   "spec_path": ".flow/tasks/fn-48-icao-9432-chunk-01-drive-expected-gap.4.md",
-  "status": "todo",
+  "status": "done",
   "title": "Close FN33-MODEL-1: clearance-pacing advisory evidence primitive + chunk-01 test",
   "updated_at": "2026-05-23T13:45:17.498716Z"
 }
