@@ -5,17 +5,28 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import xyz.easiersaid.twr.controller.ControllerOutput
+import xyz.easiersaid.twr.controller.DecisionTrace
 import xyz.easiersaid.twr.pilot.CircuitOutcome
+import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.InitialContact
 import xyz.easiersaid.twr.protocol.LineUpAndWait
+import xyz.easiersaid.twr.protocol.NumberInSequence
+import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.Request
+import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
@@ -189,6 +200,428 @@ class EvidenceFactsTest {
         assertEquals(AerodromeInformationStatus.KnownReceivedElsewhere, information.status)
     }
 
+    // FN44-GAP-1: controller-advised frequency-transfer projection (R3, R12).
+    @Test
+    fun `controller ContactFrequency projects controller-advised frequency-transfer fact`() {
+        val aircraft = AircraftId("OE-ABC")
+        val records = listOf(
+            controllerInstructionRecord(
+                index = 0,
+                instruction = ContactFrequency(
+                    target = aircraft,
+                    role = RoleName.TOWER,
+                    frequency = Frequency.unsafe("118.500"),
+                ),
+            ),
+        )
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "controller-advised-explicit-frequency",
+            records = records,
+        )
+
+        val transfer = facts.firstFrequencyTransfer(aircraft)
+        assertNotNull(transfer)
+        assertEquals(FrequencyTransferMode.ControllerAdvised, transfer.mode)
+        assertEquals(
+            FrequencyTransferTarget.UnitAndFrequency(unitName = "TOWER", frequency = "118.500"),
+            transfer.target,
+        )
+        assertEquals(
+            EvidenceSequence(3),
+            facts.orderedFacts()
+                .first { it.payload is EvidenceFactPayload.FrequencyTransfer }
+                .provenance.sequence,
+        )
+    }
+
+    @Test
+    fun `controller ContactFrequency without explicit frequency falls back to UnitOnly target`() {
+        val aircraft = AircraftId("OE-XYZ")
+        val records = listOf(
+            controllerInstructionRecord(
+                index = 0,
+                instruction = ContactFrequency(target = aircraft, role = RoleName.APPROACH),
+            ),
+        )
+
+        val transfer = EvidenceFactAdapters
+            .fromTransmissionRecords(scenarioId = "controller-advised-implicit", records = records)
+            .firstFrequencyTransfer(aircraft)
+
+        assertNotNull(transfer)
+        assertEquals(FrequencyTransferMode.ControllerAdvised, transfer.mode)
+        assertEquals(FrequencyTransferTarget.UnitOnly(unitName = "APPROACH"), transfer.target)
+    }
+
+    // FN44-GAP-2: pilot-notified frequency-change projection (R4, R12).
+    @Test
+    fun `pilot RequestFrequencyChange projects pilot-notified frequency-transfer fact`() {
+        val aircraft = AircraftId("OE-ABC")
+        val records = listOf(
+            pilotTransmissionRecord(
+                index = 0,
+                aircraft = aircraft,
+                transmission = Request(RequestFrequencyChange(frequency = Frequency.unsafe("123.500"))),
+            ),
+        )
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "pilot-notified-explicit-frequency",
+            records = records,
+        )
+
+        val transfer = facts.firstFrequencyTransfer(aircraft)
+        assertNotNull(transfer)
+        assertEquals(FrequencyTransferMode.PilotNotifiedAbsentAdvice, transfer.mode)
+        assertEquals(
+            FrequencyTransferTarget.UnitAndFrequency(
+                unitName = EvidenceFactAdapters.PILOT_NOTIFIED_UNIT_PLACEHOLDER,
+                frequency = "123.500",
+            ),
+            transfer.target,
+        )
+        assertEquals(
+            EvidenceSequence(4),
+            facts.orderedFacts()
+                .first { it.payload is EvidenceFactPayload.FrequencyTransfer }
+                .provenance.sequence,
+        )
+    }
+
+    @Test
+    fun `pilot RequestFrequencyChange without explicit frequency falls back to UnitOnly target`() {
+        val aircraft = AircraftId("OE-XYZ")
+        val records = listOf(
+            pilotTransmissionRecord(
+                index = 0,
+                aircraft = aircraft,
+                transmission = Request(RequestFrequencyChange()),
+            ),
+        )
+
+        val transfer = EvidenceFactAdapters
+            .fromTransmissionRecords(scenarioId = "pilot-notified-implicit", records = records)
+            .firstFrequencyTransfer(aircraft)
+
+        assertNotNull(transfer)
+        assertEquals(FrequencyTransferMode.PilotNotifiedAbsentAdvice, transfer.mode)
+        assertEquals(
+            FrequencyTransferTarget.UnitOnly(unitName = EvidenceFactAdapters.PILOT_NOTIFIED_UNIT_PLACEHOLDER),
+            transfer.target,
+        )
+    }
+
+    // R12 acceptance: explicit speaker × utterance × payload matrix.
+    // {Controller, Pilot} speaker × {Controller, Pilot} utterance × {match, non-match} payload
+    // ⇒ eight base combinations. Empty input + single-unrelated + mixed boundary cases
+    // are exercised in dedicated tests below.
+    //
+    // Constructing `ControllerOutput.Instruct` requires a factory: `fromMissedHandoffReissue`
+    // covers ContactFrequency (the matching controller payload); `fromAdministrative` covers
+    // NumberInSequence (a non-matching controller payload that doesn't require certification).
+    @Test
+    fun `frequency-transfer projections are total over the explicit speaker x utterance x payload matrix`() {
+        val aircraft = AircraftId("OE-ABC")
+        val controllerId = ControllerId("LOWG_TWR")
+        val matchingContactFrequency = ContactFrequency(
+            target = aircraft,
+            role = RoleName.TOWER,
+            frequency = Frequency.unsafe("118.500"),
+        )
+        val nonMatchingInstruction = NumberInSequence.unsafe(target = aircraft, number = 1)
+        val matchingRequestFrequencyChange: PilotTransmission =
+            Request(RequestFrequencyChange(frequency = Frequency.unsafe("123.500")))
+        val nonMatchingPilotTransmission: PilotTransmission = Report(events = listOf(ReportEvent.Ready))
+
+        val matchingControllerOutput = ControllerOutput.Instruct.fromMissedHandoffReissue(
+            instruction = matchingContactFrequency,
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("MATRIX-TEST", "matrix test ContactFrequency", emptyList()),
+        )
+        val nonMatchingControllerOutput = ControllerOutput.Instruct.fromAdministrative(
+            instruction = nonMatchingInstruction,
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("MATRIX-TEST", "matrix test NumberInSequence", emptyList()),
+        )
+
+        val matrix = listOf(
+            // Speaker = Controller, Utterance = FromController.
+            Combo(
+                label = "controller-speaker / controller-utterance / matching-payload",
+                record = controllerOutputRecord(
+                    index = 0,
+                    targetAircraft = aircraft,
+                    output = matchingControllerOutput,
+                ),
+                expectControllerAdvised = true,
+                expectPilotNotified = false,
+            ),
+            Combo(
+                label = "controller-speaker / controller-utterance / non-matching-payload",
+                record = controllerOutputRecord(
+                    index = 0,
+                    targetAircraft = aircraft,
+                    output = nonMatchingControllerOutput,
+                ),
+                expectControllerAdvised = false,
+                expectPilotNotified = false,
+            ),
+            // Speaker = Controller, Utterance = FromPilot (cross-speaker; record is dropped).
+            Combo(
+                label = "controller-speaker / pilot-utterance / matching-payload",
+                record = TransmissionRecord(
+                    transmissionId = TransmissionId(900),
+                    time = SimTime.ZERO,
+                    speaker = SpeakerRef.Controller(controllerId),
+                    receiver = ReceiverRef.Pilot(aircraft),
+                    utterance = Utterance.FromPilot(matchingRequestFrequencyChange),
+                ),
+                expectControllerAdvised = false,
+                expectPilotNotified = false,
+            ),
+            Combo(
+                label = "controller-speaker / pilot-utterance / non-matching-payload",
+                record = TransmissionRecord(
+                    transmissionId = TransmissionId(901),
+                    time = SimTime.ZERO,
+                    speaker = SpeakerRef.Controller(controllerId),
+                    receiver = ReceiverRef.Pilot(aircraft),
+                    utterance = Utterance.FromPilot(nonMatchingPilotTransmission),
+                ),
+                expectControllerAdvised = false,
+                expectPilotNotified = false,
+            ),
+            // Speaker = Pilot, Utterance = FromController (cross-speaker; record is dropped).
+            Combo(
+                label = "pilot-speaker / controller-utterance / matching-payload",
+                record = TransmissionRecord(
+                    transmissionId = TransmissionId(902),
+                    time = SimTime.ZERO,
+                    speaker = SpeakerRef.Pilot(aircraft),
+                    receiver = ReceiverRef.Controller(controllerId),
+                    utterance = Utterance.FromController(matchingControllerOutput),
+                ),
+                expectControllerAdvised = false,
+                expectPilotNotified = false,
+            ),
+            Combo(
+                label = "pilot-speaker / controller-utterance / non-matching-payload",
+                record = TransmissionRecord(
+                    transmissionId = TransmissionId(903),
+                    time = SimTime.ZERO,
+                    speaker = SpeakerRef.Pilot(aircraft),
+                    receiver = ReceiverRef.Controller(controllerId),
+                    utterance = Utterance.FromController(nonMatchingControllerOutput),
+                ),
+                expectControllerAdvised = false,
+                expectPilotNotified = false,
+            ),
+            // Speaker = Pilot, Utterance = FromPilot.
+            Combo(
+                label = "pilot-speaker / pilot-utterance / matching-payload",
+                record = pilotTransmissionRecord(
+                    index = 0,
+                    aircraft = aircraft,
+                    transmission = matchingRequestFrequencyChange,
+                ),
+                expectControllerAdvised = false,
+                expectPilotNotified = true,
+            ),
+            Combo(
+                label = "pilot-speaker / pilot-utterance / non-matching-payload",
+                record = pilotTransmissionRecord(
+                    index = 0,
+                    aircraft = aircraft,
+                    transmission = nonMatchingPilotTransmission,
+                ),
+                expectControllerAdvised = false,
+                expectPilotNotified = false,
+            ),
+        )
+
+        matrix.forEach { combo ->
+            val facts = EvidenceFactAdapters.fromTransmissionRecords(
+                scenarioId = "matrix::${combo.label}",
+                records = listOf(combo.record),
+            )
+            val controllerAdvised = facts.firstFrequencyTransfer(aircraft, FrequencyTransferMode.ControllerAdvised)
+            val pilotNotified = facts.firstFrequencyTransfer(aircraft, FrequencyTransferMode.PilotNotifiedAbsentAdvice)
+            assertEquals(
+                combo.expectControllerAdvised,
+                controllerAdvised != null,
+                "controllerAdvised expectation violated for ${combo.label}",
+            )
+            assertEquals(
+                combo.expectPilotNotified,
+                pilotNotified != null,
+                "pilotNotified expectation violated for ${combo.label}",
+            )
+        }
+    }
+
+    // Boundary case: empty input.
+    @Test
+    fun `frequency-transfer projection on empty input emits no facts`() {
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "boundary-empty",
+            records = emptyList(),
+        )
+        assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.FrequencyTransfer })
+    }
+
+    // Boundary case: single unrelated record.
+    @Test
+    fun `frequency-transfer projection on single unrelated record emits no transfer facts`() {
+        val aircraft = AircraftId("OE-ABC")
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "boundary-unrelated",
+            records = listOf(reportRecord(index = 0, time = SimTime.ZERO, event = ReportEvent.Ready)),
+        )
+        assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.FrequencyTransfer })
+        assertNull(facts.firstFrequencyTransfer(aircraft))
+    }
+
+    // Boundary case: mixed match and non-match across many records.
+    @Test
+    fun `frequency-transfer projection on mixed records emits one fact per matching record`() {
+        val aircraft = AircraftId("OE-ABC")
+        val records = listOf(
+            controllerInstructionRecord(
+                index = 0,
+                instruction = ContactFrequency(
+                    target = aircraft,
+                    role = RoleName.TOWER,
+                    frequency = Frequency.unsafe("118.500"),
+                ),
+            ),
+            reportRecord(index = 1, time = SimTime.ZERO, event = ReportEvent.Ready),
+            pilotTransmissionRecord(
+                index = 2,
+                aircraft = aircraft,
+                transmission = Request(RequestFrequencyChange(frequency = Frequency.unsafe("123.500"))),
+            ),
+            controllerOutputRecord(
+                index = 3,
+                targetAircraft = aircraft,
+                output = ControllerOutput.Instruct.fromAdministrative(
+                    instruction = NumberInSequence.unsafe(target = aircraft, number = 1),
+                    urgency = Urgency.PROGRESSION,
+                    trace = DecisionTrace("MIXED-TEST", "non-matching controller instruction", emptyList()),
+                ),
+            ),
+        )
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "boundary-mixed",
+            records = records,
+        )
+
+        val transferFacts = facts.facts.filter { it.payload is EvidenceFactPayload.FrequencyTransfer }
+        assertEquals(2, transferFacts.size)
+        val modes = transferFacts.map { (it.payload as EvidenceFactPayload.FrequencyTransfer).mode }.toSet()
+        assertEquals(
+            setOf(
+                FrequencyTransferMode.ControllerAdvised,
+                FrequencyTransferMode.PilotNotifiedAbsentAdvice,
+            ),
+            modes,
+        )
+        // Sequence-offset invariant: controller-advised at +3, pilot-notified at +4.
+        val controllerAdvisedSeq = transferFacts
+            .first { (it.payload as EvidenceFactPayload.FrequencyTransfer).mode == FrequencyTransferMode.ControllerAdvised }
+            .provenance.sequence.value
+        val pilotNotifiedSeq = transferFacts
+            .first { (it.payload as EvidenceFactPayload.FrequencyTransfer).mode == FrequencyTransferMode.PilotNotifiedAbsentAdvice }
+            .provenance.sequence.value
+        assertEquals(3, controllerAdvisedSeq)
+        assertEquals(2 * 10 + 4, pilotNotifiedSeq)
+    }
+
+    // Selector primitive-level coverage (R5 hook + selector unit test).
+    @Test
+    fun `frequencyTransfer selector returns Pass for controllerAdvised when matching fact present`() {
+        val aircraft = AircraftId("OE-ABC")
+        val report = simEvidence("selector-controller-advised") {
+            observe {
+                EvidenceFactAdapters.fromTransmissionRecords(
+                    scenarioId = "selector-controller-advised",
+                    records = listOf(
+                        controllerInstructionRecord(
+                            index = 0,
+                            instruction = ContactFrequency(
+                                target = aircraft,
+                                role = RoleName.TOWER,
+                                frequency = Frequency.unsafe("118.500"),
+                            ),
+                        ),
+                    ),
+                )
+            }
+            source("controller advised present") {
+                cites(ICAO9432.TransferCommunications.ControllerAdvisedFrequencyChange)
+                expect { frequencyTransfer(aircraft).controllerAdvised() }
+            }
+        }
+
+        report.assertNoFailures()
+    }
+
+    @Test
+    fun `frequencyTransfer selector returns Pass for pilotNotified when matching fact present`() {
+        val aircraft = AircraftId("OE-ABC")
+        val report = simEvidence("selector-pilot-notified") {
+            observe {
+                EvidenceFactAdapters.fromTransmissionRecords(
+                    scenarioId = "selector-pilot-notified",
+                    records = listOf(
+                        pilotTransmissionRecord(
+                            index = 0,
+                            aircraft = aircraft,
+                            transmission = Request(RequestFrequencyChange(frequency = Frequency.unsafe("123.500"))),
+                        ),
+                    ),
+                )
+            }
+            source("pilot notified present") {
+                cites(ICAO9432.TransferCommunications.PilotNotifiesAbsentAdvice)
+                expect { frequencyTransfer(aircraft).pilotNotified() }
+            }
+        }
+
+        report.assertNoFailures()
+    }
+
+    @Test
+    fun `frequencyTransfer selector returns Fail when no matching fact present`() {
+        val aircraft = AircraftId("OE-ABC")
+        val report = simEvidence("selector-missing") {
+            observe {
+                EvidenceFactAdapters.fromTransmissionRecords(
+                    scenarioId = "selector-missing",
+                    records = emptyList(),
+                )
+            }
+            source("controller advised missing") {
+                cites(ICAO9432.TransferCommunications.ControllerAdvisedFrequencyChange)
+                expect { frequencyTransfer(aircraft).controllerAdvised() }
+            }
+            source("pilot notified missing") {
+                cites(ICAO9432.TransferCommunications.PilotNotifiesAbsentAdvice)
+                expect { frequencyTransfer(aircraft).pilotNotified() }
+            }
+        }
+
+        // Activation-checked outcomes fail when there are no activation fact ids and the
+        // outcome is not an expectedGap/vacuous. Either way, both source cases report Fail.
+        report.results.forEach { result ->
+            assertTrue(
+                result.outcome is EvidenceAuditOutcome.Fail,
+                "expected Fail for ${result.id} but got ${result.outcome}",
+            )
+        }
+    }
+
     private fun reportRecord(
         index: Long,
         time: SimTime,
@@ -201,6 +634,54 @@ class EvidenceFactsTest {
             receiver = ReceiverRef.Controller(ControllerId("LOWG_TWR")),
             utterance = Utterance.FromPilot(Report(events = listOf(event))),
         )
+
+    private fun controllerInstructionRecord(
+        index: Int,
+        instruction: ContactFrequency,
+        controllerId: ControllerId = ControllerId("LOWG_TWR"),
+    ): TransmissionRecord {
+        val output = ControllerOutput.Instruct.fromMissedHandoffReissue(
+            instruction = instruction,
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("TEST-CTRL", "test ContactFrequency", emptyList()),
+        )
+        return controllerOutputRecord(index = index, targetAircraft = instruction.target, output = output, controllerId = controllerId)
+    }
+
+    private fun controllerOutputRecord(
+        index: Int,
+        targetAircraft: AircraftId,
+        output: ControllerOutput.Instruct,
+        controllerId: ControllerId = ControllerId("LOWG_TWR"),
+    ): TransmissionRecord =
+        TransmissionRecord(
+            transmissionId = TransmissionId(500L + index),
+            time = SimTime.ZERO,
+            speaker = SpeakerRef.Controller(controllerId),
+            receiver = ReceiverRef.Pilot(targetAircraft),
+            utterance = Utterance.FromController(output),
+        )
+
+    private fun pilotTransmissionRecord(
+        index: Int,
+        aircraft: AircraftId,
+        transmission: PilotTransmission,
+        controllerId: ControllerId = ControllerId("LOWG_TWR"),
+    ): TransmissionRecord =
+        TransmissionRecord(
+            transmissionId = TransmissionId(700L + index),
+            time = SimTime.ZERO,
+            speaker = SpeakerRef.Pilot(aircraft),
+            receiver = ReceiverRef.Controller(controllerId),
+            utterance = Utterance.FromPilot(transmission),
+        )
+
+    private data class Combo(
+        val label: String,
+        val record: TransmissionRecord,
+        val expectControllerAdvised: Boolean,
+        val expectPilotNotified: Boolean,
+    )
 }
 
 private inline fun <reified I : xyz.easiersaid.twr.protocol.AtcInstruction> EvidenceFactSet.firstInstruction(
@@ -218,3 +699,13 @@ private inline fun <reified E : ReportEvent> EvidenceFactSet.firstReport(
         val report = fact.payload as? EvidenceFactPayload.PilotReport ?: return@firstOrNull false
         report.aircraftId == aircraftId && report.events.any { event -> event is E }
     }
+
+private fun EvidenceFactSet.firstFrequencyTransfer(
+    aircraftId: AircraftId,
+    mode: FrequencyTransferMode? = null,
+): EvidenceFactPayload.FrequencyTransfer? =
+    orderedFacts().asSequence()
+        .mapNotNull { fact -> fact.payload as? EvidenceFactPayload.FrequencyTransfer }
+        .firstOrNull { payload ->
+            payload.aircraftId == aircraftId && (mode == null || payload.mode == mode)
+        }

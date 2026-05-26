@@ -5,11 +5,14 @@ import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.InitialContact
 import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.Request
+import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.sim.testing.SimTrace
@@ -422,8 +425,8 @@ object EvidenceFactAdapters {
         output: ControllerOutput,
     ): List<EvidenceFact> =
         when (output) {
-            is ControllerOutput.Instruct -> listOf(
-                fact(
+            is ControllerOutput.Instruct -> {
+                val instructionFact = fact(
                     scenarioId = scenarioId,
                     origin = EvidenceFactOrigin.SimRun,
                     sequence = EvidenceSequence(recordIndex * FACTS_PER_RECORD),
@@ -435,11 +438,67 @@ object EvidenceFactAdapters {
                         aircraftId = output.target,
                         instruction = output.instruction,
                     ),
-                ),
-            )
+                )
+                val frequencyTransferFact = controllerAdvisedFrequencyTransferFact(
+                    scenarioId = scenarioId,
+                    recordIndex = recordIndex,
+                    record = record,
+                    instruction = output.instruction,
+                    targetAircraft = output.target,
+                )
+                listOf(instructionFact) + listOfNotNull(frequencyTransferFact)
+            }
 
             is ControllerOutput.Respond -> emptyList()
         }
+
+    /**
+     * Project a controller-advised frequency transfer fact from a
+     * [ContactFrequency] instruction.
+     *
+     * Cites ICAO 9432 §2.8.2.1 — *"an aircraft will be advised by the
+     * appropriate aeronautical station to change from one radio frequency to
+     * another"*. The fact carries the target aircraft and the next unit (role
+     * name) plus the explicit frequency when issued.
+     *
+     * Sequence offset `+3` is reserved for this projection so that the unique-
+     * sequence invariant on [EvidenceFactSet] holds when the same record also
+     * emits the base instruction fact at offset `+0`. Task .3 reserves `+5`
+     * (ReceptionDoubt); task .4 reserves `+6` (ClearancePacing).
+     */
+    private fun controllerAdvisedFrequencyTransferFact(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        instruction: AtcInstruction,
+        targetAircraft: AircraftId,
+    ): EvidenceFact? {
+        val contactFrequency = instruction as? ContactFrequency ?: return null
+        val frequencyValue = contactFrequency.frequency?.mhz
+        val target = if (frequencyValue == null) {
+            FrequencyTransferTarget.UnitOnly(unitName = contactFrequency.role.name)
+        } else {
+            FrequencyTransferTarget.UnitAndFrequency(
+                unitName = contactFrequency.role.name,
+                frequency = frequencyValue,
+            )
+        }
+        return fact(
+            scenarioId = scenarioId,
+            origin = EvidenceFactOrigin.SimRun,
+            sequence = EvidenceSequence(recordIndex * FACTS_PER_RECORD + 3),
+            simTime = record.time,
+            sourceTransmissionId = record.transmissionId,
+            extractionPath = EvidenceExtractionPath(
+                "sim.records[$recordIndex].controller.contactFrequency",
+            ),
+            payload = EvidenceFactPayload.FrequencyTransfer(
+                aircraftId = targetAircraft,
+                mode = FrequencyTransferMode.ControllerAdvised,
+                target = target,
+            ),
+        )
+    }
 
     private fun pilotFacts(
         scenarioId: String,
@@ -486,7 +545,67 @@ object EvidenceFactAdapters {
                 ),
             )
         }
-        return listOf(transmissionFact) + reportFacts + listOfNotNull(aerodromeInformationFact)
+        val frequencyChangeFact = pilotNotifiedFrequencyChangeFact(
+            scenarioId = scenarioId,
+            recordIndex = recordIndex,
+            record = record,
+            pilot = pilot,
+            transmission = transmission,
+        )
+        return listOf(transmissionFact) +
+            reportFacts +
+            listOfNotNull(aerodromeInformationFact) +
+            listOfNotNull(frequencyChangeFact)
+    }
+
+    /**
+     * Project a pilot-notified frequency change fact from a [Request]
+     * pilot transmission whose [Request.type] is [RequestFrequencyChange].
+     *
+     * Cites ICAO 9432 §2.8.2.1 fallback — *"an aircraft will, except for
+     * reasons of safety, notify the appropriate aeronautical station before
+     * such a change takes place"*. The fact records the pilot's notification
+     * intent; the next unit is not known from the request alone, so
+     * [FrequencyTransferTarget] carries a sentinel `unitName` ("UNSPECIFIED")
+     * with the requested frequency when present.
+     *
+     * Sequence offset `+4` is reserved for this projection so that the
+     * unique-sequence invariant on [EvidenceFactSet] holds alongside the base
+     * pilot transmission fact (`+0`) and aerodrome information fact (`+2`).
+     */
+    private fun pilotNotifiedFrequencyChangeFact(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        pilot: SpeakerRef.Pilot,
+        transmission: PilotTransmission,
+    ): EvidenceFact? {
+        val request = transmission as? Request ?: return null
+        val frequencyChange = request.type as? RequestFrequencyChange ?: return null
+        val frequencyValue = frequencyChange.frequency?.mhz
+        val target = if (frequencyValue == null) {
+            FrequencyTransferTarget.UnitOnly(unitName = PILOT_NOTIFIED_UNIT_PLACEHOLDER)
+        } else {
+            FrequencyTransferTarget.UnitAndFrequency(
+                unitName = PILOT_NOTIFIED_UNIT_PLACEHOLDER,
+                frequency = frequencyValue,
+            )
+        }
+        return fact(
+            scenarioId = scenarioId,
+            origin = EvidenceFactOrigin.SimRun,
+            sequence = EvidenceSequence(recordIndex * FACTS_PER_RECORD + 4),
+            simTime = record.time,
+            sourceTransmissionId = record.transmissionId,
+            extractionPath = EvidenceExtractionPath(
+                "sim.records[$recordIndex].pilot.requestFrequencyChange",
+            ),
+            payload = EvidenceFactPayload.FrequencyTransfer(
+                aircraftId = pilot.aircraftId,
+                mode = FrequencyTransferMode.PilotNotifiedAbsentAdvice,
+                target = target,
+            ),
+        )
     }
 
     private fun aerodromeInformationFact(
@@ -656,6 +775,15 @@ object EvidenceFactAdapters {
     }
 
     private const val FACTS_PER_RECORD: Int = 10
+
+    /**
+     * Sentinel unit name used by the pilot-notified frequency-change
+     * projection (`FN44-GAP-2`). [RequestFrequencyChange] carries only a
+     * (possibly absent) [xyz.easiersaid.twr.protocol.Frequency] — the next
+     * unit is not known from the request alone. Downstream selectors treat
+     * this value as "unspecified next unit".
+     */
+    internal const val PILOT_NOTIFIED_UNIT_PLACEHOLDER: String = "UNSPECIFIED"
 }
 
 private data class CriticalPhaseSample(

@@ -366,6 +366,13 @@ class EvidenceExpectContext internal constructor(
             facts = facts.orderedFacts(),
             activate = { factId -> activated += factId },
         )
+
+    fun frequencyTransfer(aircraftId: AircraftId): AuditFrequencyTransferSubject =
+        AuditFrequencyTransferSubject(
+            aircraftId = aircraftId,
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
 }
 
 class AuditAircraftSubject internal constructor(
@@ -483,6 +490,63 @@ class AuditAerodromeInformationContext internal constructor(
                 },
             )
         }
+    }
+}
+
+/**
+ * Audit selector over [EvidenceFactPayload.FrequencyTransfer] facts filtered
+ * by aircraft.
+ *
+ * Source: ICAO 9432 §2.8.2.1. Two branches:
+ * - [controllerAdvised] requires at least one fact with mode
+ *   [FrequencyTransferMode.ControllerAdvised] (FN44-GAP-1 closure path).
+ * - [pilotNotified] requires at least one fact with mode
+ *   [FrequencyTransferMode.PilotNotifiedAbsentAdvice] (FN44-GAP-2 closure
+ *   path).
+ *
+ * Both branches return [EvidenceAuditOutcome.Fail] when no matching fact is
+ * present, because §2.8.2.1 is mandatory on both arms ("shall") and the
+ * regulation cannot be satisfied without an observation.
+ */
+class AuditFrequencyTransferSubject internal constructor(
+    private val aircraftId: AircraftId,
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun controllerAdvised(): EvidenceAuditOutcome =
+        outcomeForMode(
+            mode = FrequencyTransferMode.ControllerAdvised,
+            failReason = "Missing controller-advised frequency-transfer fact for ${aircraftId.value}",
+        )
+
+    fun pilotNotified(): EvidenceAuditOutcome =
+        outcomeForMode(
+            mode = FrequencyTransferMode.PilotNotifiedAbsentAdvice,
+            failReason = "Missing pilot-notified frequency-change fact for ${aircraftId.value}",
+        )
+
+    private fun outcomeForMode(
+        mode: FrequencyTransferMode,
+        failReason: String,
+    ): EvidenceAuditOutcome {
+        val matching = facts.filter { fact ->
+            val payload = fact.payload as? EvidenceFactPayload.FrequencyTransfer ?: return@filter false
+            payload.aircraftId == aircraftId && payload.mode == mode
+        }
+        if (matching.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(reason = failReason, evidence = emptyList())
+        }
+        matching.forEach { fact -> activate(fact.id) }
+        return EvidenceAuditOutcome.Pass(
+            evidence = matching.map { fact ->
+                val payload = fact.payload as EvidenceFactPayload.FrequencyTransfer
+                val target = when (val t = payload.target) {
+                    is FrequencyTransferTarget.UnitOnly -> t.unitName
+                    is FrequencyTransferTarget.UnitAndFrequency -> "${t.unitName}@${t.frequency}"
+                }
+                "${payload.mode}:$target@${fact.provenance.sequence.value}"
+            },
+        )
     }
 }
 

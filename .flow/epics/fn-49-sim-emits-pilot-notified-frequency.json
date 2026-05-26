@@ -1,0 +1,13 @@
+{
+  "branch_name": "fn-49-sim-emits-pilot-notified-frequency",
+  "created_at": "2026-05-23T15:39:46.779871Z",
+  "depends_on_epics": [],
+  "id": "fn-49-sim-emits-pilot-notified-frequency",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-49-sim-emits-pilot-notified-frequency.md",
+  "status": "open",
+  "title": "Sim emits pilot-notified frequency change (FN44-GAP-2 closure)",
+  "updated_at": "2026-05-23T15:40:24.578229Z"
+}
