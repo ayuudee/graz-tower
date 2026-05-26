@@ -98,8 +98,8 @@ The covered-red landing is the **honest** outcome here. The primitive ships (typ
 - [ ] No production-code changes outside the test tree and `.plan`.
 
 ## Done summary
-_(filled at task close)_
+Closed COMMS-1 (ICAO 9432 §2.8.1.4) in covered-red: typed `EvidenceFactPayload.ReceptionDoubt` + `ReceptionDoubtSource` sealed leaves + `SayAgainRef` linkage + adapter projection (wired through controller `Instruct`/`Respond` and pilot arms at sequence offset +5) + `AuditReceptionDoubtSubject.requiresRepetitionResponse()` selector + chunk-01 source-mapped test asserting `Fail` on `report.results`. Spawned production-repair epic `fn-50-sim-models-reception-quality-comms-1`; `.plan` COMMS-1 paragraph replaced with one-line pointer. Codex impl-review: NEEDS_WORK (activation-on-Fail-path + Respond-arm wiring) -> SHIP after fixes. Memory captured: `bug/test-failures/audit-selectors-must-activate-examined-2026-05-26`.
 ## Evidence
-- Commits:
-- Tests:
+- Commits: 6d1bf478c290336e17ff8d835ff35b727eefb58d, b4f205469bcbc2437406ec6b944fa260fc26c0b3, e77ef1d6ae44311ebe1d3268b3369e03f915968f
+- Tests: ./gradlew-nix :sim:jvmTest --tests '*.Icao9432Chunk01ReceptionDoubtEvidenceTest' (pass; covered-red asserted on report.results), ./gradlew-nix :sim:jvmTest --tests '*.EvidenceFactsTest' (pass; matrix + boundary + selector + Respond-arm wiring), ./gradlew-nix :sim:jvmTest --tests '*.EvidenceSourceCatalog*' (pass), ./gradlew-nix :controller:jvmTest --tests '*.SourceUnitCitationValidationTest' (pass), ./gradlew-nix detekt (pass), ./gradlew-nix build (pass)
 - PRs:
