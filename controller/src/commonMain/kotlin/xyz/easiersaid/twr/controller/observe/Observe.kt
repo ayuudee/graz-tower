@@ -11,6 +11,7 @@ import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RequestApproach
+import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.RequestRightBase
@@ -288,6 +289,7 @@ internal fun intentFromRequestType(rt: RequestType): AircraftIntent? = when (rt)
     is RequestStartup, is RequestTaxi -> AircraftIntent.Departing
     is RequestVisualApproach, is RequestShortApproach,
     is RequestRightBase, is RequestApproach -> AircraftIntent.Arriving
+    is RequestFrequencyChange -> null
     else -> null
 }
 

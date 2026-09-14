@@ -83,6 +83,7 @@ import xyz.easiersaid.twr.protocol.MinimumCleanSpeed
 import xyz.easiersaid.twr.protocol.MonitorFrequency
 import xyz.easiersaid.twr.protocol.RadarServiceTerminated
 import xyz.easiersaid.twr.protocol.HandoffTarget
+import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.ResponsibilityState
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.NumberInSequence
@@ -93,6 +94,8 @@ import xyz.easiersaid.twr.protocol.PushbackFace
 import xyz.easiersaid.twr.protocol.ReduceSpeedTo
 import xyz.easiersaid.twr.protocol.ReduceTaxiSpeed
 import xyz.easiersaid.twr.protocol.RejoinSidAt
+import xyz.easiersaid.twr.protocol.Request
+import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.ReportIntentions
 import xyz.easiersaid.twr.protocol.ReportTrafficInSight
 import xyz.easiersaid.twr.protocol.ReportWhen
@@ -506,7 +509,8 @@ private fun handlePilotTick(
         // step). [stepTransmission] reads `lastTransmittedStep` so the
         // same transmission doesn't fire again on a later tick of the
         // same step.
-        if (decision.transmissions.isNotEmpty() && priorStep != null) {
+        val hasStepTransmission = decision.transmissions.any { !it.isUnadvisedFrequencyChangeNotification() }
+        if (hasStepTransmission && priorStep != null) {
             mission = mission.copy(lastTransmittedStep = Some(priorStep))
         }
         for (tx in decision.transmissions) {
@@ -556,24 +560,11 @@ private fun handlePilotTick(
         // aircraft, and the wire layer must fall through to `knownStrips`
         // so the pilot's next transmission reaches the destination tower
         // rather than going back to the released controller.
-        val ctrl = resultState.controllers.values.firstOrNull {
-            it.responsibilities[event.aircraftId] is xyz.easiersaid.twr.protocol.ResponsibilityState.Owned
-        }
-            ?: run {
-                val destinationAerodrome = resultState.aircraft[event.aircraftId]
-                    ?.pilotMission?.goal.filedDestinationAerodrome()
-                val knownStripCandidates = resultState.controllers.values
-                    .filter { event.aircraftId in it.knownStrips }
-                    .let { all ->
-                        if (destinationAerodrome != null) all.filter { it.aerodromeId == destinationAerodrome }
-                        else all
-                    }
-                check(knownStripCandidates.size <= 1) {
-                    "Ambiguous knownStrip controllers for ${event.aircraftId} after destination filter " +
-                        "(destination=$destinationAerodrome): ${knownStripCandidates.map { it.id }}"
-                }
-                knownStripCandidates.firstOrNull()
-            }
+        val ctrl = selectControllerForPilotTransmissions(
+            state = resultState,
+            aircraftId = event.aircraftId,
+            transmissions = decision.transmissions,
+        )
         if (ctrl != null) {
             var txState = resultState
             // fn-8.3 Phase 3 (B4 closure): seed `nextFreeAt` with the per-
@@ -641,6 +632,43 @@ private fun handlePilotTick(
         .copy(aircraft = aircraft)
         .withAircraftRng(event.aircraftId, advancedRng)
         .emit(commEvents + next)
+}
+
+private fun PilotTransmission.isUnadvisedFrequencyChangeNotification(): Boolean =
+    this is Request && type is RequestFrequencyChange
+
+private fun selectControllerForPilotTransmissions(
+    state: SimState,
+    aircraftId: AircraftId,
+    transmissions: List<PilotTransmission>,
+): ControllerSpec? =
+    state.controllers.values.firstOrNull {
+        it.responsibilities[aircraftId] is ResponsibilityState.Owned
+    } ?: when {
+        transmissions.all { it.isUnadvisedFrequencyChangeNotification() } ->
+            state.controllers.values.firstOrNull {
+                it.responsibilities[aircraftId] is ResponsibilityState.HandingOff &&
+                    (it.responsibilities[aircraftId] as ResponsibilityState.HandingOff).target is HandoffTarget.Released
+            }
+        transmissions.any { it is InitialContact } -> selectKnownStripControllerForInitialContact(state, aircraftId)
+        else -> null
+    }
+
+private fun selectKnownStripControllerForInitialContact(
+    state: SimState,
+    aircraftId: AircraftId,
+): ControllerSpec? {
+    val destinationAerodrome = state.aircraft[aircraftId]?.pilotMission?.goal.filedDestinationAerodrome()
+    val knownStripCandidates = state.controllers.values
+        .filter { aircraftId in it.knownStrips }
+        .let { all ->
+            if (destinationAerodrome != null) all.filter { it.aerodromeId == destinationAerodrome } else all
+        }
+    check(knownStripCandidates.size <= 1) {
+        "Ambiguous knownStrip controllers for $aircraftId after destination filter " +
+            "(destination=$destinationAerodrome): ${knownStripCandidates.map { it.id }}"
+    }
+    return knownStripCandidates.firstOrNull()
 }
 
 private fun handleControllerTick(

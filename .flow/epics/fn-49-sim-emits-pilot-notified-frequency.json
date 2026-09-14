@@ -1,7 +1,9 @@
 {
   "branch_name": "fn-49-sim-emits-pilot-notified-frequency",
   "created_at": "2026-05-23T15:39:46.779871Z",
-  "depends_on_epics": [],
+  "depends_on_epics": [
+    "fn-48-icao-9432-chunk-01-drive-expected-gap"
+  ],
   "id": "fn-49-sim-emits-pilot-notified-frequency",
   "next_task": 1,
   "plan_review_status": "unknown",
@@ -9,5 +11,5 @@
   "spec_path": ".flow/specs/fn-49-sim-emits-pilot-notified-frequency.md",
   "status": "open",
   "title": "Sim emits pilot-notified frequency change (FN44-GAP-2 closure)",
-  "updated_at": "2026-05-23T15:40:24.578229Z"
+  "updated_at": "2026-05-27T15:14:00.419564Z"
 }

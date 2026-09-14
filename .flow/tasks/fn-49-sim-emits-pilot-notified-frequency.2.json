@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-05-27T14:47:13.123448Z",
+  "depends_on": [
+    "fn-49-sim-emits-pilot-notified-frequency.1"
+  ],
+  "epic": "fn-49-sim-emits-pilot-notified-frequency",
+  "id": "fn-49-sim-emits-pilot-notified-frequency.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-49-sim-emits-pilot-notified-frequency.2.md",
+  "status": "todo",
+  "title": "Flip chunk-01 covered-red \u2192 covered-green and close FN44-GAP-2 framing (.plan, STRATEGY)",
+  "updated_at": "2026-05-27T15:11:14.586334Z"
+}

@@ -125,6 +125,11 @@ data class PilotMission(
     val routeOverride: Option<RouteOverride> = None,
     /** Whether initial contact has been made on the current frequency. */
     val contactedOnFrequency: Boolean = false,
+    /**
+     * Whether the pilot owes an ICAO Doc 9432 §2.8.2.1 notification before
+     * changing frequency without controller-provided successor advice.
+     */
+    val pendingUnadvisedFrequencyChangeNotification: Boolean = false,
 
     /**
      * The role the pilot was last told to contact via [ContactFrequency].
@@ -350,6 +355,8 @@ fun PilotMission.resetForGoAround(now: SimTime): PilotMission = copy(
     altitudeRestrictionM = None,
     // lastTransmittedStep: reset — rejoined circuit's transmissions fire fresh.
     lastTransmittedStep = None,
+    // pendingUnadvisedFrequencyChangeNotification: reset — a go-around aborts any boundary frequency change.
+    pendingUnadvisedFrequencyChangeNotification = false,
     // Structural + cross-cutting — preserved.
     // goal: unchanged (still the same mission)
     // root: handled by caller (subtree replacement)

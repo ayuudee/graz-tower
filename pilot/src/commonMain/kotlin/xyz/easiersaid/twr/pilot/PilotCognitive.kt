@@ -114,6 +114,7 @@ import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.ResumeOwnNavigation
 import xyz.easiersaid.twr.protocol.TurnHeading
 import xyz.easiersaid.twr.protocol.Request
+import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.SayAgain
 import xyz.easiersaid.twr.protocol.TrafficInSight
 import xyz.easiersaid.twr.protocol.RequestStartup
@@ -787,10 +788,13 @@ fun processInstruction(
             // readback is generated separately via InstructionReadback's
             // squawk-readback rule) and clears their contact state. No
             // pendingInitialContactRole — there's no successor controller.
+            // fn-49: Transit missions also owe an ICAO Doc 9432 §2.8.2.1
+            // notification before changing frequency without successor advice.
             mission.copy(
                 contactedOnFrequency = false,
                 lastTransmittedStep = None,
                 pendingInitialContactRole = None,
+                pendingUnadvisedFrequencyChangeNotification = mission.goal is HighLevelGoal.Transit,
             )
 
         // ── Route overrides: vectors / holds suspend FPL-based routing ──
@@ -1313,9 +1317,12 @@ fun updateAfterTransmission(mission: PilotMission, tx: PilotTransmission): Pilot
         // pendingInitialContactRole from a subsequent ContactFrequency.
         pendingInitialContactRole = None,
     )
-    // Readbacks, acknowledgements, requests, and comms management — no mission effect.
+    is Request -> when (tx.type) {
+        is RequestFrequencyChange -> mission.copy(pendingUnadvisedFrequencyChangeNotification = false)
+        else -> mission
+    }
+    // Readbacks, acknowledgements, and comms management — no mission effect.
     is Readback,
-    is Request,
     is Acknowledge,
     is TrafficInSight,
     is NegativeContact,

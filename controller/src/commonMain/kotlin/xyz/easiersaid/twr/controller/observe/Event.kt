@@ -20,6 +20,7 @@ import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.Request
+import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.RequestOrbit
 import xyz.easiersaid.twr.protocol.RequestRightBase
 import xyz.easiersaid.twr.protocol.RequestShortApproach
@@ -198,6 +199,7 @@ private fun deriveFromRequest(aircraft: AircraftId, type: RequestType): List<Con
         is RequestTaxi -> listOf(ControllerEvent.TaxiRequested(aircraft))
         is RequestVisualApproach, is RequestShortApproach, is RequestRightBase, is RequestOrbit ->
             listOf(ControllerEvent.PilotRequestReceived(aircraft, type))
+        is RequestFrequencyChange -> emptyList()
         else -> emptyList()
     }
 

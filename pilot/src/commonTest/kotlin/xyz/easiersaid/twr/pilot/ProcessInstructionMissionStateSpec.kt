@@ -2,7 +2,11 @@ package xyz.easiersaid.twr.pilot
 
 import arrow.core.None
 import arrow.core.Some
+import xyz.easiersaid.twr.core.world.AviationWorld
+import xyz.easiersaid.twr.core.world.Position
 import xyz.easiersaid.twr.core.world.WorldIndex
+import xyz.easiersaid.twr.pilot.world.toPilotView
+import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.CircuitDirection
@@ -26,6 +30,9 @@ import xyz.easiersaid.twr.protocol.JoinCircuit
 import xyz.easiersaid.twr.protocol.JoinType
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.RadarServiceTerminated
+import xyz.easiersaid.twr.protocol.Request
+import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
@@ -202,6 +209,76 @@ class ProcessInstructionMissionStateSpec {
         val updated = processInstruction(instr, m, SimTime.ZERO, worldIndex)
         assertFalse(updated.contactedOnFrequency)
         assertEquals(None, updated.lastTransmittedStep)
+    }
+
+    @Test
+    fun `RadarServiceTerminated on Transit creates unadvised frequency notification obligation`() {
+        val m = createMission(
+            goal = HighLevelGoal.Transit(destination = AerodromeId("LJMB")),
+            startPhase = PilotPhase.AtStand,
+            time = SimTime.ZERO,
+        ).copy(
+            contactedOnFrequency = true,
+            lastTransmittedStep = Some(MissionStep.REPORT_READY),
+        )
+        val updated = processInstruction(RadarServiceTerminated(target = aircraftId), m, SimTime.ZERO, worldIndex)
+        assertFalse(updated.contactedOnFrequency)
+        assertEquals(None, updated.lastTransmittedStep)
+        assertEquals(None, updated.pendingInitialContactRole)
+        assertTrue(updated.pendingUnadvisedFrequencyChangeNotification)
+    }
+
+    @Test
+    fun `RadarServiceTerminated on circuit training does not create unadvised frequency notification obligation`() {
+        val m = missionAt(MissionStep.AWAIT_TAKEOFF_CLEARANCE).copy(
+            pendingUnadvisedFrequencyChangeNotification = false,
+        )
+        val updated = processInstruction(RadarServiceTerminated(target = aircraftId), m, SimTime.ZERO, worldIndex)
+        assertFalse(updated.pendingUnadvisedFrequencyChangeNotification)
+    }
+
+    @Test
+    fun `pilotDecide emits pending unadvised frequency change request before other cognitive transmissions`() {
+        val mission = createMission(
+            goal = HighLevelGoal.Transit(destination = AerodromeId("LJMB")),
+            startPhase = PilotPhase.AtStand,
+            time = SimTime.ZERO,
+        ).copy(pendingUnadvisedFrequencyChangeNotification = true)
+        val aircraft = AircraftState(
+            id = aircraftId,
+            callsign = xyz.easiersaid.twr.protocol.Callsign("OETST"),
+            position = Position(xMeters = 0.0, yMeters = 0.0),
+            positionPoint = PointId("STAND"),
+            pilotMission = mission,
+        )
+        val output = pilotDecide(
+            PilotInput(
+                aircraft = aircraft,
+                worldIndex = worldIndex,
+                world = AviationWorld().toPilotView(),
+                now = SimTime.ZERO,
+            ),
+        ).fold({ fail("pilotDecide failed: $it") }, { it })
+        val frequencyRequests = output.transmissions.filterIsInstance<Request>()
+            .filter { it.type is RequestFrequencyChange }
+        assertEquals(
+            listOf(Request(RequestFrequencyChange(frequency = null))),
+            frequencyRequests,
+        )
+        assertEquals(
+            Request(RequestFrequencyChange(frequency = null)),
+            output.transmissions.firstOrNull(),
+            "The §2.8.2.1 notification must precede ordinary same-tick cognitive transmissions.",
+        )
+    }
+
+    @Test
+    fun `RequestFrequencyChange transmission clears unadvised frequency notification obligation`() {
+        val m = missionAt(MissionStep.AWAIT_TAKEOFF_CLEARANCE).copy(
+            pendingUnadvisedFrequencyChangeNotification = true,
+        )
+        val updated = updateAfterTransmission(m, Request(RequestFrequencyChange(frequency = null)))
+        assertFalse(updated.pendingUnadvisedFrequencyChangeNotification)
     }
 
     // ── routeOverride sets/clears (Pass 2 Item 7 — symmetric coverage) ──

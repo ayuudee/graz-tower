@@ -16,6 +16,8 @@ import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.Request
+import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.SimTime
 
 /**
@@ -277,8 +279,14 @@ fun pilotDecide(input: PilotInput): Either<RoutingError, PilotOutput> {
     val suppressSameTickCognitive: Boolean =
         densityAltitudeDecline?.suppressSameTickCognitive == true ||
             abortTakeoff?.suppressSameTickCognitive == true
+    val cognitiveWithFrequencyNotification: List<PilotTransmission> =
+        if (effectiveMission.pendingUnadvisedFrequencyChangeNotification) {
+            listOf(Request(RequestFrequencyChange(frequency = null))) + cognitive.transmissions
+        } else {
+            cognitive.transmissions
+        }
     val effectiveCognitiveTransmissions: List<PilotTransmission> =
-        applyCognitiveSuppression(cognitive.transmissions, suppressSameTickCognitive)
+        applyCognitiveSuppression(cognitiveWithFrequencyNotification, suppressSameTickCognitive)
     val goAroundTransmissions = goAround?.transmissions ?: emptyList()
 
     // Plan execution: if the current task needs an airborne route the pilot
