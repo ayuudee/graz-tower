@@ -62,7 +62,7 @@ Generated from `research/tools/requirements-spike/registry/ollama_first/` by sel
 | blocking_item | `FN33-MODEL-1` | 1 |
 | blocking_item | `FN43-GAP-1` | 11 |
 | blocking_item | `FN43-GAP-2` | 2 |
-| blocking_item | `FN44-GAP-1/FN44-GAP-2` | 2 |
+| blocking_item | `FN44-GAP-1` | 2 |
 | blocking_item | `PHRASE-1` | 56 |
 | blocking_item | `POLICY-1` | 17 |
 | blocking_item | `PUSHBACK-1` | 3 |
@@ -77,7 +77,7 @@ Generated from `research/tools/requirements-spike/registry/ollama_first/` by sel
 - Initial authoring target: about 9 high-level source-mapped tests, allowing one test to cite multiple closely related units where the same scenario genuinely proves them.
 - Recommended first chunk: central to the existing DSL, partly protocol-level, and likely to expose policy/observation boundaries without requiring new aircraft physics.
 - Policy concepts flagged: ClearanceTimingPolicy, OperationalGuidancePolicy
-- Known blockers: FN33-MODEL-1, FN44-GAP-1/FN44-GAP-2, PHRASE-1, POLICY-1
+- Known blockers: FN33-MODEL-1, FN44-GAP-1, PHRASE-1, POLICY-1
 
 ### chunk-02-radio-procedures-and-policy: Radio procedures and critical-phase policy
 - Source units: 15

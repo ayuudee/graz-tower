@@ -224,15 +224,6 @@ patch. Until then, reactive goldens should only require controller-stage
 regression when the transmission was actually delivered.
 Impact: H | Effort: H
 
-**FN44-GAP-2 — Sim does not emit pilot-notified frequency change** —
-tracked by `fn-49-sim-emits-pilot-notified-frequency` (sim emits
-`Request(RequestFrequencyChange)` so ICAO 9432 §2.8.2.1 fallback lands
-covered-green). FN44-GAP-1 closed covered-green via existing
-`ContactFrequency` controller emission in LOWG circuit + the
-controller-advised adapter projection added in
-fn-48-icao-9432-chunk-01-drive-expected-gap.2.
-Impact: M | Effort: M
-
 **POLICY-1 — Source-mapped tests need typed operational policy concepts**
 FN46's ICAO 9432 programme map identifies source units whose correct controller
 or pilot behaviour depends on operational guidance, local procedure, controller

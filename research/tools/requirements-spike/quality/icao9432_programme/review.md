@@ -73,8 +73,8 @@ Suggested first chunk boundaries:
   whose expected gap can fail loudly.
 - Do not implement rendered phraseology or frequency-transfer facts inside the
   test-authoring epic.
-- Create follow-on implementation epics for `FN44-GAP-1`, `FN44-GAP-2`,
-  `POLICY-1`, and phraseology fallout as needed.
+- Create follow-on implementation epics for `FN44-GAP-1`, `POLICY-1`,
+  and phraseology fallout as needed.
 
 ## Review Considerations
 

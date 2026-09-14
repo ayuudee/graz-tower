@@ -242,22 +242,11 @@ object EvidenceGaps {
         )
     }
 
-    data object PilotNotifiedFrequencyChangeProjection : EvidenceGapId {
-        override val metadata: EvidenceGapMetadata = EvidenceGapMetadata(
-            id = "evidence-gap-pilot-notified-frequency-change",
-            affectedSources = setOf(ICAO9432.TransferCommunications.PilotNotifiesAbsentAdvice),
-            missingConcept = "Evidence facts do not expose pilot notification before frequency change.",
-            closureTrigger = "Close when traces emit FrequencyTransfer(mode = PilotNotifiedAbsentAdvice).",
-            tracking = EvidenceBacklogRef.PlanItem("FN44-GAP-2"),
-        )
-    }
-
     val All: Set<EvidenceGapId> =
         setOf(
             EssentialAerodromeInformationReceiptProjection,
             CriticalPhaseRadioSilenceProjection,
             ControllerAdvisedFrequencyTransferProjection,
-            PilotNotifiedFrequencyChangeProjection,
         )
 }
 

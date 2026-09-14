@@ -77,7 +77,7 @@ class EvidenceProjectionPressureTest {
     }
 
     @Test
-    fun `transfer communications gaps stay typed and source-specific`() {
+    fun `open transfer communications gaps stay typed and source-specific`() {
         val report = simEvidence("fn44-transfer-communications") {
             observe {
                 EvidenceFactSet(
@@ -96,20 +96,10 @@ class EvidenceProjectionPressureTest {
                     )
                 }
             }
-
-            source("pilot notification absent advice remains projection gap") {
-                cites(ICAO9432.TransferCommunications.PilotNotifiesAbsentAdvice)
-                expect {
-                    expectedGap(
-                        EvidenceGaps.PilotNotifiedFrequencyChangeProjection,
-                        "Current traces do not expose pilot notification before a frequency change.",
-                    )
-                }
-            }
         }
 
         report.assertNoFailures()
-        assertEquals(2, report.results.count { result -> result.outcome is EvidenceAuditOutcome.ExpectedGap })
+        assertEquals(1, report.results.count { result -> result.outcome is EvidenceAuditOutcome.ExpectedGap })
         assertTrue(report.results.all { result -> result.activationFactIds.isEmpty() })
     }
 }

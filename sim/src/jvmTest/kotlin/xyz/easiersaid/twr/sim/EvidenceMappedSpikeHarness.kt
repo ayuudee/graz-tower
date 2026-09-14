@@ -9,12 +9,14 @@ import xyz.easiersaid.twr.pilot.HighLevelGoal
 import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.pilot.createMission
 import xyz.easiersaid.twr.protocol.AerodromeId
+import xyz.easiersaid.twr.protocol.AircraftIntent
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtomicReadback
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.Atis
 import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.FiledPlan
 import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
@@ -28,6 +30,7 @@ import xyz.easiersaid.twr.protocol.requiredReadbackAtoms
 import xyz.easiersaid.twr.sim.testing.Fixtures
 import xyz.easiersaid.twr.sim.testing.SimTrace
 import xyz.easiersaid.twr.sim.testing.TransmissionRecord
+import xyz.easiersaid.twr.sim.testing.controllerAt
 import xyz.easiersaid.twr.sim.testing.controllerByRole
 import xyz.easiersaid.twr.sim.testing.formatJourney
 import xyz.easiersaid.twr.sim.testing.load
@@ -209,6 +212,106 @@ object LowgObservationPort {
             records = records,
             trace = result.trace,
             diagnostic = finalState.formatJourney(aircraftId, records),
+        )
+    }
+
+    fun runLowgLjmbTransitTrace(
+        scenarioId: String,
+        untilMinutes: Long,
+    ): LowgCircuitTrace {
+        val loaded = Fixtures.LOWG_LJMB_VFR.load().getOrElse {
+            fail("LOWG_LJMB_VFR fixture failed to load: $it")
+        }
+        val lowg = AerodromeId("LOWG")
+        val ljmb = AerodromeId("LJMB")
+        val lowgGround = checkNotNull(loaded.controllerAt(lowg, RoleName.GROUND)) {
+            "LOWG_GROUND missing from fixture"
+        }
+        val lowgTower = checkNotNull(loaded.controllerAt(lowg, RoleName.TOWER)) {
+            "LOWG_TOWER missing from fixture"
+        }
+        val lowgApproach = checkNotNull(loaded.controllerAt(lowg, RoleName.APPROACH)) {
+            "LOWG_APPROACH missing from fixture"
+        }
+        val ljmbTower = checkNotNull(loaded.controllerAt(ljmb, RoleName.TOWER)) {
+            "LJMB_TOWER missing from fixture"
+        }
+        val aircraftId = AircraftId("OE-XYZ")
+        val now = SimTime.ZERO
+        val filedPlan = FiledPlan.Vfr(
+            departureAerodrome = lowg,
+            destinationAerodrome = ljmb,
+            destinationRunway = RunwayId("14"),
+            intent = AircraftIntent.Transit,
+        )
+        val aircraft = AircraftState(
+            id = aircraftId,
+            callsign = Callsign("OEXYZ"),
+            position = loaded.world.geometry.points.getValue(Fixtures.LOWG_LJMB_VFR.standPointId),
+            positionPoint = Fixtures.LOWG_LJMB_VFR.standPointId,
+            phase = PilotPhase.AtStand,
+            pilotMission = createMission(
+                goal = HighLevelGoal.Transit(destination = ljmb),
+                startPhase = PilotPhase.AtStand,
+                time = now,
+                filedPlan = filedPlan,
+            ),
+        )
+        val initialState = SimState.initial(
+            seed = 42L,
+            world = loaded.world,
+            worldIndex = loaded.worldIndex,
+            aircraft = listOf(aircraft),
+            controllers = listOf(lowgGround, lowgTower, lowgApproach, ljmbTower),
+            weatherByAerodrome = Fixtures.LOWG_LJMB_VFR.weatherByAerodrome,
+        ).getOrElse { error("SimState.initial rejected the LOWG_LJMB_VFR fixture: $it") }
+        val lowgAtis = Atis(
+            letter = 'A',
+            aerodrome = lowg,
+            configuration = RunwayConfiguration(arrivals = listOf(RunwayId("16C")), departures = listOf(RunwayId("16C"))),
+            wind = Wind.unsafe(160, 8),
+            qnh = null,
+            visibility = null,
+            generatedAt = now,
+        )
+        val ljmbAtis = Atis(
+            letter = 'B',
+            aerodrome = ljmb,
+            configuration = RunwayConfiguration(arrivals = listOf(RunwayId("14")), departures = listOf(RunwayId("14"))),
+            wind = Wind.unsafe(140, 6),
+            qnh = null,
+            visibility = null,
+            generatedAt = now,
+        )
+        val initialEvents = loaded.initialEvents + listOf(
+            SimEvent.AtisIssued(time = now, aerodrome = lowg, atis = lowgAtis),
+            SimEvent.AtisIssued(time = now, aerodrome = ljmb, atis = ljmbAtis),
+            SimEvent.PilotDecisionTick(time = now, aircraftId = aircraftId),
+            SimEvent.PhysicsTick(time = now),
+            SimEvent.ControllerCycle(time = now, controllerId = lowgGround.id),
+            SimEvent.ControllerCycle(time = now, controllerId = lowgTower.id),
+            SimEvent.ControllerCycle(time = now, controllerId = lowgApproach.id),
+            SimEvent.ControllerCycle(time = now, controllerId = ljmbTower.id),
+        )
+        val result = runUntilWithStateTrace(
+            initialState = initialState,
+            initialEvents = initialEvents,
+            untilTime = now + SimDuration.ofMillis(untilMinutes * 60 * 1000L),
+        )
+        val finalState = result.finalState
+        val finalAircraft = finalState.aircraft.mapValues { (_, aircraftState) ->
+            ObservedAircraft(
+                phase = aircraftState.phase,
+                missionComplete = aircraftState.pilotMission?.isComplete == true,
+            )
+        }
+        return LowgCircuitTrace(
+            scenarioId = scenarioId,
+            aircraftId = aircraftId,
+            finalAircraft = finalAircraft,
+            records = result.records,
+            trace = result.trace,
+            diagnostic = finalState.formatJourney(aircraftId, result.records),
         )
     }
 }

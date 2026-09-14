@@ -411,7 +411,7 @@
     "current_testability": "needs-observation-fact",
     "likely_target": "simEvidence",
     "policy_concept": "",
-    "blocking_item": "FN44-GAP-1/FN44-GAP-2"
+    "blocking_item": "FN44-GAP-1"
   },
   {
     "source_unit_id": "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
@@ -457,7 +457,7 @@
     "current_testability": "needs-observation-fact",
     "likely_target": "simEvidence",
     "policy_concept": "",
-    "blocking_item": "FN44-GAP-1/FN44-GAP-2"
+    "blocking_item": "FN44-GAP-1"
   },
   {
     "source_unit_id": "icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4",

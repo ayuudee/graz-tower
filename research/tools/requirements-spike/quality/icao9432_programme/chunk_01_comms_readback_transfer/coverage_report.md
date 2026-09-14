@@ -6,17 +6,18 @@ Chunk: ICAO 9432 communications, transfer, and readback.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 8 |
-| `covered-red` | 2 |
+| `covered-green` | 9 |
+| `covered-red` | 1 |
 | `expected-gap` | 0 |
 | `not-applicable` | 1 |
 | `phraseology-later` | 7 |
 | `policy-blocked` | 2 |
 
-Closed at `fn-48-icao-9432-chunk-01-drive-expected-gap` (2026-05-26).
-Two units landed `covered-green` (FN44-GAP-1 + FN33-MODEL-1) and two
-units landed `covered-red` (FN44-GAP-2 + COMMS-1), each tied to a
-named spawned production-repair epic.
+Closed initially at `fn-48-icao-9432-chunk-01-drive-expected-gap`
+(2026-05-26), then updated by `fn-49-sim-emits-pilot-notified-frequency`.
+Frequency-transfer coverage is now green for both the controller-advised
+and pilot-notified branches. COMMS-1 remains the single `covered-red`
+chunk-01 unit tied to a named spawned production-repair epic.
 
 Focused verification run:
 
@@ -31,8 +32,8 @@ Result: GREEN. All chunk-01 evidence tests pass
 `Icao9432Chunk01ClearancePacingEvidenceTest` on the sim side;
 `Icao9432ReadbackConformanceSpec` on the controller side; plus the
 adjacent `Icao9432*SourceUnitSpec` / `Icao9432*SourceBackedScenario`
-classes the `*Icao9432*` wildcard also captures). The `covered-red`
-landings (FN44-GAP-2, COMMS-1) emit honest `Fail` outcomes inside the
+classes the `*Icao9432*` wildcard also captures). The remaining
+`covered-red` landing (COMMS-1) emits an honest `Fail` outcome inside the
 audit reports while the JUnit assertions on `report.results` pass —
 contractually green at the JUnit/Kotest layer.
 
@@ -69,7 +70,7 @@ test-environment concern, not as a chunk closure blocker.
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ce25c18f1b44a6a8` | `not-applicable` | `none` | See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES |
 | `icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01FrequencyTransferEvidenceTest.kt` (controller-advised path via existing `ContactFrequency` emission) | An aircraft shall be advised by the appropriate aeronautical station to change from one radio frequency to another in... |
 | `icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc` | `phraseology-later` | `PHRASE-1` | Phraseology for frequency change includes 'CONTACT [Unit] [Frequency]' and readback 'Frequency Callsign'. |
-| `icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538` | `covered-red` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01FrequencyTransferEvidenceTest.kt` — spawned: `fn-49-sim-emits-pilot-notified-frequency` | In the absence of such advice, the aircraft shall notify the aeronautical station before such a change takes place. |
+| `icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01FrequencyTransferEvidenceTest.kt` (pilot-notified path via G2 LOWG → LJMB `RequestFrequencyChange` emission) | In the absence of such advice, the aircraft shall notify the aeronautical station before such a change takes place. |
 
 ## Repair / Follow-Up Handoff
 
@@ -102,12 +103,10 @@ test-environment concern, not as a chunk closure blocker.
 - `FN44-GAP-1`: CLOSED `covered-green` at fn-48 via existing
   `ContactFrequency` controller emission in LOWG circuit + new
   controller-advised adapter projection. `.plan` paragraph deleted.
-- `FN44-GAP-2`: CLOSED `covered-red` at fn-48 via typed
-  `EvidenceFactPayload.FrequencyTransfer(PilotNotifiedAbsentAdvice)`
-  adapter + chunk-01 source-mapped test asserting on
-  `report.results`. Sim model gap (no `RequestFrequencyChange`
-  emission) tracked by `fn-49-sim-emits-pilot-notified-frequency`.
-  `.plan` paragraph replaced with a one-line pointer to that epic.
+- Pilot-notified frequency-change gap: CLOSED `covered-green` at fn-49
+  via the G2 LOWG → LJMB `Request(RequestFrequencyChange(frequency =
+  null))` emission + chunk-01 source-mapped test asserting
+  `report.assertNoFailures()`.
 
 ## Review Considerations
 
@@ -119,13 +118,13 @@ test-environment concern, not as a chunk closure blocker.
   branch.
 - Test architecture: green tests cover structural readback and
   hearback classification (pre-existing) PLUS frequency-transfer
-  (FN44-GAP-1 covered-green, FN44-GAP-2 covered-red),
+  (FN44-GAP-1 covered-green, pilot-notified branch covered-green),
   reception-doubt (COMMS-1 covered-red), and clearance pacing
   (FN33-MODEL-1 covered-green Advisory). Phraseology, policy, and
   the two remaining FN33-MODEL-1 source units stay blocked.
-- Impact: no production behaviour was changed in this chunk. Two
-  `covered-red` landings spawn `fn-49` and `fn-50` as the named
-  production-repair epics.
+- Impact: fn-49 changed production pilot/sim behaviour only for the
+  pilot-notified frequency-change branch. COMMS-1 remains the named
+  production-repair epic after this update.
 - Operational correctness: each covered/blocked row keeps the
   accepted ICAO 9432 source-unit id visible and cites the new
   `Icao9432Chunk01*EvidenceTest` files where applicable.

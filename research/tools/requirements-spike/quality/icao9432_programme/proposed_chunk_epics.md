@@ -12,8 +12,8 @@ in separate implementation epics.
      `readback_continuation_2_8_3_7_to_2_8_3_10_en`.
    - Units: 20.
    - Initial target: about 9 source-mapped tests.
-   - Expected fallout: `FN44-GAP-1`, `FN44-GAP-2`, `POLICY-1`,
-     `PHRASE-1`, and existing FN33 timing/workload model gaps.
+   - Expected fallout: `FN44-GAP-1`, `POLICY-1`, `PHRASE-1`, and
+     existing FN33 timing/workload model gaps.
    - Why first: it is central, partly testable now, and exercises the firewall
      without needing new vehicle or emergency domains.
 
@@ -97,7 +97,7 @@ Acceptance:
   establishment units whose evidence is available.
 - For transfer/frequency and policy-sensitive units, author expected-gap records
   or failing tests that cite the missing concept (`FN44-GAP-1`,
-  `FN44-GAP-2`, `POLICY-1`, or `PHRASE-1`).
+  `POLICY-1`, or `PHRASE-1`).
 - Produce a per-source coverage report: passing, failing, expected gap, or
   deferred with explicit reason.
 - Do not change controller/pilot/sim behaviour except to fix defects in the

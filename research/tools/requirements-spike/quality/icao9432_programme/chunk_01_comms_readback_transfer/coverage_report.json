@@ -479,11 +479,11 @@
     "current_testability": "needs-observation-fact",
     "likely_target": "simEvidence",
     "policy_concept": "",
-    "blocking_item": "FN44-GAP-1/FN44-GAP-2",
+    "blocking_item": "FN44-GAP-1",
     "planned_coverage_state": "expected-gap",
-    "test_authoring_notes": "Record expected gap for FN44-GAP-1/FN44-GAP-2 with accepted source id and quote.",
-    "final_coverage_state": "expected-gap",
-    "test_file": ""
+    "test_authoring_notes": "Record expected gap for FN44-GAP-1 with accepted source id and quote.",
+    "final_coverage_state": "covered-green",
+    "test_file": "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01FrequencyTransferEvidenceTest.kt"
   },
   {
     "source_unit_id": "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
@@ -533,10 +533,10 @@
     "current_testability": "needs-observation-fact",
     "likely_target": "simEvidence",
     "policy_concept": "",
-    "blocking_item": "FN44-GAP-1/FN44-GAP-2",
+    "blocking_item": "FN44-GAP-1",
     "planned_coverage_state": "expected-gap",
-    "test_authoring_notes": "Record expected gap for FN44-GAP-1/FN44-GAP-2 with accepted source id and quote.",
-    "final_coverage_state": "expected-gap",
-    "test_file": ""
+    "test_authoring_notes": "Record expected gap for FN44-GAP-1 with accepted source id and quote.",
+    "final_coverage_state": "covered-green",
+    "test_file": "sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01FrequencyTransferEvidenceTest.kt"
   }
 ]

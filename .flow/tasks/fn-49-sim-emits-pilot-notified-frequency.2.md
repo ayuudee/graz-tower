@@ -193,60 +193,59 @@ see Approach step 8) is clean.
 
 ## Acceptance
 
-- [ ] New `lowgLjmbTransit(...)` function added to
+- [x] New `lowgLjmbTransit(...)` function added to
   `object EvidenceFactAdapters` in `EvidenceFacts.kt:390`,
   producing a deterministic G2 trace that includes the §2.8.2.1
   pilot transmission.
-- [ ] `Icao9432Chunk01FrequencyTransferEvidenceTest.kt:36`
+- [x] `Icao9432Chunk01FrequencyTransferEvidenceTest.kt:36`
   `aircraft` constant split into `controllerAdvisedAircraft =
   AircraftId("OE-ABC")` and `pilotNotifiedTransitAircraft =
   AircraftId("OE-XYZ")`; controller-advised branch uses the former,
   pilot-notified branch uses the latter (matches G2 scenario aircraft).
-- [ ] Chunk-01 `pilotNotified` test method observes
+- [x] Chunk-01 `pilotNotified` test method observes
   `lowgLjmbTransit(...)`, selects on
   `frequencyTransfer(pilotNotifiedTransitAircraft)`, and asserts via
   `report.assertNoFailures()` AND retains a targeted Pass-outcome
   cross-check on `PilotNotifiesAbsentAdvice`.
-- [ ] Chunk-01 test KDoc rewritten — no "covered-red posture" prose
+- [x] Chunk-01 test KDoc rewritten — no "covered-red posture" prose
   remains in the pilot-notified branch; cites fn-49 closure.
-- [ ] `PILOT_NOTIFIED_UNIT_PLACEHOLDER` KDoc at
+- [x] `PILOT_NOTIFIED_UNIT_PLACEHOLDER` KDoc at
   `EvidenceFacts.kt:1188-1195` no longer contains `FN44-GAP-2`.
-- [ ] `classification.csv` lines 19 and 21 §2.8.2.1 rows have
+- [x] `classification.csv` lines 19 and 21 §2.8.2.1 rows have
   `FN44-GAP-2` substring removed from the tag field (FN44-GAP-1
   substring preserved).
-- [ ] `.plan:227-234` deleted (verbatim, 8-line block).
-- [ ] `STRATEGY.md:47` FN44-GAP-2 fragment reads covered-green;
-  COMMS-1 / fn-50 fragment unchanged.
-- [ ] Narrow grep gate clean:
+- [x] `.plan:227-234` deleted (verbatim, 8-line block).
+- [x] `STRATEGY.md:47` frequency-transfer fragment records the
+  pilot-notified branch as covered-green; COMMS-1 / fn-50 fragment
+  unchanged.
+- [x] Narrow grep gate clean:
   `grep -RIn "FN44-GAP-2" .plan sim/ STRATEGY.md research/tools/requirements-spike/quality/icao9432_programme/`
   returns no live hits.
-- [ ] Targeted grep clean:
+- [x] Targeted grep clean:
   `grep -n "covered-red\|covered red" sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01FrequencyTransferEvidenceTest.kt`
   returns no live hits in the pilot-notified branch.
-- [ ] Unrelated `covered-red` prose preserved unchanged: COMMS-1 /
+- [x] Unrelated `covered-red` prose preserved unchanged: COMMS-1 /
   reception-doubt / clearance-pacing / phase-signal references in
   `EvidenceFacts.kt`, `EvidenceDsl.kt`, `EvidenceFactsTest.kt`,
   `Icao9432Chunk01ClearancePacingEvidenceTest.kt`,
   `Icao9432Chunk01ReceptionDoubtEvidenceTest.kt` etc. remain
   untouched.
-- [ ] `./gradlew-nix :sim:jvmTest --tests "*.Icao9432Chunk01FrequencyTransferEvidenceTest"`
+- [x] `./gradlew-nix :sim:jvmTest --tests "*.Icao9432Chunk01FrequencyTransferEvidenceTest"`
   recorded green (or `[~]` PARTIAL per honest-closure).
-- [ ] `./gradlew-nix build detekt` green.
+- [x] `./gradlew-nix build detekt` green.
 
 ## Done summary
-
-<!-- Filled in at task closure. Summarise: new G2-trace adapter shape,
-the assertion-flip pattern adopted, framing surfaces touched (.plan,
-STRATEGY.md, optional classification.csv), and the narrow grep-gate
-result (with explicit note that unrelated covered-red prose was
-preserved). -->
-
+fn-49.2 closes FN44-GAP-2 by moving ICAO 9432 §2.8.2.1 pilot-notified frequency-change evidence from covered-red to covered-green. Added a LOWG→LJMB Transit trace adapter, asserted the real G2 trace emits Request(RequestFrequencyChange(frequency = null)) after radar-service termination, removed FN44-GAP-2 from .plan/registry red framing, and kept the request as a no-event/no-intent controller observation that does not establish two-way comms before real operational contact.
 ## Evidence
-
-<!-- Filled in at task closure. Cite:
-- Commit SHA(s) for adapter + test flip + framing close-out
-- `./gradlew-nix :sim:jvmTest --tests "*.Icao9432Chunk01FrequencyTransferEvidenceTest"` recorded green
-- `./gradlew-nix build detekt` recorded output (or `[~]` PARTIAL)
-- Narrow grep-gate output for `FN44-GAP-2`
-- Targeted grep-gate output for `covered-red` in Icao9432Chunk01FrequencyTransferEvidenceTest.kt
--->
+- Tests:
+  - `./gradlew-nix :sim:jvmTest --tests "*.Icao9432Chunk01FrequencyTransferEvidenceTest"` — green.
+  - `./gradlew-nix :sim:jvmTest --tests "*.EvidenceSourceCatalogTest" --tests "*.EvidenceProjectionPressureTest" --tests "*.Icao9432Chunk01FrequencyTransferEvidenceTest"` — green.
+  - `./gradlew-nix :sim:jvmTest --tests "*.G2CrossAerodromeVfrTest" --tests "*.G3bCrossAerodromeReactiveTest"` — green.
+  - `./gradlew-nix build detekt` — green.
+- Grep gates:
+  - `grep -RIn "FN44-GAP-2" .plan sim/ STRATEGY.md research/tools/requirements-spike/quality/icao9432_programme/` — no live hits after closing stale source-catalog and generated chunk-01 framing.
+  - `grep -n "covered-red\|covered red" sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01FrequencyTransferEvidenceTest.kt` — no hits.
+- Flow:
+  - `flowctl done fn-49-sim-emits-pilot-notified-frequency.2` completed.
+  - `flowctl epic close fn-49-sim-emits-pilot-notified-frequency` completed.
+  - `flowctl validate --all` still fails on pre-existing unrelated flow drift: old fn-1/fn-3/fn-4/fn-5/fn-6/fn-7/fn-8/fn-9/fn-11/fn-12/fn-13/fn-14 task/status drift, fn-7/fn-8/fn-9 ID collisions, and missing headings in older fn-46/fn-47/fn-8 task specs.

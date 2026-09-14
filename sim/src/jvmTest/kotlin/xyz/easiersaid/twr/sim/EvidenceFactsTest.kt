@@ -257,7 +257,7 @@ class EvidenceFactsTest {
         assertEquals(FrequencyTransferTarget.UnitOnly(unitName = "APPROACH"), transfer.target)
     }
 
-    // FN44-GAP-2: pilot-notified frequency-change projection (R4, R12).
+    // Pilot-notified frequency-change projection (R4, R12).
     @Test
     fun `pilot RequestFrequencyChange projects pilot-notified frequency-transfer fact`() {
         val aircraft = AircraftId("OE-ABC")

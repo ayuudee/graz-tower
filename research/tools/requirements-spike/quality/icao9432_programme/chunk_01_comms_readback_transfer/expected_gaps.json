@@ -110,16 +110,6 @@
     "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/readback_continuation_2_8_3_7_to_2_8_3_10_en/icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ce25c18f1b44a6a8.json"
   },
   {
-    "source_unit_id": "icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e",
-    "section_id": "transfer_communications_2_8_2_en",
-    "claim_text": "An aircraft shall be advised by the appropriate aeronautical station to change from one radio frequency to another in accordance with agreed procedures.",
-    "planned_coverage_state": "expected-gap",
-    "blocking_item": "FN44-GAP-1/FN44-GAP-2",
-    "policy_concept": "",
-    "test_authoring_notes": "Record expected gap for FN44-GAP-1/FN44-GAP-2 with accepted source id and quote.",
-    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/transfer_communications_2_8_2_en/icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e.json"
-  },
-  {
     "source_unit_id": "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
     "section_id": "transfer_communications_2_8_2_en",
     "claim_text": "Phraseology for frequency change includes 'CONTACT [Unit] [Frequency]' and readback 'Frequency Callsign'.",
@@ -128,15 +118,5 @@
     "policy_concept": "",
     "test_authoring_notes": "Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology.",
     "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/transfer_communications_2_8_2_en/icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc.json"
-  },
-  {
-    "source_unit_id": "icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538",
-    "section_id": "transfer_communications_2_8_2_en",
-    "claim_text": "In the absence of such advice, the aircraft shall notify the aeronautical station before such a change takes place.",
-    "planned_coverage_state": "expected-gap",
-    "blocking_item": "FN44-GAP-1/FN44-GAP-2",
-    "policy_concept": "",
-    "test_authoring_notes": "Record expected gap for FN44-GAP-1/FN44-GAP-2 with accepted source id and quote.",
-    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/transfer_communications_2_8_2_en/icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538.json"
   }
 ]

@@ -445,9 +445,9 @@
     "current_testability": "needs-observation-fact",
     "likely_target": "simEvidence",
     "policy_concept": "",
-    "blocking_item": "FN44-GAP-1/FN44-GAP-2",
-    "planned_coverage_state": "expected-gap",
-    "test_authoring_notes": "Record expected gap for FN44-GAP-1/FN44-GAP-2 with accepted source id and quote."
+    "blocking_item": "none",
+    "planned_coverage_state": "candidate-test",
+    "test_authoring_notes": "Covered by Icao9432Chunk01FrequencyTransferEvidenceTest controller-advised path."
   },
   {
     "source_unit_id": "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
@@ -495,8 +495,8 @@
     "current_testability": "needs-observation-fact",
     "likely_target": "simEvidence",
     "policy_concept": "",
-    "blocking_item": "FN44-GAP-1/FN44-GAP-2",
-    "planned_coverage_state": "expected-gap",
-    "test_authoring_notes": "Record expected gap for FN44-GAP-1/FN44-GAP-2 with accepted source id and quote."
+    "blocking_item": "none",
+    "planned_coverage_state": "candidate-test",
+    "test_authoring_notes": "Covered by Icao9432Chunk01FrequencyTransferEvidenceTest pilot-notified path."
   }
 ]

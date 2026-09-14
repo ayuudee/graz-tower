@@ -531,13 +531,15 @@ private fun handlePilotTick(
     val commEvents = mutableListOf<SimEvent>()
     if (decision.transmissions.isNotEmpty()) {
         // G2 Phase F (cross-aerodrome wire layer): fall back to `knownStrips`
-        // when no controller has the aircraft in `responsibilities`. This is
-        // exactly the cross-aerodrome autonomous-contact case: between LOWG's
-        // boundary release and LJMB_TWR's `applyTwoWayCommsEstablished` flip,
-        // no controller has the aircraft in responsibilities — but LJMB_TWR
-        // has it in knownStrips from Pass 14 filing distribution. Without
-        // this fallback, the pilot's autonomous InitialContact at the
-        // procedure REP would be silently dropped.
+        // when no controller has the aircraft in `responsibilities`. This
+        // is the cross-aerodrome autonomous-contact case: between LOWG's
+        // boundary release and LJMB_TWR's `applyTwoWayCommsEstablished`
+        // flip, no controller has the aircraft in responsibilities — but
+        // LJMB_TWR has it in knownStrips from Pass 14 filing distribution.
+        // fn-49 also sends `RequestFrequencyChange` through this path as an
+        // explicit no-event/no-intent notification before the subsequent
+        // InitialContact. Without the fallback, both transmissions would be
+        // silently dropped.
         //
         // Single-aerodrome flows (G0) are unaffected: some controller always
         // has the aircraft in responsibilities after the first taxi clearance,
@@ -646,15 +648,12 @@ private fun selectControllerForPilotTransmissions(
         it.responsibilities[aircraftId] is ResponsibilityState.Owned
     } ?: when {
         transmissions.all { it.isUnadvisedFrequencyChangeNotification() } ->
-            state.controllers.values.firstOrNull {
-                it.responsibilities[aircraftId] is ResponsibilityState.HandingOff &&
-                    (it.responsibilities[aircraftId] as ResponsibilityState.HandingOff).target is HandoffTarget.Released
-            }
-        transmissions.any { it is InitialContact } -> selectKnownStripControllerForInitialContact(state, aircraftId)
+            selectKnownStripDestinationController(state, aircraftId)
+        transmissions.any { it is InitialContact } -> selectKnownStripDestinationController(state, aircraftId)
         else -> null
     }
 
-private fun selectKnownStripControllerForInitialContact(
+private fun selectKnownStripDestinationController(
     state: SimState,
     aircraftId: AircraftId,
 ): ControllerSpec? {
@@ -1091,6 +1090,7 @@ private fun applyInitialContactLanding(
     msg: ReceivedMessage,
 ): SimState {
     val clear = msg as? ReceivedMessage.Clear ?: return state
+    if (clear.transmission.isUnadvisedFrequencyChangeNotification()) return state
     val receivingControllerId = receivingControllerForInbound(state, frequency, clear.aircraft) ?: return state
     val withFlippedMission = flipMissionContactedOnInitialContact(state, clear)
     val receivingRole = withFlippedMission.controllers[receivingControllerId]?.role

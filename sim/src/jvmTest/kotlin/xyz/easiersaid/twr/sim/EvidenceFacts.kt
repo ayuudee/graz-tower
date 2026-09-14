@@ -426,6 +426,17 @@ object EvidenceFactAdapters {
         return fromLowgCircuitTrace(trace)
     }
 
+    fun lowgLjmbTransit(
+        scenarioId: String,
+        untilMinutes: Long,
+    ): EvidenceFactSet {
+        val trace = LowgObservationPort.runLowgLjmbTransitTrace(
+            scenarioId = scenarioId,
+            untilMinutes = untilMinutes,
+        )
+        return fromLowgCircuitTrace(trace)
+    }
+
     fun fromLowgCircuitTrace(trace: LowgCircuitTrace): EvidenceFactSet {
         // Build a per-transmission phase lookup from the SimTrace so the
         // ClearancePacing projection can observe the pilot phase at the
@@ -1187,7 +1198,7 @@ object EvidenceFactAdapters {
 
     /**
      * Sentinel unit name used by the pilot-notified frequency-change
-     * projection (`FN44-GAP-2`). [RequestFrequencyChange] carries only a
+     * projection. [RequestFrequencyChange] carries only a
      * (possibly absent) [xyz.easiersaid.twr.protocol.Frequency] — the next
      * unit is not known from the request alone. Downstream selectors treat
      * this value as "unspecified next unit".

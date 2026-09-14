@@ -571,7 +571,7 @@ class AuditAerodromeInformationContext internal constructor(
  * - [controllerAdvised] requires at least one fact with mode
  *   [FrequencyTransferMode.ControllerAdvised] (FN44-GAP-1 closure path).
  * - [pilotNotified] requires at least one fact with mode
- *   [FrequencyTransferMode.PilotNotifiedAbsentAdvice] (FN44-GAP-2 closure
+ *   [FrequencyTransferMode.PilotNotifiedAbsentAdvice] (pilot-notified closure
  *   path).
  *
  * Both branches return [EvidenceAuditOutcome.Fail] when no matching fact is

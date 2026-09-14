@@ -6,7 +6,7 @@ This file records chunk-01 source units that should not be converted into passin
 
 | State | Units |
 |---|---:|
-| `expected-gap` | 4 |
+| `expected-gap` | 2 |
 | `not-applicable` | 1 |
 | `phraseology-later` | 7 |
 | `policy-blocked` | 2 |
@@ -26,9 +26,7 @@ This file records chunk-01 source units that should not be converted into passin
 | `icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9` | `phraseology-later` | `PHRASE-1` | An ATC route clearance is not an instruction to take off or enter an active runway. | Wait for rendered-transmission phraseology facts. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71` | `phraseology-later` | `PHRASE-1` | An aircraft should terminate the read-back by its call sign. | Wait for rendered-transmission phraseology facts. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ce25c18f1b44a6a8` | `not-applicable` | `none` | See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES | No behaviour claim for this simulator chunk. |
-| `icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e` | `expected-gap` | `FN44-GAP-1/FN44-GAP-2` | An aircraft shall be advised by the appropriate aeronautical station to change from one radio frequency to another in accordanc... | Needs frequency-transfer evidence projections. |
 | `icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc` | `phraseology-later` | `PHRASE-1` | Phraseology for frequency change includes 'CONTACT [Unit] [Frequency]' and readback 'Frequency Callsign'. | Wait for rendered-transmission phraseology facts. |
-| `icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538` | `expected-gap` | `FN44-GAP-1/FN44-GAP-2` | In the absence of such advice, the aircraft shall notify the aeronautical station before such a change takes place. | Needs frequency-transfer evidence projections. |
 
 ## Review Considerations
 

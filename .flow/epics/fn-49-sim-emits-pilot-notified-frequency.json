@@ -9,7 +9,7 @@
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-49-sim-emits-pilot-notified-frequency.md",
-  "status": "open",
+  "status": "done",
   "title": "Sim emits pilot-notified frequency change (FN44-GAP-2 closure)",
-  "updated_at": "2026-05-27T15:14:00.419564Z"
+  "updated_at": "2026-09-14T11:11:16.311433Z"
 }
