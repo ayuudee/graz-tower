@@ -145,21 +145,16 @@ class EvidencePermanentTwentyCaseTest {
                 }
             }
 
-            source("critical phase radio silence remains explicit gap") {
-                cites(ICAO9432.GapSources.CriticalPhaseRadioSilence)
-                expect {
-                    expectedGap(
-                        EvidenceGaps.CriticalPhaseRadioSilenceProjection,
-                        "Evidence facts do not yet expose critical-phase windows or safety necessity.",
-                    )
-                }
+            source("critical phase radio silence is covered-red under routine classification") {
+                cites(ICAO9432.CriticalPhase.CriticalPhaseRadioSilence)
+                expect { criticalPhase(aircraft).routineControllerTransmissions().none() }
             }
         }
 
         protocolReport.assertNoFailures()
-        lowgReport.assertNoFailures()
         assertEquals(20, protocolReport.results.size + lowgReport.results.size)
-        assertEquals(2, lowgReport.results.count { result -> result.outcome is EvidenceAuditOutcome.ExpectedGap })
+        assertEquals(1, lowgReport.results.count { result -> result.outcome is EvidenceAuditOutcome.ExpectedGap })
+        assertEquals(1, lowgReport.results.count { result -> result.outcome is EvidenceAuditOutcome.Fail })
         assertTrue(lowgReport.results.filter { result -> result.sources.isNotEmpty() }
             .all { result ->
                 result.activationFactIds.isNotEmpty() ||
@@ -172,9 +167,12 @@ class EvidencePermanentTwentyCaseTest {
         val cases = Json.parseToJsonElement(Files.readString(reportFiles.json))
             .jsonObject.getValue("cases").jsonArray.map { element -> element.jsonObject }
         val gapCases = cases.filter { case -> case.getValue("outcome").jsonPrimitive.content == "expected_gap" }
-        assertEquals(2, gapCases.size)
+        val failCases = cases.filter { case -> case.getValue("outcome").jsonPrimitive.content == "fail" }
+        assertEquals(1, gapCases.size)
+        assertEquals(1, failCases.size)
         assertTrue(gapCases.all { case -> case.getValue("typedGap").jsonObject.getValue("tracking").jsonPrimitive.content.startsWith("FN43-GAP-") })
         assertTrue(gapCases.all { case -> case.getValue("typedGap").jsonObject.getValue("affectedSourceRefs").jsonArray.isNotEmpty() })
+        assertTrue(failCases.all { case -> case.getValue("sourceRefs").jsonArray.isNotEmpty() })
     }
 
     private fun ProtocolEvidenceBuilder.readbackCase(

@@ -52,7 +52,7 @@ class EvidenceProjectionPressureTest {
     }
 
     @Test
-    fun `critical phase radio silence uses observed phase windows`() {
+    fun `critical phase radio silence surfaces routine transmissions in observed phase windows`() {
         val aircraft = AircraftId("OE-ABC")
 
         val report = simEvidence("fn44-critical-phase-radio-silence") {
@@ -70,10 +70,13 @@ class EvidenceProjectionPressureTest {
             }
         }
 
-        report.assertNoFailures()
         val result = report.results.single()
         assertTrue(result.activationFactIds.isNotEmpty())
-        assertTrue(result.outcome is EvidenceAuditOutcome.Pass)
+        assertTrue(
+            result.outcome is EvidenceAuditOutcome.Fail,
+            "expected covered-red critical-phase result once routine controller transmissions are projected; " +
+                "got ${result.outcome}",
+        )
     }
 
     @Test

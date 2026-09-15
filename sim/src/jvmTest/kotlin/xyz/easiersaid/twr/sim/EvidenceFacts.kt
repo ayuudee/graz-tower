@@ -302,6 +302,16 @@ enum class CriticalPhaseKind {
 
 enum class TransmissionNecessity {
     Routine,
+
+    /**
+     * Vocabulary for the ICAO 9432 §4.1.2 safety exception.
+     *
+     * The current trace adapter must not emit this value until a
+     * reason-bearing safety policy type exists. Until then, observed
+     * controller transmissions in critical phases are projected as
+     * [Routine] so source-mapped audits fail loudly instead of silently
+     * blessing an unreviewed exception.
+     */
     SafetyNecessary,
 }
 
@@ -666,6 +676,13 @@ object EvidenceFactAdapters {
             aircraftId = targetAircraft,
             extractionSlot = "controller",
         )
+        val criticalPhaseTransmissionFact = criticalPhaseTransmissionFact(
+            scenarioId = scenarioId,
+            recordIndex = recordIndex,
+            record = record,
+            targetAircraft = targetAircraft,
+            phaseAtTransmission = phaseAtTransmission,
+        )
         val outputFacts = when (output) {
             is ControllerOutput.Instruct -> {
                 val instructionFact = fact(
@@ -703,7 +720,9 @@ object EvidenceFactAdapters {
 
             is ControllerOutput.Respond -> emptyList()
         }
-        return outputFacts + listOfNotNull(receptionDoubtFact)
+        return outputFacts +
+            listOfNotNull(receptionDoubtFact) +
+            listOfNotNull(criticalPhaseTransmissionFact)
     }
 
     /**
@@ -943,6 +962,53 @@ object EvidenceFactAdapters {
                 aircraftId = targetAircraft,
                 clearanceRef = record.transmissionId,
                 issuedDuring = phaseToPacingWindow(phase),
+            ),
+        )
+    }
+
+    /**
+     * Project a controller transmission that targeted an aircraft while that
+     * aircraft was in one of ICAO 9432 §4.1.2's protected critical phases:
+     * take-off, initial climb, the last part of final approach, or landing
+     * roll.
+     *
+     * The projection is intentionally target-aircraft scoped: a controller
+     * call to aircraft B while aircraft A is in a critical phase is a fact for
+     * B only, never for A. [phaseAtTransmission] is already keyed by the
+     * target aircraft's phase at the transmission instant.
+     *
+     * The current adapter classifies every emitted fact as [Routine]. ICAO
+     * 9432 §4.1.2 permits transmissions that are necessary for safety, but the
+     * sim does not yet carry a reason-bearing safety-necessity policy type.
+     * Emitting Routine keeps source-mapped audits conservative: an observed
+     * in-window controller transmission fails until policy work can prove the
+     * safety exception honestly.
+     *
+     * Sequence offset `+7` is reserved for this projection.
+     */
+    private fun criticalPhaseTransmissionFact(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        targetAircraft: AircraftId,
+        phaseAtTransmission: Map<TransmissionId, PilotPhase>,
+    ): EvidenceFact? {
+        val observedPhase = phaseAtTransmission[record.transmissionId] ?: return null
+        val criticalPhase = criticalPhaseKind(observedPhase) ?: return null
+        return fact(
+            scenarioId = scenarioId,
+            origin = EvidenceFactOrigin.SimRun,
+            sequence = EvidenceSequence(recordIndex * FACTS_PER_RECORD + 7),
+            simTime = record.time,
+            sourceTransmissionId = record.transmissionId,
+            extractionPath = EvidenceExtractionPath(
+                "sim.records[$recordIndex].controller.criticalPhaseTransmission",
+            ),
+            payload = EvidenceFactPayload.CriticalPhaseTransmission(
+                aircraftId = targetAircraft,
+                phase = criticalPhase,
+                transmissionId = record.transmissionId,
+                necessity = TransmissionNecessity.Routine,
             ),
         )
     }
@@ -1276,16 +1342,21 @@ object EvidenceFactAdapters {
     }
 
     private fun criticalPhaseKind(phase: PilotPhase): CriticalPhaseKind? =
+        // ICAO 9432 §4.1.2 names "initial climb" and "the last part of
+        // final approach". The current sim phases are coarser (`Climbing`,
+        // `Final`), so this is a conservative over-approximation: it may flag
+        // too many controller transmissions for review, but it must not miss
+        // transmissions in the protected windows.
         when (phase) {
             PilotPhase.TakeoffRoll -> CriticalPhaseKind.Takeoff
+            PilotPhase.Climbing -> CriticalPhaseKind.InitialClimb
+            PilotPhase.Final -> CriticalPhaseKind.LateFinal
             PilotPhase.LandingRoll -> CriticalPhaseKind.LandingRoll
             PilotPhase.AtStand,
             PilotPhase.Base,
             PilotPhase.ClearOfRunway,
-            PilotPhase.Climbing,
             PilotPhase.Crosswind,
             PilotPhase.Downwind,
-            PilotPhase.Final,
             PilotPhase.HoldingShort,
             PilotPhase.LinedUp,
             PilotPhase.Parked,

@@ -31,7 +31,9 @@ Out of scope:
 - [ ] Critical-phase projection emits real `CriticalPhaseTransmission` facts
   from sim traces, not test-injected payloads.
 - [ ] Any safety-necessary exception classification is typed and review-aware;
-  no catch-all "necessary" default is introduced.
+  no catch-all "necessary" default is introduced. Until a reason-bearing
+  policy type exists, projected critical-phase transmissions are classified as
+  `Routine`.
 - [ ] Start-up approval/start evidence is based on real lifecycle state or an
   explicit model decision; mission-step completion alone is not treated as
   engine start.
@@ -53,4 +55,6 @@ Out of scope:
   infrastructure opportunistically.
 - Operational correctness: cite ICAO 9432 §4.1.2, §4.2.3, and §2.8.4.4
   source-unit ids in tests/docs. Safety-exception handling must not erase the
-  "should not transmit" critical-phase discipline.
+  "should not transmit" critical-phase discipline. The §4.1.2 phase set is
+  take-off, initial climb, late final, and landing roll; fn-52.1 must either
+  observe each phase or leave the unobservable part explicit.

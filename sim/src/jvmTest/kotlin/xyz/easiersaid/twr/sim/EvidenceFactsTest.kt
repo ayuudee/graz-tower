@@ -176,6 +176,124 @@ class EvidenceFactsTest {
     }
 
     @Test
+    fun `critical phase projection emits routine controller transmission for each ICAO protected phase`() {
+        val aircraft = AircraftId("OE-ABC")
+        val phaseCases = mapOf(
+            PilotPhase.TakeoffRoll to CriticalPhaseKind.Takeoff,
+            PilotPhase.Climbing to CriticalPhaseKind.InitialClimb,
+            PilotPhase.Final to CriticalPhaseKind.LateFinal,
+            PilotPhase.LandingRoll to CriticalPhaseKind.LandingRoll,
+        )
+
+        phaseCases.entries.forEachIndexed { index, (pilotPhase, expectedCriticalPhase) ->
+            val record = controllerInstructionRecord(
+                index = index,
+                instruction = ContactFrequency(
+                    target = aircraft,
+                    role = RoleName.TOWER,
+                    frequency = Frequency.unsafe("118.500"),
+                ),
+            )
+            val facts = EvidenceFactAdapters.fromTransmissionRecords(
+                scenarioId = "critical-phase-projection::$pilotPhase",
+                records = listOf(record),
+                phaseAtTransmission = mapOf(record.transmissionId to pilotPhase),
+            )
+
+            val fact = facts.facts.single {
+                it.payload is EvidenceFactPayload.CriticalPhaseTransmission
+            }
+            val payload = fact.payload as EvidenceFactPayload.CriticalPhaseTransmission
+            assertEquals(aircraft, payload.aircraftId)
+            assertEquals(expectedCriticalPhase, payload.phase)
+            assertEquals(record.transmissionId, payload.transmissionId)
+            assertEquals(TransmissionNecessity.Routine, payload.necessity)
+            assertEquals(EvidenceSequence(7), fact.provenance.sequence)
+            assertEquals(record.transmissionId, fact.provenance.sourceTransmissionId)
+        }
+    }
+
+    @Test
+    fun `critical phase projection is scoped to the controller transmission target aircraft`() {
+        val aircraftA = AircraftId("OE-ABC")
+        val aircraftB = AircraftId("OE-DEF")
+        val recordToA = controllerInstructionRecord(
+            index = 0,
+            instruction = ContactFrequency(
+                target = aircraftA,
+                role = RoleName.TOWER,
+                frequency = Frequency.unsafe("118.500"),
+            ),
+        )
+        val recordToB = controllerInstructionRecord(
+            index = 1,
+            instruction = ContactFrequency(
+                target = aircraftB,
+                role = RoleName.TOWER,
+                frequency = Frequency.unsafe("118.500"),
+            ),
+        )
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "critical-phase-target-scope",
+            records = listOf(recordToA, recordToB),
+            phaseAtTransmission = mapOf(
+                recordToA.transmissionId to PilotPhase.Taxiing,
+                recordToB.transmissionId to PilotPhase.Final,
+            ),
+        )
+
+        val criticalTransmissions = facts.facts.mapNotNull {
+            it.payload as? EvidenceFactPayload.CriticalPhaseTransmission
+        }
+        assertEquals(1, criticalTransmissions.size)
+        assertEquals(aircraftB, criticalTransmissions.single().aircraftId)
+        assertEquals(recordToB.transmissionId, criticalTransmissions.single().transmissionId)
+    }
+
+    @Test
+    fun `criticalPhase selector fails source-mapped audit when routine controller transmission is projected`() {
+        val aircraft = AircraftId("OE-ABC")
+        val record = controllerInstructionRecord(
+            index = 0,
+            instruction = ContactFrequency(
+                target = aircraft,
+                role = RoleName.TOWER,
+                frequency = Frequency.unsafe("118.500"),
+            ),
+        )
+        val projectedTransmissionFacts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "critical-phase-routine-fail",
+            records = listOf(record),
+            phaseAtTransmission = mapOf(record.transmissionId to PilotPhase.Final),
+        )
+        val factSet = projectedTransmissionFacts.copy(
+            facts = projectedTransmissionFacts.facts + criticalPhaseWindowFact(
+                scenarioId = "critical-phase-routine-fail",
+                aircraft = aircraft,
+            ),
+        )
+
+        val report = simEvidence("critical-phase-routine-fail") {
+            observe { factSet }
+            source("routine controller transmission during critical phase") {
+                cites(ICAO9432.CriticalPhase.CriticalPhaseRadioSilence)
+                expect { criticalPhase(aircraft).routineControllerTransmissions().none() }
+            }
+        }
+
+        val result = report.results.single()
+        assertTrue(
+            result.outcome is EvidenceAuditOutcome.Fail,
+            "expected source-mapped Fail for projected routine critical-phase transmission; got ${result.outcome}",
+        )
+        assertTrue(
+            result.activationFactIds.isNotEmpty(),
+            "critical-phase selector must activate both window and transmission evidence on Fail",
+        )
+    }
+
+    @Test
     fun `initial contact with ATIS code projects known aerodrome information receipt`() {
         val aircraft = AircraftId("OE-ABC")
         val facts = EvidenceFactAdapters.fromTransmissionRecords(
@@ -1598,6 +1716,28 @@ class EvidenceFactsTest {
             speaker = SpeakerRef.Pilot(aircraft),
             receiver = ReceiverRef.Controller(controllerId),
             utterance = Utterance.FromPilot(transmission),
+        )
+
+    private fun criticalPhaseWindowFact(
+        scenarioId: String,
+        aircraft: AircraftId,
+    ): EvidenceFact =
+        EvidenceFact(
+            id = FactId("$scenarioId::sim-run::000100::CriticalPhaseWindow::test.criticalPhaseWindow"),
+            provenance = EvidenceFactProvenance(
+                scenarioId = scenarioId,
+                origin = EvidenceFactOrigin.SimRun,
+                sequence = EvidenceSequence(100),
+                simTime = null,
+                sourceTransmissionId = null,
+                extractionPath = EvidenceExtractionPath("test.criticalPhaseWindow"),
+            ),
+            payload = EvidenceFactPayload.CriticalPhaseWindow(
+                aircraftId = aircraft,
+                phase = CriticalPhaseKind.LateFinal,
+                start = EvidenceSequence(1),
+                end = EvidenceSequence(2),
+            ),
         )
 
     private data class Combo(

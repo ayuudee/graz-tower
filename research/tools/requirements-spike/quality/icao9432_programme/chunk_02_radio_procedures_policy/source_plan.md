@@ -84,7 +84,7 @@ normalized matching, which is the correct comparison for extracted PDF text.
 
 | Source unit | Planned state | Reason |
 |---|---|---|
-| `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4` | `expected-gap` + `policy-blocked` | Current DSL has `CriticalPhaseWindow` / `CriticalPhaseTransmission` types and `criticalPhase(...).routineControllerTransmissions().none()`, but real sim projection currently emits windows only. Routine/safety-necessary transmission projection is still missing, and the ICAO 9432 §4.1.2 safety exception cannot be fully evaluated without typed `CriticalPhaseTransmissionPolicy`. |
+| `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4` | `covered-red` + `policy-blocked` | fn-52.1 now projects `CriticalPhaseTransmission(Routine)` facts from real controller transmissions in protected phase windows, including conservative `Climbing`/`Final` approximations for initial climb/late final. The LOWG pressure trace surfaces routine in-window controller transmissions, so the source-mapped audit is honestly covered-red. The ICAO 9432 §4.1.2 safety exception still cannot be fully evaluated without typed `CriticalPhaseTransmissionPolicy`. |
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::35ad4a7f3d8d2ead` | `phraseology-later` | Requires rendered engine-start request phraseology checks (`PHRASE-1`). |
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::39a4619cec62a93f` | `phraseology-later` | Requires rendered start-up approval phraseology checks (`PHRASE-1`). |
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::86ba1c63169eceff` | `phraseology-later` | Requires rendered start-up-at-time phraseology checks (`PHRASE-1`). |

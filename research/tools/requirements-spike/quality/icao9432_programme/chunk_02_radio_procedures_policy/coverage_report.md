@@ -7,17 +7,19 @@ Chunk: ICAO 9432 radio procedures and critical-phase policy.
 | Final state | Units |
 |---|---:|
 | `covered-green` | 0 |
-| `covered-red` | 0 |
+| `covered-red` + `policy-blocked` | 1 |
 | `expected-gap` | 1 |
-| `expected-gap` + `policy-blocked` | 1 |
 | `phraseology-later` | 11 |
 | `policy-blocked` | 1 |
 | `split` | 1 |
 | `not-applicable` | 0 |
 
-No source-mapped tests were authored in fn-51 because every chunk-02 unit is
-currently blocked by missing phraseology, policy, or observation/model
-infrastructure. This is an honest chunk closure, not a green-test closure.
+fn-51 originally authored no source-mapped tests because every chunk-02 unit
+was blocked by missing phraseology, policy, or observation/model
+infrastructure. fn-52.1 repaired the critical-phase observation surface and
+turned `095624c5163849a4` into an honest covered-red source-mapped result
+under conservative routine classification. This remains not a green-test
+closure.
 
 Repair epic:
 
@@ -35,7 +37,7 @@ Cross-cutting blockers:
 
 | Source unit | Final state | Test / blocker | Claim |
 |---|---|---|---|
-| `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4` | `expected-gap` + `policy-blocked` | `fn-52-implement-icao-9432-chunk-02.1`; `POLICY-1` | Controllers should not transmit during take-off, initial climb, late final, or landing roll unless necessary for safety. |
+| `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4` | `covered-red` + `policy-blocked` | `EvidenceProjectionPressureTest`; `fn-52-implement-icao-9432-chunk-02.1`; `POLICY-1` | Controllers should not transmit during take-off, initial climb, late final, or landing roll unless necessary for safety. |
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::35ad4a7f3d8d2ead` | `phraseology-later` | `PHRASE-1` | Engine-start request phraseology examples. |
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::39a4619cec62a93f` | `phraseology-later` | `PHRASE-1` | Start-up approval phraseology with QNH. |
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::86ba1c63169eceff` | `phraseology-later` | `PHRASE-1` | Start-up-at-time approval phraseology. |
@@ -57,20 +59,23 @@ Cross-cutting blockers:
   `verbatimQuoteCheck.status = pass`, `lifecycle.state = accepted`, and
   normalized `exactSourceQuotes` matches in
   `research/txt/icao9432-extracted.txt`.
-- No Kotlin production or test code changed in fn-51.
-- No source-mapped tests were authored because no row is currently coverable
-  without crossing the reviewed `PHRASE-1` / `POLICY-1` / observation-gap
-  boundaries.
+- fn-51 changed no Kotlin production or test code; fn-52.1 added the
+  critical-phase source-mapped covered-red test and observation projection.
+- Remaining chunk-02 rows are still blocked by `PHRASE-1`, `POLICY-1`, or the
+  two open fn-52 observation/model tasks.
 
 ## Review Considerations
 
-- FP / type safety: no new sealed leaves or evidence payloads were introduced
-  in fn-51. Unknown future coverage states must remain explicit in the
-  chunk-local report rather than coerced into green.
-- Test architecture: chunk 02 is a gap-classification closure. Future green
-  coverage belongs after fn-52 or the cross-cutting phraseology/policy epics.
-- Impact: fn-51 narrowed `FN43-GAP-2`: critical-phase windows exist, but
-  critical-phase controller-transmission projection and safety-necessity
-  classification do not.
+- FP / type safety: fn-52.1 reused existing evidence payloads and kept
+  `TransmissionNecessity.SafetyNecessary` non-emitted until a reason-bearing
+  policy type exists. Unknown future coverage states must remain explicit in
+  the chunk-local report rather than coerced into green.
+- Test architecture: chunk 02 is still mostly a gap-classification closure,
+  but critical-phase radio discipline now has a permanent covered-red wall in
+  `EvidenceProjectionPressureTest` and `EvidencePermanentTwentyCaseTest`.
+  Future green coverage belongs after sim behavior or `POLICY-1` work.
+- Impact: fn-52.1 narrowed `FN43-GAP-2`: critical-phase windows and routine
+  controller-transmission projection exist; safety-necessity classification
+  remains blocked by `POLICY-1`.
 - Operational correctness: ICAO 9432 §4.1.2 contains a safety exception; it is
   deliberately not asserted as an unconditional no-transmission rule.

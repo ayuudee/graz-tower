@@ -11,8 +11,8 @@ covered-green with the current evidence and policy surface.
 |---|---:|
 | `phraseology-later` | 11 |
 | `policy-blocked` | 1 |
+| `covered-red` + `policy-blocked` | 1 |
 | `expected-gap` | 1 |
-| `expected-gap` + `policy-blocked` | 1 |
 | `split` | 1 |
 
 Counting note: the `split` row is the radio-test-signal source unit
@@ -23,14 +23,13 @@ phraseology/callsign obligation.
 
 | Source unit | Blocker | Reason |
 |---|---|---|
-| `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4` | `POLICY-1` / `CriticalPhaseTransmissionPolicy`; implementation scout `fn-52-implement-icao-9432-chunk-02.1` | The ICAO 9432 §4.1.2 safety exception cannot be evaluated without typed policy, even after routine/safety-necessary transmission evidence exists. |
+| `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4` | `POLICY-1` / `CriticalPhaseTransmissionPolicy`; observation repair `fn-52-implement-icao-9432-chunk-02.1` | The ICAO 9432 §4.1.2 safety exception cannot be evaluated without typed policy. fn-52.1 repaired routine critical-phase transmission projection and now surfaces the LOWG trace as covered-red under conservative routine classification. |
 | `icao9432-extracted::test_procedures_2_8_4_en::daa4fadde3c06a1f` | `POLICY-1` / `OperationalGuidancePolicy` | The 1-5 readability scale is a classification policy. Existing fn-50 `ReceptionQuality` only distinguishes clear vs doubtful reception and is not the ICAO 9432 readability scale. |
 
 ## Expected-Gap / Observation
 
 | Source unit | Blocker | Reason |
 |---|---|---|
-| `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4` | `FN43-GAP-2`; repair `fn-52-implement-icao-9432-chunk-02.1` | Current real sim projection emits `CriticalPhaseWindow` facts but does not project `CriticalPhaseTransmission` facts from controller transmissions during those windows. Existing selector pass paths are therefore not enough for chunk-02 source coverage. |
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::95034efc191fa9cd` | `FN43-GAP-2`; repair `fn-52-implement-icao-9432-chunk-02.2` | Need an evidence path for ATC start-up approval followed by pilot engine start. Protocol primitives exist, but no source-mapped evidence fact has been identified yet. |
 | `icao9432-extracted::test_procedures_2_8_4_en::d67d1f63cbbecd7d` | duration repair `fn-52-implement-icao-9432-chunk-02.3`; `PHRASE-1` for content | The duration limit may be testable if a typed ground-station test-signal event exists. The spoken-number and callsign content requires rendered phraseology evidence. |
 

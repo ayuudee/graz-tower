@@ -24,17 +24,23 @@ Existing surfaces:
 
 Important limitation:
 
-- `fromLowgCircuitTrace(...)` currently adds `CriticalPhaseWindow` facts.
-- No production projection of `EvidenceFactPayload.CriticalPhaseTransmission`
-  from real `TransmissionRecord` / `SimTrace` controller transmissions was
-  found. `rg "CriticalPhaseTransmission("` finds the payload declaration and
-  test-injected instances only.
-- Therefore a selector can pass with observed windows and zero projected
-  routine transmissions, but that is not enough to prove ICAO 9432 §4.1.2.
+- Original scout finding: `fromLowgCircuitTrace(...)` added
+  `CriticalPhaseWindow` facts but did not project
+  `EvidenceFactPayload.CriticalPhaseTransmission` from real
+  `TransmissionRecord` / `SimTrace` controller transmissions. A selector could
+  therefore pass with observed windows and zero projected routine
+  transmissions.
+- fn-52.1 follow-up: the adapter now projects
+  `CriticalPhaseTransmission(Routine)` for controller transmissions whose
+  target aircraft is in a protected phase. `PilotPhase.Climbing` and
+  `PilotPhase.Final` are documented conservative over-approximations for
+  initial climb and late final. The LOWG pressure trace now reports this source
+  unit as covered-red rather than false-green.
 
 Classification:
 
-- `expected-gap` for missing routine/safety-necessity transmission projection.
+- `covered-red` for current LOWG routine critical-phase transmission evidence
+  under fn-52.1's conservative classification.
 - `policy-blocked` for the "unless necessary for safety reasons" exception.
 
 Repair direction:
@@ -43,6 +49,13 @@ Repair direction:
   `CriticalPhaseWindow`s, carrying `TransmissionNecessity.Routine` vs a typed
   safety-necessary classification.
 - Do not green chunk 02 from window-only evidence.
+- Impact review addendum: the existing window projection omitted
+  `InitialClimb` and `LateFinal` because `PilotPhase.Climbing` and
+  `PilotPhase.Final` mapped to `null`. fn-52.1 must fix that as a conservative
+  observation surface or leave the unobservable parts explicit.
+- Impact review addendum: `TransmissionNecessity.SafetyNecessary` is too
+  coarse to emit without a reason-bearing policy type. fn-52.1 should classify
+  projected transmissions as `Routine` only.
 
 ### Engine-Start After Approval
 

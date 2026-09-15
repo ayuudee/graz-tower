@@ -226,8 +226,8 @@ object EvidenceGaps {
         override val metadata: EvidenceGapMetadata = EvidenceGapMetadata(
             id = "evidence-gap-critical-phase-radio-silence",
             affectedSources = setOf(ICAO9432.GapSources.CriticalPhaseRadioSilence),
-            missingConcept = "Evidence facts do not expose critical-phase windows or safety-necessity classifications.",
-            closureTrigger = "Close when the observation port emits phase-window and safety-necessity facts.",
+            missingConcept = "Evidence facts do not yet expose a reason-bearing safety-necessity policy for critical-phase controller transmissions.",
+            closureTrigger = "Close when critical-phase controller transmission facts can distinguish routine calls from typed safety-necessary calls.",
             tracking = EvidenceBacklogRef.PlanItem("FN43-GAP-2"),
         )
     }
