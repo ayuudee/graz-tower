@@ -25,6 +25,7 @@ import xyz.easiersaid.twr.protocol.Request
 import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.SayAgain
+import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.Standby
 import xyz.easiersaid.twr.sim.testing.SimTrace
@@ -222,6 +223,22 @@ sealed interface EvidenceFactPayload {
         override val kind: EvidenceFactKind = EvidenceFactKind.ClearancePacing
     }
 
+    data class GroundStationTestSignal(
+        val stationId: ControllerId,
+        val transmissionRef: TransmissionId,
+        val purpose: TestSignalPurpose,
+        val startedAt: SimTime,
+        val endedAt: SimTime,
+        val duration: SimDuration,
+    ) : EvidenceFactPayload {
+        init {
+            require(startedAt <= endedAt) { "ground-station test signal start must not be after end" }
+            require(duration == endedAt - startedAt) { "ground-station test signal duration must match start/end" }
+        }
+
+        override val kind: EvidenceFactKind = EvidenceFactKind.GroundStationTestSignal
+    }
+
     data class SampleFact(
         val name: String,
         val displayValue: String,
@@ -247,6 +264,7 @@ enum class EvidenceFactKind {
     FrequencyTransfer,
     ReceptionDoubt,
     ClearancePacing,
+    GroundStationTestSignal,
     Sample,
 }
 
@@ -653,6 +671,19 @@ object EvidenceFactAdapters {
                     transmission = utterance.transmission,
                 )
             }
+
+            is Utterance.GroundStationTestSignal -> when (val speaker = record.speaker) {
+                is SpeakerRef.Controller -> listOf(
+                    groundStationTestSignalFact(
+                        scenarioId = scenarioId,
+                        recordIndex = recordIndex,
+                        record = record,
+                        controller = speaker,
+                        signal = utterance,
+                    ),
+                )
+                is SpeakerRef.Pilot -> emptyList()
+            }
         }
 
     private fun controllerFacts(
@@ -1012,6 +1043,43 @@ object EvidenceFactAdapters {
             ),
         )
     }
+
+    /**
+     * Project ICAO 9432 §2.8.4.4 ground-station test-signal duration
+     * evidence from the typed radio signal and the real transmission start/end
+     * times captured in [TransmissionRecord].
+     *
+     * This fact deliberately carries no spoken-number or station-callsign
+     * content. Those are phraseology/rendering obligations and remain blocked
+     * by PHRASE-1; the fact covers only signal identity and duration.
+     *
+     * Sequence offset `+8` is reserved for this projection.
+     */
+    private fun groundStationTestSignalFact(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        controller: SpeakerRef.Controller,
+        signal: Utterance.GroundStationTestSignal,
+    ): EvidenceFact =
+        fact(
+            scenarioId = scenarioId,
+            origin = EvidenceFactOrigin.SimRun,
+            sequence = EvidenceSequence(recordIndex * FACTS_PER_RECORD + 8),
+            simTime = record.time,
+            sourceTransmissionId = record.transmissionId,
+            extractionPath = EvidenceExtractionPath(
+                "sim.records[$recordIndex].groundStationTestSignal",
+            ),
+            payload = EvidenceFactPayload.GroundStationTestSignal(
+                stationId = controller.id,
+                transmissionRef = record.transmissionId,
+                purpose = signal.purpose,
+                startedAt = record.time,
+                endedAt = record.endedAt,
+                duration = record.endedAt - record.time,
+            ),
+        )
 
     /**
      * Map an observed [PilotPhase] to the regulation-relevant

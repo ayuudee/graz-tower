@@ -95,19 +95,21 @@ Repair direction:
 Existing surfaces:
 
 - `TransmissionRecord.time` exists.
-- Transmission duration can be inferred from `SimEvent.TransmissionStart` /
-  `SimEvent.TransmissionEnd` in the raw event trace, but
-  `TransmissionRecord` stores start time only.
+- fn-52.3 adds mandatory `TransmissionRecord.endedAt`, derived from the typed
+  `InFlightTransmission.endsAt`; matching `SimEvent.TransmissionEnd` records
+  are consistency-checked when present.
+- fn-52.3 adds typed `Utterance.GroundStationTestSignal` with
+  `TestSignalPurpose`, plus `EvidenceFactPayload.GroundStationTestSignal`.
 
 Important limitation:
 
-- No typed protocol/sim concept for a ground-station test signal was found.
-- Without a typed test-signal utterance or rendered phraseology layer, the
-  duration obligation cannot be identified without string-matching speech.
+- Spoken-number content and transmitting-station callsign content remain
+  unmodelled until rendered phraseology evidence exists.
 
 Classification:
 
-- Duration: `expected-gap` under a narrower radio-test-signal modelling gap.
+- Duration: `covered-green` after fn-52.3 for the ICAO 9432 §2.8.4.4
+  10-second duration sub-obligation.
 - Spoken-number/callsign content: `phraseology-later` (`PHRASE-1`).
 
 ## Impact Assessment

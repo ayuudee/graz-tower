@@ -1,12 +1,13 @@
 package xyz.easiersaid.twr.sim
 
 import kotlin.test.fail
+import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtomicReadback
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.requiredReadbackAtoms
-import xyz.easiersaid.twr.pilot.PilotPhase
 
 enum class EvidenceClaimKind {
     StructuralProtocolRequirement,
@@ -443,6 +444,12 @@ class EvidenceExpectContext internal constructor(
             facts = facts.orderedFacts(),
             activate = { factId -> activated += factId },
         )
+
+    fun groundStationTestSignals(): AuditGroundStationTestSignalSubject =
+        AuditGroundStationTestSignalSubject(
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
 }
 
 class AuditAircraftSubject internal constructor(
@@ -833,6 +840,41 @@ class AuditCriticalPhaseRoutineTransmissions internal constructor(
             EvidenceAuditOutcome.Fail(
                 reason = "Observed routine controller transmission(s) during critical phase",
                 evidence = routineTransmissions.map { fact -> fact.id.value },
+            )
+        }
+    }
+}
+
+class AuditGroundStationTestSignalSubject internal constructor(
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun allWithin(maxDuration: SimDuration): EvidenceAuditOutcome {
+        val signals = facts.filter { fact ->
+            fact.payload is EvidenceFactPayload.GroundStationTestSignal
+        }
+        if (signals.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing ground-station test-signal evidence",
+                evidence = emptyList(),
+            )
+        }
+        signals.forEach { fact -> activate(fact.id) }
+        val overLimit = signals.filter { fact ->
+            val signal = fact.payload as EvidenceFactPayload.GroundStationTestSignal
+            signal.duration > maxDuration
+        }
+        return if (overLimit.isEmpty()) {
+            EvidenceAuditOutcome.Pass(
+                signals.map { fact ->
+                    val signal = fact.payload as EvidenceFactPayload.GroundStationTestSignal
+                    "${signal.stationId.value}:${signal.duration.millis}ms"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Ground-station test signal exceeded ${maxDuration.millis}ms",
+                evidence = overLimit.map { fact -> fact.id.value },
             )
         }
     }

@@ -615,6 +615,7 @@ class G1ClosureDiveTest {
                         is Utterance.FromController -> (u.output as? ControllerOutput.Instruct)?.trace?.ruleId
                             ?: u::class.simpleName ?: "?"
                         is Utterance.FromPilot -> u.transmission::class.simpleName ?: "?"
+                        is Utterance.GroundStationTestSignal -> "GroundStationTestSignal(${u.purpose})"
                     }
                     "$from $payload"
                 }
@@ -685,6 +686,7 @@ class G1ClosureDiveTest {
                         else -> pt::class.simpleName ?: "?"
                     }
                 }
+                is Utterance.GroundStationTestSignal -> "GroundStationTestSignal(${u.purpose})"
             }
             println(
                 "  [${tx.startedAt.millis}..${tx.endsAt.millis}ms] freq=${tx.frequency.mhz} " +
@@ -717,6 +719,7 @@ class G1ClosureDiveTest {
                                 else -> pt::class.simpleName ?: "?"
                             }
                         }
+                        is Utterance.GroundStationTestSignal -> "GroundStationTestSignal(${u.purpose})"
                     }
                     "id=${tx.id.value} tx[${tx.startedAt.millis}..${tx.endsAt.millis}] $from $payload steppedOn=${tx.steppedOn}"
                 }

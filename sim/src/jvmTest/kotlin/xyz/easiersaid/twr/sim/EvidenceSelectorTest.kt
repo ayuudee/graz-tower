@@ -97,6 +97,7 @@ class EvidenceSelectorTest {
         TransmissionRecord(
             transmissionId = TransmissionId(200 + index),
             time = SimTime.ZERO,
+            endedAt = SimTime.ofSeconds(2),
             speaker = SpeakerRef.Pilot(AircraftId("OE-ABC")),
             receiver = ReceiverRef.Controller(ControllerId("LOWG_TWR")),
             utterance = Utterance.FromPilot(Report(events = listOf(event))),

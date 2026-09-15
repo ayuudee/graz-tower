@@ -194,6 +194,14 @@ object ICAO9432 {
         )
     }
 
+    object TestProcedures {
+        val GroundStationTestSignalDuration: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::test_procedures_2_8_4_en::d67d1f63cbbecd7d",
+            title = "Ground-station test signals limited to ten seconds",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+    }
+
     object CriticalPhase {
         val CriticalPhaseRadioSilence: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4",
@@ -261,6 +269,7 @@ object EvidenceSourceCatalog {
             setOf(
                 ICAO9432.AerodromeInformation.EssentialAerodromeInformationTiming,
                 ICAO9432.CriticalPhase.CriticalPhaseRadioSilence,
+                ICAO9432.TestProcedures.GroundStationTestSignalDuration,
             )
 
     fun validateAgainstRegistry(

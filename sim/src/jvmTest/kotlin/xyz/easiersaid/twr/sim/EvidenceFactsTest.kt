@@ -11,7 +11,6 @@ import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.DecisionTrace
 import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.PilotPhase
-import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.Clearance
@@ -31,10 +30,13 @@ import xyz.easiersaid.twr.protocol.Request
 import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.Standby
 import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
+import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.sim.testing.TransmissionRecord
+import xyz.easiersaid.twr.sim.testing.toTransmissionRecords
 
 class EvidenceFactsTest {
     @Test
@@ -294,6 +296,156 @@ class EvidenceFactsTest {
     }
 
     @Test
+    fun `ground-station test-signal payload rejects reversed bounds and mismatched duration`() {
+        val station = ControllerId("LOWG_TWR")
+
+        assertFailsWith<IllegalArgumentException> {
+            EvidenceFactPayload.GroundStationTestSignal(
+                stationId = station,
+                transmissionRef = TransmissionId(830),
+                purpose = TestSignalPurpose.TransmitterAdjustment,
+                startedAt = SimTime.ofSeconds(10),
+                endedAt = SimTime.ofSeconds(9),
+                duration = SimDuration.ofSeconds(1),
+            )
+        }
+        assertFailsWith<IllegalArgumentException> {
+            EvidenceFactPayload.GroundStationTestSignal(
+                stationId = station,
+                transmissionRef = TransmissionId(831),
+                purpose = TestSignalPurpose.TransmitterAdjustment,
+                startedAt = SimTime.ZERO,
+                endedAt = SimTime.ofSeconds(10),
+                duration = SimDuration.ofSeconds(9),
+            )
+        }
+    }
+
+    @Test
+    fun `ground-station test-signal projection uses typed signal identity and actual start-end duration`() {
+        val station = ControllerId("LOWG_TWR")
+        val transmission = InFlightTransmission(
+            id = TransmissionId(840),
+            speaker = SpeakerRef.Controller(station),
+            receiver = ReceiverRef.Controller(station),
+            frequency = Frequency.unsafe("118.200"),
+            utterance = Utterance.GroundStationTestSignal(TestSignalPurpose.TransmitterAdjustment),
+            startedAt = SimTime.ofSeconds(5),
+            endsAt = SimTime.ofSeconds(15),
+        )
+        val records = listOf(
+            SimEvent.TransmissionStart(time = transmission.startedAt, transmission = transmission),
+            SimEvent.TransmissionEnd(time = transmission.endsAt, transmissionId = transmission.id),
+        ).toTransmissionRecords()
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "ground-station-test-signal-duration",
+            records = records,
+        )
+
+        val fact = facts.facts.single { it.payload is EvidenceFactPayload.GroundStationTestSignal }
+        val payload = fact.payload as EvidenceFactPayload.GroundStationTestSignal
+        assertEquals(station, payload.stationId)
+        assertEquals(transmission.id, payload.transmissionRef)
+        assertEquals(TestSignalPurpose.TransmitterAdjustment, payload.purpose)
+        assertEquals(SimTime.ofSeconds(5), payload.startedAt)
+        assertEquals(SimTime.ofSeconds(15), payload.endedAt)
+        assertEquals(SimDuration.ofSeconds(10), payload.duration)
+        assertEquals(EvidenceSequence(8), fact.provenance.sequence)
+        assertEquals(transmission.id, fact.provenance.sourceTransmissionId)
+        assertEquals("sim.records[0].groundStationTestSignal", fact.provenance.extractionPath.value)
+    }
+
+    @Test
+    fun `transmission record extraction allows partial slices and keeps typed transmission end time`() {
+        val station = ControllerId("LOWG_TWR")
+        val transmission = InFlightTransmission(
+            id = TransmissionId(841),
+            speaker = SpeakerRef.Controller(station),
+            receiver = ReceiverRef.Controller(station),
+            frequency = Frequency.unsafe("118.200"),
+            utterance = Utterance.GroundStationTestSignal(TestSignalPurpose.ReceiverAdjustment),
+            startedAt = SimTime.ZERO,
+            endsAt = SimTime.ofSeconds(10),
+        )
+
+        val record = listOf(
+            SimEvent.TransmissionStart(time = transmission.startedAt, transmission = transmission),
+        ).toTransmissionRecords().single()
+
+        assertEquals(transmission.endsAt, record.endedAt)
+    }
+
+    @Test
+    fun `transmission record extraction fails loudly when an end event disagrees with transmission endsAt`() {
+        val station = ControllerId("LOWG_TWR")
+        val transmission = InFlightTransmission(
+            id = TransmissionId(842),
+            speaker = SpeakerRef.Controller(station),
+            receiver = ReceiverRef.Controller(station),
+            frequency = Frequency.unsafe("118.200"),
+            utterance = Utterance.GroundStationTestSignal(TestSignalPurpose.ReceiverAdjustment),
+            startedAt = SimTime.ZERO,
+            endsAt = SimTime.ofSeconds(10),
+        )
+
+        assertFailsWith<IllegalArgumentException> {
+            listOf(
+                SimEvent.TransmissionStart(time = transmission.startedAt, transmission = transmission),
+                SimEvent.TransmissionEnd(time = SimTime.ofSeconds(11), transmissionId = transmission.id),
+            )
+                .toTransmissionRecords()
+        }
+    }
+
+    @Test
+    fun `groundStationTestSignals selector passes at ten seconds and fails above ten seconds`() {
+        val station = ControllerId("LOWG_TWR")
+        val withinLimit = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "ground-signal-within-limit",
+            records = listOf(
+                groundStationTestSignalRecord(
+                    station = station,
+                    startedAt = SimTime.ZERO,
+                    endedAt = SimTime.ofSeconds(10),
+                ),
+            ),
+        )
+        val overLimit = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "ground-signal-over-limit",
+            records = listOf(
+                groundStationTestSignalRecord(
+                    station = station,
+                    startedAt = SimTime.ZERO,
+                    endedAt = SimTime.ofSeconds(11),
+                ),
+            ),
+        )
+
+        val passReport = simEvidence("ground-signal-within-limit") {
+            observe { withinLimit }
+            source("ground-station test signal duration") {
+                cites(ICAO9432.TestProcedures.GroundStationTestSignalDuration)
+                expect { groundStationTestSignals().allWithin(SimDuration.ofSeconds(10)) }
+            }
+        }
+        val failReport = simEvidence("ground-signal-over-limit") {
+            observe { overLimit }
+            source("ground-station test signal duration") {
+                cites(ICAO9432.TestProcedures.GroundStationTestSignalDuration)
+                expect { groundStationTestSignals().allWithin(SimDuration.ofSeconds(10)) }
+            }
+        }
+
+        passReport.assertNoFailures()
+        assertTrue(
+            failReport.results.single().outcome is EvidenceAuditOutcome.Fail,
+            "expected over-limit ground-station signal to fail duration selector",
+        )
+        assertTrue(failReport.results.single().activationFactIds.isNotEmpty())
+    }
+
+    @Test
     fun `initial contact with ATIS code projects known aerodrome information receipt`() {
         val aircraft = AircraftId("OE-ABC")
         val facts = EvidenceFactAdapters.fromTransmissionRecords(
@@ -302,6 +454,7 @@ class EvidenceFactsTest {
                 TransmissionRecord(
                     transmissionId = TransmissionId(300),
                     time = SimTime.ZERO,
+                    endedAt = SimTime.ofSeconds(2),
                     speaker = SpeakerRef.Pilot(aircraft),
                     receiver = ReceiverRef.Controller(ControllerId("LOWG_GND")),
                     utterance = Utterance.FromPilot(
@@ -494,6 +647,7 @@ class EvidenceFactsTest {
                 record = TransmissionRecord(
                     transmissionId = TransmissionId(900),
                     time = SimTime.ZERO,
+                    endedAt = SimTime.ofSeconds(2),
                     speaker = SpeakerRef.Controller(controllerId),
                     receiver = ReceiverRef.Pilot(aircraft),
                     utterance = Utterance.FromPilot(matchingRequestFrequencyChange),
@@ -506,6 +660,7 @@ class EvidenceFactsTest {
                 record = TransmissionRecord(
                     transmissionId = TransmissionId(901),
                     time = SimTime.ZERO,
+                    endedAt = SimTime.ofSeconds(2),
                     speaker = SpeakerRef.Controller(controllerId),
                     receiver = ReceiverRef.Pilot(aircraft),
                     utterance = Utterance.FromPilot(nonMatchingPilotTransmission),
@@ -519,6 +674,7 @@ class EvidenceFactsTest {
                 record = TransmissionRecord(
                     transmissionId = TransmissionId(902),
                     time = SimTime.ZERO,
+                    endedAt = SimTime.ofSeconds(2),
                     speaker = SpeakerRef.Pilot(aircraft),
                     receiver = ReceiverRef.Controller(controllerId),
                     utterance = Utterance.FromController(matchingControllerOutput),
@@ -531,6 +687,7 @@ class EvidenceFactsTest {
                 record = TransmissionRecord(
                     transmissionId = TransmissionId(903),
                     time = SimTime.ZERO,
+                    endedAt = SimTime.ofSeconds(2),
                     speaker = SpeakerRef.Pilot(aircraft),
                     receiver = ReceiverRef.Controller(controllerId),
                     utterance = Utterance.FromController(nonMatchingControllerOutput),
@@ -841,6 +998,7 @@ class EvidenceFactsTest {
             "controller-speaker / pilot-utterance / matching-payload" to TransmissionRecord(
                 transmissionId = TransmissionId(910),
                 time = SimTime.ZERO,
+                endedAt = SimTime.ofSeconds(2),
                 speaker = SpeakerRef.Controller(controllerId),
                 receiver = ReceiverRef.Pilot(aircraft),
                 utterance = Utterance.FromPilot(matchingPilotTransmission),
@@ -848,6 +1006,7 @@ class EvidenceFactsTest {
             "controller-speaker / pilot-utterance / non-matching-payload" to TransmissionRecord(
                 transmissionId = TransmissionId(911),
                 time = SimTime.ZERO,
+                endedAt = SimTime.ofSeconds(2),
                 speaker = SpeakerRef.Controller(controllerId),
                 receiver = ReceiverRef.Pilot(aircraft),
                 utterance = Utterance.FromPilot(nonMatchingPilotTransmission),
@@ -855,6 +1014,7 @@ class EvidenceFactsTest {
             "pilot-speaker / controller-utterance / matching-payload" to TransmissionRecord(
                 transmissionId = TransmissionId(912),
                 time = SimTime.ZERO,
+                endedAt = SimTime.ofSeconds(2),
                 speaker = SpeakerRef.Pilot(aircraft),
                 receiver = ReceiverRef.Controller(controllerId),
                 utterance = Utterance.FromController(matchingControllerOutput),
@@ -862,6 +1022,7 @@ class EvidenceFactsTest {
             "pilot-speaker / controller-utterance / non-matching-payload" to TransmissionRecord(
                 transmissionId = TransmissionId(913),
                 time = SimTime.ZERO,
+                endedAt = SimTime.ofSeconds(2),
                 speaker = SpeakerRef.Pilot(aircraft),
                 receiver = ReceiverRef.Controller(controllerId),
                 utterance = Utterance.FromController(nonMatchingControllerOutput),
@@ -966,6 +1127,7 @@ class EvidenceFactsTest {
         val record = TransmissionRecord(
             transmissionId = TransmissionId(820),
             time = SimTime.ZERO,
+            endedAt = SimTime.ofSeconds(2),
             speaker = SpeakerRef.Controller(ControllerId("LOWG_TWR")),
             receiver = ReceiverRef.Pilot(aircraft),
             utterance = Utterance.FromController(respondOutput),
@@ -1221,6 +1383,7 @@ class EvidenceFactsTest {
             "controller-speaker / pilot-utterance / RequestFrequencyChange" to TransmissionRecord(
                 transmissionId = TransmissionId(1210),
                 time = SimTime.ZERO,
+                endedAt = SimTime.ofSeconds(2),
                 speaker = SpeakerRef.Controller(controllerId),
                 receiver = ReceiverRef.Pilot(aircraft),
                 utterance = Utterance.FromPilot(pilotRequest),
@@ -1228,6 +1391,7 @@ class EvidenceFactsTest {
             "controller-speaker / pilot-utterance / Report" to TransmissionRecord(
                 transmissionId = TransmissionId(1211),
                 time = SimTime.ZERO,
+                endedAt = SimTime.ofSeconds(2),
                 speaker = SpeakerRef.Controller(controllerId),
                 receiver = ReceiverRef.Pilot(aircraft),
                 utterance = Utterance.FromPilot(pilotReport),
@@ -1235,6 +1399,7 @@ class EvidenceFactsTest {
             "pilot-speaker / controller-utterance / NumberInSequence" to TransmissionRecord(
                 transmissionId = TransmissionId(1212),
                 time = SimTime.ZERO,
+                endedAt = SimTime.ofSeconds(2),
                 speaker = SpeakerRef.Pilot(aircraft),
                 receiver = ReceiverRef.Controller(controllerId),
                 utterance = Utterance.FromController(administrativeControllerOutput),
@@ -1242,6 +1407,7 @@ class EvidenceFactsTest {
             "pilot-speaker / controller-utterance / ContactFrequency" to TransmissionRecord(
                 transmissionId = TransmissionId(1213),
                 time = SimTime.ZERO,
+                endedAt = SimTime.ofSeconds(2),
                 speaker = SpeakerRef.Pilot(aircraft),
                 receiver = ReceiverRef.Controller(controllerId),
                 utterance = Utterance.FromController(frequencyControllerOutput),
@@ -1481,6 +1647,7 @@ class EvidenceFactsTest {
         val respondRecord = TransmissionRecord(
             transmissionId = TransmissionId(1820),
             time = SimTime.ZERO,
+            endedAt = SimTime.ofSeconds(2),
             speaker = SpeakerRef.Controller(ControllerId("LOWG_TWR")),
             receiver = ReceiverRef.Pilot(aircraft),
             utterance = Utterance.FromController(respondOutput),
@@ -1488,6 +1655,7 @@ class EvidenceFactsTest {
         val pilotArmRecord = TransmissionRecord(
             transmissionId = TransmissionId(1821),
             time = SimTime.ZERO,
+            endedAt = SimTime.ofSeconds(2),
             speaker = SpeakerRef.Pilot(aircraft),
             receiver = ReceiverRef.Controller(ControllerId("LOWG_TWR")),
             utterance = Utterance.FromController(
@@ -1672,6 +1840,7 @@ class EvidenceFactsTest {
         TransmissionRecord(
             transmissionId = TransmissionId(100 + index),
             time = time,
+            endedAt = time + SimDuration.ofSeconds(2),
             speaker = SpeakerRef.Pilot(AircraftId("OE-ABC")),
             receiver = ReceiverRef.Controller(ControllerId("LOWG_TWR")),
             utterance = Utterance.FromPilot(Report(events = listOf(event))),
@@ -1699,6 +1868,7 @@ class EvidenceFactsTest {
         TransmissionRecord(
             transmissionId = TransmissionId(500L + index),
             time = SimTime.ZERO,
+            endedAt = SimTime.ofSeconds(2),
             speaker = SpeakerRef.Controller(controllerId),
             receiver = ReceiverRef.Pilot(targetAircraft),
             utterance = Utterance.FromController(output),
@@ -1713,9 +1883,24 @@ class EvidenceFactsTest {
         TransmissionRecord(
             transmissionId = TransmissionId(700L + index),
             time = SimTime.ZERO,
+            endedAt = SimTime.ofSeconds(2),
             speaker = SpeakerRef.Pilot(aircraft),
             receiver = ReceiverRef.Controller(controllerId),
             utterance = Utterance.FromPilot(transmission),
+        )
+
+    private fun groundStationTestSignalRecord(
+        station: ControllerId,
+        startedAt: SimTime,
+        endedAt: SimTime,
+    ): TransmissionRecord =
+        TransmissionRecord(
+            transmissionId = TransmissionId(850),
+            time = startedAt,
+            endedAt = endedAt,
+            speaker = SpeakerRef.Controller(station),
+            receiver = ReceiverRef.Controller(station),
+            utterance = Utterance.GroundStationTestSignal(TestSignalPurpose.TransmitterAdjustment),
         )
 
     private fun criticalPhaseWindowFact(

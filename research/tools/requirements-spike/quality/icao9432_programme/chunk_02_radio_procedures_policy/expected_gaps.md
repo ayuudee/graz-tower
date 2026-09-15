@@ -16,8 +16,8 @@ covered-green with the current evidence and policy surface.
 | `split` | 1 |
 
 Counting note: the `split` row is the radio-test-signal source unit
-`d67d1f63cbbecd7d`. Its duration obligation is treated separately from its
-phraseology/callsign obligation.
+`d67d1f63cbbecd7d`. fn-52.3 covers its duration obligation; only its
+spoken-number/callsign content remains blocked by phraseology rendering.
 
 ## Policy-Blocked
 
@@ -31,7 +31,12 @@ phraseology/callsign obligation.
 | Source unit | Blocker | Reason |
 |---|---|---|
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::95034efc191fa9cd` | `D-PF.1`; assessed by `fn-52-implement-icao-9432-chunk-02.2` | Need an evidence path for ATC start-up approval followed by pilot engine start. Protocol primitives exist, but the live departure tree omits startup clearance under D-PF.1 and `engineRunning == true` is failure/abort ground truth, not orderable startup evidence. |
-| `icao9432-extracted::test_procedures_2_8_4_en::d67d1f63cbbecd7d` | duration repair `fn-52-implement-icao-9432-chunk-02.3`; `PHRASE-1` for content | The duration limit may be testable if a typed ground-station test-signal event exists. The spoken-number and callsign content requires rendered phraseology evidence. |
+
+## Split Source Units
+
+| Source unit | Covered leg | Remaining blocker |
+|---|---|---|
+| `icao9432-extracted::test_procedures_2_8_4_en::d67d1f63cbbecd7d` | fn-52.3 covers the ICAO 9432 §2.8.4.4 10-second duration sub-obligation with typed ground-station test-signal identity and measured start/end evidence. | `PHRASE-1`: spoken-number sequence and transmitting-station callsign content require rendered phraseology evidence. |
 
 ## Phraseology-Later
 
@@ -54,6 +59,8 @@ phraseology/callsign obligation.
 - `FN43-GAP-2` is narrower after the task .2 scout: critical-phase
   observation facts exist, but safety-exception policy and start-up
   approval/start workflow evidence remain unresolved.
+- fn-52.3 closes the chunk-local radio-test-signal duration gap; it does not
+  claim phraseology/callsign compliance for the same source unit.
 - `fn-52-implement-icao-9432-chunk-02` is the repair epic for the three
   chunk-specific observation/model gaps. It is separate from fn-51 so the
   coverage epic remains a test/gap classification effort.

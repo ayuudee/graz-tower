@@ -17,8 +17,7 @@ import xyz.easiersaid.twr.sim.step
  *
  * ```
  * val (state, events) = runUntil(initial, init, until)
- * val transmissions = events.filterIsInstance<SimEvent.TransmissionStart>()
- *                           .map { it.toTransmissionRecord() }
+ * val transmissions = events.toTransmissionRecords()
  * ```
  *
  * The local `mutableListOf<SimEvent>` is consumed-before-return — the public
@@ -48,7 +47,7 @@ fun runUntil(
 
 /**
  * Convenience: drive the sim and project the transmission stream.
- * Equivalent to `runUntil(...).let { (s, events) -> s to events.filterIsInstance<TransmissionStart>().map { it.toTransmissionRecord() } }`.
+ * Equivalent to `runUntil(...).let { (s, events) -> s to events.toTransmissionRecords() }`.
  */
 fun runUntilWithTransmissions(
     initialState: SimState,

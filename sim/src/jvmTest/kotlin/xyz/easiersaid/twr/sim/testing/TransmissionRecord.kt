@@ -30,6 +30,7 @@ import xyz.easiersaid.twr.sim.Utterance
 data class TransmissionRecord(
     val transmissionId: TransmissionId,
     val time: SimTime,
+    val endedAt: SimTime,
     val speaker: SpeakerRef,
     val receiver: ReceiverRef,
     val utterance: Utterance,
@@ -37,10 +38,11 @@ data class TransmissionRecord(
 )
 
 /** Extract a typed [TransmissionRecord] from a [SimEvent.TransmissionStart]. */
-fun SimEvent.TransmissionStart.toTransmissionRecord(): TransmissionRecord =
+fun SimEvent.TransmissionStart.toTransmissionRecord(endedAt: SimTime): TransmissionRecord =
     TransmissionRecord(
         transmissionId = transmission.id,
         time = transmission.startedAt,
+        endedAt = endedAt,
         speaker = transmission.speaker,
         receiver = transmission.receiver,
         utterance = transmission.utterance,
@@ -48,10 +50,19 @@ fun SimEvent.TransmissionStart.toTransmissionRecord(): TransmissionRecord =
 
 /** Extract typed records from events, merging final receive-quality observations. */
 fun List<SimEvent>.toTransmissionRecords(): List<TransmissionRecord> {
+    val endByTransmissionId = filterIsInstance<SimEvent.TransmissionEnd>()
+        .associate { event -> event.transmissionId to event.time }
     val qualityByTransmissionId = filterIsInstance<SimEvent.TransmissionReceptionObserved>()
         .associate { event -> event.transmission.id to event.receptionQuality }
     return filterIsInstance<SimEvent.TransmissionStart>().map { event ->
-        event.toTransmissionRecord().copy(
+        val observedEnd = endByTransmissionId[event.transmission.id]
+        if (observedEnd != null) {
+            require(observedEnd == event.transmission.endsAt) {
+                "transmission ${event.transmission.id.value} end record ${observedEnd.millis}ms " +
+                    "disagrees with planned end ${event.transmission.endsAt.millis}ms"
+            }
+        }
+        event.toTransmissionRecord(endedAt = event.transmission.endsAt).copy(
             receptionQuality = qualityByTransmissionId[event.transmission.id] ?: ReceptionQuality.Clear,
         )
     }

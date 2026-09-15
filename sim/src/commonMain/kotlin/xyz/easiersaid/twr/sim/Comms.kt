@@ -67,6 +67,12 @@ sealed interface ReceiverRef {
 sealed interface Utterance {
     data class FromPilot(val transmission: PilotTransmission) : Utterance
     data class FromController(val output: ControllerOutput) : Utterance
+    data class GroundStationTestSignal(val purpose: TestSignalPurpose) : Utterance
+}
+
+enum class TestSignalPurpose {
+    TransmitterAdjustment,
+    ReceiverAdjustment,
 }
 
 /** Final receive-quality classification for a transmission instance. */
@@ -160,6 +166,7 @@ object CommsConstants {
 fun utteranceDuration(utterance: Utterance): SimDuration = when (utterance) {
     is Utterance.FromController -> controllerUtteranceDuration(utterance.output)
     is Utterance.FromPilot -> pilotUtteranceDuration(utterance.transmission)
+    is Utterance.GroundStationTestSignal -> SimDuration.ofSeconds(10)
 }
 
 private fun controllerUtteranceDuration(output: ControllerOutput): SimDuration = when (output) {

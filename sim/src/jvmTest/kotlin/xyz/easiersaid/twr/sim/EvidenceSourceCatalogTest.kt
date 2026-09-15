@@ -26,6 +26,7 @@ class EvidenceSourceCatalogTest {
                 "icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538",
                 "icao9432-extracted::essential_aerodrome_information_4_10_en::1aa5cb7e758055bc",
                 "icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4",
+                "icao9432-extracted::test_procedures_2_8_4_en::d67d1f63cbbecd7d",
             ),
             EvidenceSourceCatalog.All.map { source -> source.canonicalId }.toSet(),
         )

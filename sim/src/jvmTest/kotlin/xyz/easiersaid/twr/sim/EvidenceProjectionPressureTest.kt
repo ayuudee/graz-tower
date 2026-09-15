@@ -6,10 +6,13 @@ import kotlin.test.assertTrue
 import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.InitialContact
 import xyz.easiersaid.twr.protocol.RoleName
+import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.sim.testing.TransmissionRecord
+import xyz.easiersaid.twr.sim.testing.toTransmissionRecords
 
 class EvidenceProjectionPressureTest {
     @Test
@@ -24,6 +27,7 @@ class EvidenceProjectionPressureTest {
                         TransmissionRecord(
                             transmissionId = TransmissionId(400),
                             time = SimTime.ZERO,
+                            endedAt = SimTime.ofSeconds(2),
                             speaker = SpeakerRef.Pilot(aircraft),
                             receiver = ReceiverRef.Controller(ControllerId("LOWG_GND")),
                             utterance = Utterance.FromPilot(
@@ -77,6 +81,43 @@ class EvidenceProjectionPressureTest {
             "expected covered-red critical-phase result once routine controller transmissions are projected; " +
                 "got ${result.outcome}",
         )
+    }
+
+    @Test
+    fun `ground-station test signal duration is source-mapped from real start-end records`() {
+        val station = ControllerId("LOWG_TWR")
+        val transmission = InFlightTransmission(
+            id = TransmissionId(410),
+            speaker = SpeakerRef.Controller(station),
+            receiver = ReceiverRef.Controller(station),
+            frequency = Frequency.unsafe("118.200"),
+            utterance = Utterance.GroundStationTestSignal(TestSignalPurpose.TransmitterAdjustment),
+            startedAt = SimTime.ZERO,
+            endsAt = SimTime.ofSeconds(10),
+        )
+
+        val report = simEvidence("fn44-ground-station-test-signal-duration") {
+            observe {
+                EvidenceFactAdapters.fromTransmissionRecords(
+                    scenarioId = "fn44-ground-station-test-signal-duration",
+                    records = listOf(
+                        SimEvent.TransmissionStart(time = transmission.startedAt, transmission = transmission),
+                        SimEvent.TransmissionEnd(time = transmission.endsAt, transmissionId = transmission.id),
+                    ).toTransmissionRecords(),
+                )
+            }
+
+            source("ground station test signal duration within ten seconds") {
+                cites(ICAO9432.TestProcedures.GroundStationTestSignalDuration)
+                expect { groundStationTestSignals().allWithin(SimDuration.ofSeconds(10)) }
+            }
+        }
+
+        report.assertNoFailures()
+        val result = report.results.single()
+        assertEquals(EvidenceClaimKind.SimObservedSourceBehaviour, result.claimKind)
+        assertTrue(result.activationFactIds.isNotEmpty())
+        assertTrue(result.outcome is EvidenceAuditOutcome.Pass)
     }
 
     @Test

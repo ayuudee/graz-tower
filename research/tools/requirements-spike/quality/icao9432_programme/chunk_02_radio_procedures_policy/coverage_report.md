@@ -19,7 +19,9 @@ was blocked by missing phraseology, policy, or observation/model
 infrastructure. fn-52.1 repaired the critical-phase observation surface and
 turned `095624c5163849a4` into an honest covered-red source-mapped result
 under conservative routine classification. This remains not a green-test
-closure.
+closure. fn-52.3 repaired the duration leg of `d67d1f63cbbecd7d`; the source
+unit remains split because its spoken-number and station-callsign content is
+still blocked by `PHRASE-1`.
 
 Repair epic:
 
@@ -29,6 +31,9 @@ Repair epic:
 - `fn-52.2` assessed the start-up approval/start row and blocked it on D-PF.1
   rather than inferring engine start from mission-step completion or default
   `engineRunning == true`.
+- `fn-52.3` added typed ground-station test-signal identity plus measured
+  transmission end times, and now covers the ICAO 9432 §2.8.4.4 10-second
+  duration sub-obligation with source-mapped evidence.
 
 Cross-cutting blockers:
 
@@ -53,7 +58,7 @@ Cross-cutting blockers:
 | `icao9432-extracted::test_procedures_2_8_4_en::45020d8d667c291c` | `phraseology-later` | `PHRASE-1` | Radio-check transmissions include called station, aircraft id, radio-check words, and frequency. |
 | `icao9432-extracted::test_procedures_2_8_4_en::486f651c71895e42` | `phraseology-later` | `PHRASE-1` | Pilot unable to execute an instruction or clearance notifies using unable phraseology and gives a reason. |
 | `icao9432-extracted::test_procedures_2_8_4_en::b0c636108a61a135` | `phraseology-later` | `PHRASE-1` | Radio-check replies include calling station, replying station, and readability information. |
-| `icao9432-extracted::test_procedures_2_8_4_en::d67d1f63cbbecd7d` | `split` | `fn-52-implement-icao-9432-chunk-02.3`; `PHRASE-1` | Ground-station test-signal duration is limited to 10 seconds; content must be spoken numbers followed by station callsign. |
+| `icao9432-extracted::test_procedures_2_8_4_en::d67d1f63cbbecd7d` | `split`: duration `covered-green` / content `phraseology-later` | `EvidenceProjectionPressureTest`; `fn-52-implement-icao-9432-chunk-02.3`; `PHRASE-1` | Ground-station test-signal duration is limited to 10 seconds; content must be spoken numbers followed by station callsign. |
 | `icao9432-extracted::test_procedures_2_8_4_en::daa4fadde3c06a1f` | `policy-blocked` | `POLICY-1` | Transmission readability is classified on a 1-5 readability scale. |
 
 ## Verification
@@ -63,9 +68,10 @@ Cross-cutting blockers:
   normalized `exactSourceQuotes` matches in
   `research/txt/icao9432-extracted.txt`.
 - fn-51 changed no Kotlin production or test code; fn-52.1 added the
-  critical-phase source-mapped covered-red test and observation projection.
+  critical-phase source-mapped covered-red test and observation projection;
+  fn-52.3 added the ground-station test-signal duration covered-green case.
 - Remaining chunk-02 rows are still blocked by `PHRASE-1`, `POLICY-1`,
-  D-PF.1, or the open fn-52.3 radio-test observation task.
+  or D-PF.1.
 
 ## Review Considerations
 
@@ -83,5 +89,12 @@ Cross-cutting blockers:
 - Impact: fn-52.2 deliberately avoids changing `AircraftState.engineRunning`
   because that field is already coupled to failure physics and abort
   recognition; startup lifecycle belongs with D-PF.1.
+- Impact: fn-52.3 adds a typed test-signal utterance and mandatory
+  `TransmissionRecord.endedAt` derived from the typed in-flight transmission;
+  present end events must agree with that end time rather than inventing
+  durations.
 - Operational correctness: ICAO 9432 §4.1.2 contains a safety exception; it is
   deliberately not asserted as an unconditional no-transmission rule.
+- Operational correctness: ICAO 9432 §2.8.4.4 duration is asserted only for
+  typed ground-station test signals; spoken-number and station-callsign
+  phraseology is deliberately not asserted until `PHRASE-1`.
