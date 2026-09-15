@@ -26,6 +26,9 @@ Repair epic:
 - `fn-52-implement-icao-9432-chunk-02`: chunk-specific observation/model
   repairs for critical-phase transmission projection, start-up approval/start
   evidence, and ground-station radio-test-signal duration identity.
+- `fn-52.2` assessed the start-up approval/start row and blocked it on D-PF.1
+  rather than inferring engine start from mission-step completion or default
+  `engineRunning == true`.
 
 Cross-cutting blockers:
 
@@ -41,7 +44,7 @@ Cross-cutting blockers:
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::35ad4a7f3d8d2ead` | `phraseology-later` | `PHRASE-1` | Engine-start request phraseology examples. |
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::39a4619cec62a93f` | `phraseology-later` | `PHRASE-1` | Start-up approval phraseology with QNH. |
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::86ba1c63169eceff` | `phraseology-later` | `PHRASE-1` | Start-up-at-time approval phraseology. |
-| `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::95034efc191fa9cd` | `expected-gap` | `fn-52-implement-icao-9432-chunk-02.2` | After ATC approval, the pilot starts engines assisted as necessary by ground crew. |
+| `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::95034efc191fa9cd` | `expected-gap` | `D-PF.1`; `fn-52-implement-icao-9432-chunk-02.2` | After ATC approval, the pilot starts engines assisted as necessary by ground crew. |
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::b6a69b358e0a53f2` | `phraseology-later` | `PHRASE-1` | Expected departure time and start-up-at-own-discretion phraseology. |
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::bba49998378e3b31` | `phraseology-later` | `PHRASE-1` | Where no ATIS is provided, the pilot may request current aerodrome information before start-up. |
 | `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::c43cb2d0a82356bd` | `phraseology-later` | `PHRASE-1` | Expected start-up time phraseology. |
@@ -61,8 +64,8 @@ Cross-cutting blockers:
   `research/txt/icao9432-extracted.txt`.
 - fn-51 changed no Kotlin production or test code; fn-52.1 added the
   critical-phase source-mapped covered-red test and observation projection.
-- Remaining chunk-02 rows are still blocked by `PHRASE-1`, `POLICY-1`, or the
-  two open fn-52 observation/model tasks.
+- Remaining chunk-02 rows are still blocked by `PHRASE-1`, `POLICY-1`,
+  D-PF.1, or the open fn-52.3 radio-test observation task.
 
 ## Review Considerations
 
@@ -77,5 +80,8 @@ Cross-cutting blockers:
 - Impact: fn-52.1 narrowed `FN43-GAP-2`: critical-phase windows and routine
   controller-transmission projection exist; safety-necessity classification
   remains blocked by `POLICY-1`.
+- Impact: fn-52.2 deliberately avoids changing `AircraftState.engineRunning`
+  because that field is already coupled to failure physics and abort
+  recognition; startup lifecycle belongs with D-PF.1.
 - Operational correctness: ICAO 9432 §4.1.2 contains a safety exception; it is
   deliberately not asserted as an unconditional no-transmission rule.

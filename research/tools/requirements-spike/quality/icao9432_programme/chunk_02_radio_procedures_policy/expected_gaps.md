@@ -30,7 +30,7 @@ phraseology/callsign obligation.
 
 | Source unit | Blocker | Reason |
 |---|---|---|
-| `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::95034efc191fa9cd` | `FN43-GAP-2`; repair `fn-52-implement-icao-9432-chunk-02.2` | Need an evidence path for ATC start-up approval followed by pilot engine start. Protocol primitives exist, but no source-mapped evidence fact has been identified yet. |
+| `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::95034efc191fa9cd` | `D-PF.1`; assessed by `fn-52-implement-icao-9432-chunk-02.2` | Need an evidence path for ATC start-up approval followed by pilot engine start. Protocol primitives exist, but the live departure tree omits startup clearance under D-PF.1 and `engineRunning == true` is failure/abort ground truth, not orderable startup evidence. |
 | `icao9432-extracted::test_procedures_2_8_4_en::d67d1f63cbbecd7d` | duration repair `fn-52-implement-icao-9432-chunk-02.3`; `PHRASE-1` for content | The duration limit may be testable if a typed ground-station test-signal event exists. The spoken-number and callsign content requires rendered phraseology evidence. |
 
 ## Phraseology-Later

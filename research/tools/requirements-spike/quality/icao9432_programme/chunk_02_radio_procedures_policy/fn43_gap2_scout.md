@@ -79,13 +79,16 @@ Important limitation:
 
 Classification:
 
-- `expected-gap` (`FN43-GAP-2` or a narrower start-up-workflow repair epic).
+- `expected-gap`, blocked on D-PF.1 after fn-52.2 impact review.
 
 Repair direction:
 
-- Separate epic: introduce an observable start-up workflow fact only if the
-  sim chooses to model engine-start approval/start as a real lifecycle.
-- Do not infer engine start from mission-step completion alone.
+- Introduce an observable start-up workflow fact only when D-PF.1 lands the
+  real startup-clearance lifecycle: airport-conditional startup requirement,
+  live startup mission steps, and a clearance-delivery procedure that emits
+  `StartupApproved`.
+- Do not infer engine start from mission-step completion or default
+  `AircraftState.engineRunning == true`.
 
 ### Ground-Station Test-Signal Duration
 

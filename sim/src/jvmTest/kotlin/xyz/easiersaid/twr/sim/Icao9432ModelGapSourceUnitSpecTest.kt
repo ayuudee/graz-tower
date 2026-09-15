@@ -64,4 +64,33 @@ class Icao9432ModelGapSourceUnitSpecTest {
             }
         }.assertSatisfied().assertHasModelGap()
     }
+
+    @Test
+    fun `startup approval then engine start reports missing lifecycle evidence`() {
+        sourceUnitSpec("icao9432-startup-approval-engine-start") {
+            title("After ATC start-up approval, the pilot starts engines")
+            sourceUnit(
+                SourceUnitRef("icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::95034efc191fa9cd"),
+            )
+            domain("approval", setOf("StartupApproved"))
+            domain("engine-start-observation", setOf("explicit-engine-start-event"))
+            domain("ordering", setOf("approval-before-start"))
+
+            partition(
+                name = "approval before explicit engine start",
+                parameters = mapOf(
+                    "approval" to "StartupApproved",
+                    "engine-start-observation" to "explicit-engine-start-event",
+                    "ordering" to "approval-before-start",
+                ),
+            ) {
+                hit("startup-workflow-required")
+                modelGap(
+                    "The live departure tree omits REQUEST_STARTUP/AWAIT_STARTUP_APPROVAL under D-PF.1, " +
+                        "and AircraftState.engineRunning defaults true for failure/abort physics rather than " +
+                        "recording an orderable engine-start lifecycle.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
 }
