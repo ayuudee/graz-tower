@@ -1,23 +1,36 @@
 package xyz.easiersaid.twr.sim
 
 import xyz.easiersaid.twr.controller.ControllerOutput
+import xyz.easiersaid.twr.controller.DecisionTrace
+import xyz.easiersaid.twr.core.world.AviationWorld
+import xyz.easiersaid.twr.core.world.Position
+import xyz.easiersaid.twr.core.world.WorldIndex
+import xyz.easiersaid.twr.pilot.AircraftState
 import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.pilot.PilotPhase
+import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.Clearance
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.InitialContact
 import xyz.easiersaid.twr.protocol.PilotTransmission
+import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.Request
 import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.RoleName
+import xyz.easiersaid.twr.protocol.SayAgain
 import xyz.easiersaid.twr.protocol.SimTime
+import xyz.easiersaid.twr.protocol.Standby
 import xyz.easiersaid.twr.sim.testing.SimTrace
 import xyz.easiersaid.twr.sim.testing.TransmissionRecord
+import xyz.easiersaid.twr.sim.testing.runUntil
+import xyz.easiersaid.twr.sim.testing.toTransmissionRecords
 
 @JvmInline
 value class FactId(val value: String) {
@@ -437,6 +450,59 @@ object EvidenceFactAdapters {
         return fromLowgCircuitTrace(trace)
     }
 
+    fun receptionDoubtOverlap(scenarioId: String): EvidenceFactSet {
+        val aircraftA = AircraftId("OE-ABC")
+        val aircraftB = AircraftId("OE-DEF")
+        val towerId = ControllerId("LOWG_TWR")
+        val towerFrequency = Frequency.unsafe("118.200")
+        val towerTransmission = InFlightTransmission(
+            id = TransmissionId(10),
+            speaker = SpeakerRef.Controller(towerId),
+            receiver = ReceiverRef.Pilot(aircraftA),
+            frequency = towerFrequency,
+            utterance = Utterance.FromController(
+                ControllerOutput.Respond(
+                    target = aircraftA,
+                    response = Standby(target = aircraftA),
+                    trace = DecisionTrace(
+                        ruleId = "COMMS-1-OVERLAP",
+                        description = "COMMS-1 stepped-on controller response",
+                        regulations = emptyList(),
+                    ),
+                ),
+            ),
+            startedAt = SimTime.ZERO,
+            endsAt = SimTime.ofMillis(COMMS_1_TOWER_END_MS),
+        )
+        val blockingTransmission = InFlightTransmission(
+            id = TransmissionId(11),
+            speaker = SpeakerRef.Pilot(aircraftB),
+            receiver = ReceiverRef.Controller(towerId),
+            frequency = towerFrequency,
+            utterance = Utterance.FromPilot(Report(events = listOf(ReportEvent.Ready))),
+            startedAt = SimTime.ZERO,
+            endsAt = SimTime.ofMillis(COMMS_1_BLOCKING_END_MS),
+        )
+        val (_, events) = runUntil(
+            initialState = receptionDoubtOverlapState(
+                aircraftA = aircraftA,
+                aircraftB = aircraftB,
+                towerId = towerId,
+                towerFrequency = towerFrequency,
+            ),
+            initialEvents = listOf(
+                SimEvent.TransmissionStart(time = SimTime.ZERO, transmission = towerTransmission),
+                SimEvent.TransmissionStart(time = SimTime.ZERO, transmission = blockingTransmission),
+            ),
+            untilTime = SimTime.ofSeconds(COMMS_1_UNTIL_SECONDS),
+        )
+        return fromTransmissionRecords(
+            scenarioId = scenarioId,
+            records = events.toTransmissionRecords(),
+            diagnostic = "COMMS-1 real radio-overlap evidence facts",
+        )
+    }
+
     fun fromLowgCircuitTrace(trace: LowgCircuitTrace): EvidenceFactSet {
         // Build a per-transmission phase lookup from the SimTrace so the
         // ClearancePacing projection can observe the pilot phase at the
@@ -474,10 +540,11 @@ object EvidenceFactAdapters {
         val transmissionFacts = records.flatMapIndexed { index, record ->
             recordFacts(
                 scenarioId = scenarioId,
-                recordIndex = index,
-                record = record,
-                phaseAtTransmission = phaseAtTransmission,
-            )
+            recordIndex = index,
+            record = record,
+            records = records,
+            phaseAtTransmission = phaseAtTransmission,
+        )
         }
         val aircraftFacts = finalAircraft.entries
             .sortedBy { (aircraftId, _) -> aircraftId.value }
@@ -547,6 +614,7 @@ object EvidenceFactAdapters {
         scenarioId: String,
         recordIndex: Int,
         record: TransmissionRecord,
+        records: List<TransmissionRecord>,
         phaseAtTransmission: Map<TransmissionId, PilotPhase>,
     ): List<EvidenceFact> =
         when (val utterance = record.utterance) {
@@ -557,6 +625,7 @@ object EvidenceFactAdapters {
                     record = record,
                     controller = speaker,
                     output = utterance.output,
+                    records = records,
                     phaseAtTransmission = phaseAtTransmission,
                 )
 
@@ -569,6 +638,7 @@ object EvidenceFactAdapters {
                     scenarioId = scenarioId,
                     recordIndex = recordIndex,
                     record = record,
+                    records = records,
                     pilot = speaker,
                     transmission = utterance.transmission,
                 )
@@ -581,6 +651,7 @@ object EvidenceFactAdapters {
         record: TransmissionRecord,
         controller: SpeakerRef.Controller,
         output: ControllerOutput,
+        records: List<TransmissionRecord>,
         phaseAtTransmission: Map<TransmissionId, PilotPhase>,
     ): List<EvidenceFact> {
         val targetAircraft = when (output) {
@@ -591,6 +662,7 @@ object EvidenceFactAdapters {
             scenarioId = scenarioId,
             recordIndex = recordIndex,
             record = record,
+            records = records,
             aircraftId = targetAircraft,
             extractionSlot = "controller",
         )
@@ -687,6 +759,7 @@ object EvidenceFactAdapters {
         scenarioId: String,
         recordIndex: Int,
         record: TransmissionRecord,
+        records: List<TransmissionRecord>,
         pilot: SpeakerRef.Pilot,
         transmission: PilotTransmission,
     ): List<EvidenceFact> {
@@ -739,6 +812,7 @@ object EvidenceFactAdapters {
             scenarioId = scenarioId,
             recordIndex = recordIndex,
             record = record,
+            records = records,
             aircraftId = pilot.aircraftId,
             extractionSlot = "pilot",
         )
@@ -999,6 +1073,7 @@ object EvidenceFactAdapters {
         scenarioId: String,
         recordIndex: Int,
         record: TransmissionRecord,
+        records: List<TransmissionRecord>,
         aircraftId: AircraftId,
         extractionSlot: String,
     ): EvidenceFact? =
@@ -1017,7 +1092,11 @@ object EvidenceFactAdapters {
                     aircraftId = aircraftId,
                     transmissionRef = record.transmissionId,
                     doubtSource = quality.cause.toReceptionDoubtSource(),
-                    resolvedBy = null,
+                    resolvedBy = sayAgainResolutionFor(
+                        records = records,
+                        afterIndex = recordIndex,
+                        aircraftId = aircraftId,
+                    ),
                 ),
             )
         }
@@ -1029,6 +1108,57 @@ object EvidenceFactAdapters {
             ReceptionDoubtCause.SteppedOn -> ReceptionDoubtSource.SteppedOn
             is ReceptionDoubtCause.Other -> ReceptionDoubtSource.Other(detail)
         }
+
+    private fun sayAgainResolutionFor(
+        records: List<TransmissionRecord>,
+        afterIndex: Int,
+        aircraftId: AircraftId,
+    ): SayAgainRef? =
+        records.drop(afterIndex + 1)
+            .firstOrNull { record ->
+                val speaker = record.speaker as? SpeakerRef.Pilot ?: return@firstOrNull false
+                val utterance = record.utterance as? Utterance.FromPilot ?: return@firstOrNull false
+                speaker.aircraftId == aircraftId && utterance.transmission is SayAgain
+            }
+            ?.let { record -> SayAgainRef(record.transmissionId) }
+
+    private fun receptionDoubtOverlapState(
+        aircraftA: AircraftId,
+        aircraftB: AircraftId,
+        towerId: ControllerId,
+        towerFrequency: Frequency,
+    ): SimState =
+        SimState(
+            now = SimTime.ZERO,
+            seq = 0L,
+            rng = SimRandom(0L),
+            rngByAircraft = mapOf(aircraftA to SimRandom(1L), aircraftB to SimRandom(2L)),
+            aircraft = linkedMapOf(
+                aircraftA to receptionDoubtAircraft(aircraftA, "OE-ABC"),
+                aircraftB to receptionDoubtAircraft(aircraftB, "OE-DEF"),
+            ),
+            controllers = mapOf(
+                towerId to ControllerSpec(
+                    id = towerId,
+                    role = RoleName.TOWER,
+                    aerodromeId = AerodromeId("LOWG"),
+                    frequency = towerFrequency,
+                    responsibilities = emptyMap(),
+                ),
+            ),
+            beliefs = emptyMap(),
+            world = AviationWorld(),
+            worldIndex = WorldIndex(),
+            nextTransmissionId = COMMS_1_FIRST_MINTED_TX_ID,
+        )
+
+    private fun receptionDoubtAircraft(aircraftId: AircraftId, callsign: String): AircraftState =
+        AircraftState(
+            id = aircraftId,
+            callsign = Callsign(callsign),
+            position = Position(0.0, 0.0),
+            positionPoint = PointId("P"),
+        )
 
     private fun aerodromeInformationFact(
         scenarioId: String,
@@ -1197,6 +1327,10 @@ object EvidenceFactAdapters {
     }
 
     private const val FACTS_PER_RECORD: Int = 10
+    private const val COMMS_1_TOWER_END_MS: Long = 2500L
+    private const val COMMS_1_BLOCKING_END_MS: Long = 2000L
+    private const val COMMS_1_UNTIL_SECONDS: Long = 10L
+    private const val COMMS_1_FIRST_MINTED_TX_ID: Long = 100L
 
     /**
      * Sentinel unit name used by the pilot-notified frequency-change

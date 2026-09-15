@@ -245,15 +245,6 @@ available as stable evidence facts with enough structure to check cited
 phraseology without brittle string scraping.
 Impact: H | Effort: H
 
-**COMMS-1 — Doubtful-reception repetition requests need communication-quality evidence** —
-tracked by `fn-50-sim-models-reception-quality-comms-1` (sim adds typed
-reception-quality input to `TransmissionRecord` so ICAO 9432 §2.8.1.4
-lands covered-green). Typed `EvidenceFactPayload.ReceptionDoubt` +
-`AuditReceptionDoubtSubject` selector + chunk-01 source-mapped test
-landed covered-red in
-fn-48-icao-9432-chunk-01-drive-expected-gap.3.
-Impact: M | Effort: M
-
 **VEHICLE-1 — Aerodrome vehicle and towing source units need a sim model**
 FN46 maps ICAO 9432 Chapter 5 vehicle/crossing/towing units to expected gaps.
 The current sim is aircraft-focused and does not model aerodrome vehicles,

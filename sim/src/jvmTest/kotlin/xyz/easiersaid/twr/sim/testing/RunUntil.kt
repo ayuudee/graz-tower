@@ -56,8 +56,7 @@ fun runUntilWithTransmissions(
     untilTime: SimTime,
 ): Pair<SimState, List<TransmissionRecord>> {
     val (finalState, events) = runUntil(initialState, initialEvents, untilTime)
-    val records = events.filterIsInstance<SimEvent.TransmissionStart>()
-        .map { it.toTransmissionRecord() }
+    val records = events.toTransmissionRecords()
     return finalState to records
 }
 
@@ -205,8 +204,7 @@ fun runUntilWithStateTraceAndInjection(
         emitted.forEach(queue::enqueue)
         nextEvent = queue.dequeueMin()
     }
-    val records = eventTrace.filterIsInstance<SimEvent.TransmissionStart>()
-        .map { it.toTransmissionRecord() }
+    val records = eventTrace.toTransmissionRecords()
     return StateTraceResult(
         finalState = state,
         records = records.toList(),

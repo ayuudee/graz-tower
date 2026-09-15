@@ -18,11 +18,11 @@
     "chunk_id": "chunk-01-comms-readback-transfer",
     "normative_kind": "must",
     "current_testability": "testable-now",
-    "likely_target": "protocolEvidence",
+    "likely_target": "simEvidence",
     "policy_concept": "",
-    "blocking_item": "COMMS-1",
-    "planned_coverage_state": "expected-gap",
-    "test_authoring_notes": "Record expected gap for COMMS-1; current facts do not model doubtful reception or in-full/in-part repetition requests."
+    "blocking_item": "",
+    "planned_coverage_state": "candidate-test",
+    "test_authoring_notes": "Covered by fn-50 real radio-overlap evidence: stepped-on controller transmission produces ReceptionDoubt resolved by pilot SayAgain."
   },
   {
     "source_unit_id": "icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca",

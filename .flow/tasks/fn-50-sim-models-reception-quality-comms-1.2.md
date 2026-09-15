@@ -5,34 +5,39 @@ Teach the sim to produce at least one real, resolved reception-doubt
 observation from the radio model.
 
 Use the narrowest believable scenario: overlapping transmissions on the
-same frequency where the receiver can identify the relevant station or
-aircraft but the message content is doubtful. The receiver must respond
-with `SayAgain`, and the evidence projection must link the doubt fact to
-that `SayAgainRef`.
+same frequency where the receiver can identify the relevant station but
+the message content is doubtful. The minimal non-cognitive pilot fixture
+must respond with `SayAgain`, and the evidence projection must link the
+doubt fact to that `SayAgainRef`.
 
 Do not broaden this into a general voice-quality or partial-phoneme
 model. COMMS-1 only needs the regulatory behavior: doubt exists, and a
 repetition is requested either in full or in part.
 
+Full cognitive-mission recovery is not enabled in this task; it is filed
+as `D-AUDIT.15-FOLLOWUP` because naive automatic repetition perturbs the
+LOWG golden-style traces and needs its own design.
+
 ## Acceptance
-- [ ] A real sim scenario produces a typed reception-doubt signal from
+- [x] A real sim scenario produces a typed reception-doubt signal from
   overlapping radio transmissions, without direct mutation of evidence
   facts.
-- [ ] The receiving controller or pilot emits `SayAgain` in response to
-  the doubtful transmission. If controller-side `SayAgain` is not yet a
-  protocol type, model the smallest typed response needed without
-  overloading unrelated readback correction paths.
-- [ ] The evidence adapter links each produced
+- [x] The receiving pilot emits `SayAgain` in response to the doubtful
+  controller transmission in the minimal non-cognitive fixture. The
+  controller-side `SayAgain` question remains untouched because this
+  scenario uses the existing pilot-side protocol type correctly.
+- [x] The evidence adapter links each produced
   `EvidenceFactPayload.ReceptionDoubt` to the matching
   `SayAgainRef(TransmissionId)`.
-- [ ] At least one focused sim test proves the radio overlap →
+- [x] At least one focused sim test proves the radio overlap →
   reception-doubt → `SayAgain` chain at the `TransmissionRecord` /
-  evidence-fact level.
-- [ ] Existing golden tests that rely on stepped-on transmissions remain
+  evidence-fact level:
+  `ReceptionQualityCommsTest`.
+- [x] Existing golden-style tests that rely on stepped-on transmissions remain
   green; no previously vanished transmission is silently delivered as a
   valid operational message.
-- [ ] Targeted tests are green:
-  `./gradlew-nix :sim:jvmTest --tests "*.EvidenceFactsTest" --tests "*.Icao9432Chunk01ReceptionDoubtEvidenceTest" --tests "*.G1B4ClosurePinSpec"`.
+- [x] Targeted tests are green:
+  `./gradlew-nix :sim:jvmTest --tests "*.ReceptionQualityCommsTest" --tests "*.EvidenceFactsTest" --tests "*.Icao9432Chunk01ReceptionDoubtEvidenceTest"`.
 
 ## Review considerations
 
@@ -51,9 +56,14 @@ repetition is requested either in full or in part.
   `SayAgain` concept.
 
 ## Done summary
-TBD
+Implemented the real radio-overlap COMMS-1 behavior for task .2.
 
+- Added final TransmissionReceptionObserved events from TransmissionEnd handling so test traces can distinguish clear delivery from stepped-on doubtful reception.
+- Added minimal non-cognitive pilot SayAgain recovery for stepped-on controller-to-pilot transmissions, with one-repeat/pending-doubt guards to avoid recursive radio congestion.
+- Updated transmission-record projection to merge final reception quality observations.
+- Added ReceptionQualityCommsTest, which drives two overlapping transmissions through the sim, observes a doubtful controller transmission, observes a later pilot SayAgain, and verifies the evidence fact resolves via SayAgainRef.
+- Filed D-AUDIT.15-FOLLOWUP for full cognitive-mission repetition recovery, which needs separate design before being enabled in golden-style missions.
 ## Evidence
 - Commits:
-- Tests:
+- Tests: {'command': './gradlew-nix :sim:jvmTest --tests "*.ReceptionQualityCommsTest" --tests "*.EvidenceFactsTest" --tests "*.Icao9432Chunk01ReceptionDoubtEvidenceTest"', 'result': 'pass'}, {'command': './gradlew-nix :sim:jvmTest --tests "*.G1B4ClosurePinSpec"', 'result': 'pass'}
 - PRs:

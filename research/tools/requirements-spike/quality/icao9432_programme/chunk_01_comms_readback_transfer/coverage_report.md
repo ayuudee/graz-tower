@@ -6,18 +6,19 @@ Chunk: ICAO 9432 communications, transfer, and readback.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 9 |
-| `covered-red` | 1 |
+| `covered-green` | 10 |
+| `covered-red` | 0 |
 | `expected-gap` | 0 |
 | `not-applicable` | 1 |
 | `phraseology-later` | 7 |
 | `policy-blocked` | 2 |
 
 Closed initially at `fn-48-icao-9432-chunk-01-drive-expected-gap`
-(2026-05-26), then updated by `fn-49-sim-emits-pilot-notified-frequency`.
-Frequency-transfer coverage is now green for both the controller-advised
-and pilot-notified branches. COMMS-1 remains the single `covered-red`
-chunk-01 unit tied to a named spawned production-repair epic.
+(2026-05-26), then updated by `fn-49-sim-emits-pilot-notified-frequency`
+and `fn-50-sim-models-reception-quality-comms-1`. Frequency-transfer
+coverage is green for both the controller-advised and pilot-notified
+branches. COMMS-1 is now covered-green via a real radio-overlap scenario
+that produces reception-doubt evidence resolved by pilot `SayAgain`.
 
 Focused verification run:
 
@@ -32,10 +33,8 @@ Result: GREEN. All chunk-01 evidence tests pass
 `Icao9432Chunk01ClearancePacingEvidenceTest` on the sim side;
 `Icao9432ReadbackConformanceSpec` on the controller side; plus the
 adjacent `Icao9432*SourceUnitSpec` / `Icao9432*SourceBackedScenario`
-classes the `*Icao9432*` wildcard also captures). The remaining
-`covered-red` landing (COMMS-1) emits an honest `Fail` outcome inside the
-audit reports while the JUnit assertions on `report.results` pass —
-contractually green at the JUnit/Kotest layer.
+classes the `*Icao9432*` wildcard also captures). There are no remaining
+covered-red or expected-gap units in chunk 01.
 
 Pre-existing sandbox failure, NOT a chunk-01 regression:
 `EvidenceReportWriterTest` (2 cases) and `EvidencePermanentTwentyCaseTest`
@@ -51,7 +50,7 @@ test-environment concern, not as a chunk closure blocker.
 
 | Source unit | Final state | Test / blocker | Claim |
 |---|---|---|---|
-| `icao9432-extracted::communications_2_8_1_en::0a964f42b6100596` | `covered-red` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ReceptionDoubtEvidenceTest.kt` — spawned: `fn-50-sim-models-reception-quality-comms-1` | If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either ... |
+| `icao9432-extracted::communications_2_8_1_en::0a964f42b6100596` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ReceptionDoubtEvidenceTest.kt` | If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either ... |
 | `icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca` | `phraseology-later` | `PHRASE-1` | When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the c... |
 | `icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf` | `policy-blocked` | `POLICY-1` | No reply is expected to such general calls unless individual stations are subsequently called upon to acknowledge rec... |
 | `icao9432-extracted::communications_2_8_1_en::a685cef087951878` | `phraseology-later` | `PHRASE-1` | When establishing communications, an aircraft should use the full call sign of both the aircraft and the aeronautical... |
@@ -74,12 +73,12 @@ test-environment concern, not as a chunk closure blocker.
 
 ## Repair / Follow-Up Handoff
 
-- `COMMS-1`: CLOSED `covered-red` at fn-48 via typed
+- `COMMS-1`: CLOSED `covered-green` at fn-50 via typed
+  `ReceptionQuality` / `ReceptionDoubtCause` radio observations,
   `EvidenceFactPayload.ReceptionDoubt` + `AuditReceptionDoubtSubject`
-  selector + chunk-01 source-mapped test asserting on `report.results`.
-  Sim model gap (no reception-quality signal) tracked by
-  `fn-50-sim-models-reception-quality-comms-1`. `.plan` paragraph
-  replaced with a one-line pointer to that epic.
+  selector, and a chunk-01 source-mapped test asserting
+  `assertNoFailures()` over a real stepped-on radio-overlap scenario.
+  The old `.plan` repair-epic pointer is deleted.
 - `POLICY-1`: UNCHANGED. Still cross-chunk infrastructure; covers
   no-reply general calls and route-clearance timing
   (`readback_2_8_3_en::36e6ad16cffe8726`). Tracked in `.plan`.
@@ -119,12 +118,13 @@ test-environment concern, not as a chunk closure blocker.
 - Test architecture: green tests cover structural readback and
   hearback classification (pre-existing) PLUS frequency-transfer
   (FN44-GAP-1 covered-green, pilot-notified branch covered-green),
-  reception-doubt (COMMS-1 covered-red), and clearance pacing
+  reception-doubt (COMMS-1 covered-green), and clearance pacing
   (FN33-MODEL-1 covered-green Advisory). Phraseology, policy, and
   the two remaining FN33-MODEL-1 source units stay blocked.
-- Impact: fn-49 changed production pilot/sim behaviour only for the
-  pilot-notified frequency-change branch. COMMS-1 remains the named
-  production-repair epic after this update.
+- Impact: fn-50 adds final reception-quality observations and a minimal
+  non-cognitive pilot `SayAgain` recovery path for stepped-on controller
+  transmissions. Full cognitive-mission recovery remains filed as
+  `D-AUDIT.15-FOLLOWUP`.
 - Operational correctness: each covered/blocked row keeps the
   accepted ICAO 9432 source-unit id visible and cites the new
   `Icao9432Chunk01*EvidenceTest` files where applicable.

@@ -6,7 +6,7 @@ This file records chunk-01 source units that should not be converted into passin
 
 | State | Units |
 |---|---:|
-| `expected-gap` | 2 |
+| `expected-gap` | 1 |
 | `not-applicable` | 1 |
 | `phraseology-later` | 7 |
 | `policy-blocked` | 2 |
@@ -15,7 +15,6 @@ This file records chunk-01 source units that should not be converted into passin
 
 | Source unit | State | Blocker | Claim | Handoff |
 |---|---|---|---|---|
-| `icao9432-extracted::communications_2_8_1_en::0a964f42b6100596` | `expected-gap` | `COMMS-1` | If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either in full or... | Implement reception-doubt / repetition-request evidence before authoring this as executable behaviour. |
 | `icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca` | `phraseology-later` | `PHRASE-1` | When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the call "ALL S... | Wait for rendered-transmission phraseology facts. |
 | `icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf` | `policy-blocked` | `POLICY-1` | No reply is expected to such general calls unless individual stations are subsequently called upon to acknowledge receipt. | Introduce explicit policy concept before asserting one correct behaviour. |
 | `icao9432-extracted::communications_2_8_1_en::a685cef087951878` | `phraseology-later` | `PHRASE-1` | When establishing communications, an aircraft should use the full call sign of both the aircraft and the aeronautical station. | Wait for rendered-transmission phraseology facts. |
@@ -32,5 +31,5 @@ This file records chunk-01 source units that should not be converted into passin
 
 - FP / type safety: these gap states are planning records; permanent expected gaps in code should use typed `EvidenceGapId`s.
 - Test architecture: a blocked unit is not skipped. It remains part of chunk coverage with an explicit blocker and handoff.
-- Impact: COMMS-1 was added during fn-47 to avoid overclaiming doubtful-reception behaviour from the existence of `SayAgain`.
+- Impact: COMMS-1 has moved to covered-green via fn-50; remaining entries are phraseology, policy, model-gap, or not-applicable records.
 - Operational correctness: phraseology and policy units remain separate from structural readback semantics.

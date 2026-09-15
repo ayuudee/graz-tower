@@ -1,5 +1,10 @@
 # FN47 review: chunk 01 source-mapped test wall
 
+Update 2026-09-15: COMMS-1 was subsequently repaired by
+`fn-50-sim-models-reception-quality-comms-1` and is now covered-green via
+real reception-doubt / pilot `SayAgain` evidence. The original review below
+records the fn-47 state before that repair.
+
 ## Verdict
 
 Proceed, with one important framing note: chunk 01 is a mixed success, not a
@@ -24,9 +29,10 @@ Final chunk state:
 
 - The test/implementation firewall held. No controller, pilot, sim, or
   phraseology production behaviour was changed to make source tests pass.
-- The source plan corrected two overclaims before test authoring:
+- The source plan corrected two overclaims before test authoring (fn-47 state):
   - the Appendix cross-reference became `not-applicable`;
-  - doubtful-reception repetition became `expected-gap` via `COMMS-1`.
+  - doubtful-reception repetition was parked under `COMMS-1` for a later
+    repair, which landed in fn-50.
 - Structural readback source units are now covered through exact evidence
   source refs, not only broad `RequiredItems` grouping.
 - Hearback/correction source units are covered by source-backed controller

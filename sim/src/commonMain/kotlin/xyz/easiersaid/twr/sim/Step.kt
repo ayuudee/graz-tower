@@ -103,6 +103,7 @@ import xyz.easiersaid.twr.protocol.ResumeNormalSpeed
 import xyz.easiersaid.twr.protocol.ResumeOwnNavigation
 import xyz.easiersaid.twr.protocol.RouteAsFiled
 import xyz.easiersaid.twr.protocol.RunwayInUseAdvisory
+import xyz.easiersaid.twr.protocol.SayAgain
 import xyz.easiersaid.twr.protocol.SetPressure
 import xyz.easiersaid.twr.protocol.SetSquawk
 import xyz.easiersaid.twr.protocol.SpecialVfrClearance
@@ -209,6 +210,7 @@ fun step(state: SimState, event: SimEvent): Pair<SimState, List<SimEvent>> {
         is SimEvent.Spawn -> handleSpawn(atTime, event)
         is SimEvent.TransmissionStart -> handleTransmissionStart(atTime, event)
         is SimEvent.TransmissionEnd -> handleTransmissionEnd(atTime, event)
+        is SimEvent.TransmissionReceptionObserved -> atTime to emptyList()
         is SimEvent.PilotProcessingComplete -> handlePilotProcessingComplete(atTime, event)
         // Pass 9 (D-AUDIT.2 / Phase 9.B): MissedHandoffDetected has no
         // handler-state-change effect — it is a system-emitted operational
@@ -1044,10 +1046,25 @@ private fun handleTransmissionEnd(
     val tx = state.inFlightTransmissions[event.transmissionId]
         ?: return state to emptyList()
     val withoutTx = state.copy(inFlightTransmissions = state.inFlightTransmissions - tx.id)
+    val receptionQuality = if (tx.steppedOn) {
+        ReceptionQuality.Doubtful(ReceptionDoubtCause.SteppedOn)
+    } else {
+        ReceptionQuality.Clear
+    }
+    val receptionObserved = SimEvent.TransmissionReceptionObserved(
+        time = tx.endsAt,
+        transmission = tx,
+        receptionQuality = receptionQuality,
+    )
 
-    if (tx.steppedOn) return withoutTx to emptyList()
+    if (tx.steppedOn && tx.repetitionOf == null && !hasPendingReceptionDoubt(withoutTx, tx)) {
+        val (withRepetitionRequest, repetitionRequestEvents) =
+            scheduleSayAgainAndRepeatForSteppedOnControllerTransmission(withoutTx, tx)
+        return withRepetitionRequest.emit(listOf(receptionObserved) + repetitionRequestEvents)
+    }
+    if (tx.steppedOn) return withoutTx.emit(listOf(receptionObserved))
 
-    return when (val receiver = tx.receiver) {
+    val (deliveredState, deliveredEvents) = when (val receiver = tx.receiver) {
         is ReceiverRef.Pilot -> {
             val processingAt = tx.endsAt + CommsConstants.PILOT_COGNITIVE_DELAY
             val completion = SimEvent.PilotProcessingComplete(
@@ -1055,10 +1072,75 @@ private fun handleTransmissionEnd(
                 aircraftId = receiver.aircraftId,
                 utterance = tx.utterance,
             )
-            withoutTx.emit(listOf(completion))
+            clearPendingReceptionDoubt(withoutTx, tx) to listOf(completion)
         }
         is ReceiverRef.Controller -> handleControllerTransmissionEnd(withoutTx, tx)
     }
+    return deliveredState.emit(listOf(receptionObserved) + deliveredEvents)
+}
+
+private fun hasPendingReceptionDoubt(state: SimState, tx: InFlightTransmission): Boolean {
+    val receiver = tx.receiver as? ReceiverRef.Pilot ?: return false
+    return receiver.aircraftId in state.pendingReceptionDoubtAircraft
+}
+
+private fun clearPendingReceptionDoubt(state: SimState, tx: InFlightTransmission): SimState {
+    val receiver = tx.receiver as? ReceiverRef.Pilot ?: return state
+    if (tx.speaker !is SpeakerRef.Controller) return state
+    return state.copy(
+        pendingReceptionDoubtAircraft = state.pendingReceptionDoubtAircraft - receiver.aircraftId,
+    )
+}
+
+private fun scheduleSayAgainAndRepeatForSteppedOnControllerTransmission(
+    state: SimState,
+    tx: InFlightTransmission,
+): Pair<SimState, List<SimEvent>> {
+    val receiver = tx.receiver as? ReceiverRef.Pilot ?: return state to emptyList()
+    val speaker = tx.speaker as? SpeakerRef.Controller ?: return state to emptyList()
+    val aircraft = state.aircraft[receiver.aircraftId] ?: return state to emptyList()
+    if (aircraft.pilotMission != null) return state to emptyList()
+    val controller = state.controllers[speaker.id] ?: return state to emptyList()
+
+    val (withTxId, txId) = state.mintTransmissionId()
+    val utterance = Utterance.FromPilot(SayAgain())
+    val earliestStart = tx.endsAt + CommsConstants.PILOT_READBACK_PREP
+    val pilotRadioFloor = withTxId.pilotRadioFreeAt[receiver.aircraftId] ?: earliestStart
+    val startAt = maxOf(
+        earliestStart,
+        pilotRadioFloor,
+        pilotFrequencyFreeFrom(withTxId, tx.frequency, earliestStart),
+    )
+    val sayAgainTx = InFlightTransmission(
+        id = txId,
+        speaker = SpeakerRef.Pilot(receiver.aircraftId),
+        receiver = ReceiverRef.Controller(speaker.id),
+        frequency = tx.frequency,
+        utterance = utterance,
+        startedAt = startAt,
+        endsAt = startAt + utteranceDuration(utterance),
+    )
+    val existingFloor = withTxId.pilotRadioFreeAt[receiver.aircraftId] ?: sayAgainTx.endsAt
+    val withRadioFreeAt = withTxId.copy(
+        pilotRadioFreeAt = withTxId.pilotRadioFreeAt +
+            (receiver.aircraftId to maxOf(existingFloor, sayAgainTx.endsAt)),
+        pendingReceptionDoubtAircraft = withTxId.pendingReceptionDoubtAircraft + receiver.aircraftId,
+    )
+    val (withRepeatId, repeatTxId) = withRadioFreeAt.mintTransmissionId()
+    val repeatEarliestStart = sayAgainTx.endsAt +
+        (CommsConstants.CONTROLLER_REPLY_LATENCY[controller.role] ?: CommsConstants.DEFAULT_CONTROLLER_REPLY_LATENCY)
+    val repeatStartAt = pilotFrequencyFreeFrom(withRepeatId, tx.frequency, repeatEarliestStart)
+    val repeatTx = tx.copy(
+        id = repeatTxId,
+        startedAt = repeatStartAt,
+        endsAt = repeatStartAt + utteranceDuration(tx.utterance),
+        steppedOn = false,
+        repetitionOf = tx.repetitionOf ?: tx.id,
+    )
+    return withRepeatId to listOf(
+        SimEvent.TransmissionStart(time = sayAgainTx.startedAt, transmission = sayAgainTx),
+        SimEvent.TransmissionStart(time = repeatTx.startedAt, transmission = repeatTx),
+    )
 }
 
 private fun handleControllerTransmissionEnd(

@@ -10,8 +10,8 @@ Source: `classification.csv` rows with `chunk_id = chunk-01-comms-readback-trans
 
 | State | Units |
 |---|---:|
-| `candidate-test` | 8 |
-| `expected-gap` | 2 |
+| `candidate-test` | 9 |
+| `expected-gap` | 1 |
 | `not-applicable` | 1 |
 | `phraseology-later` | 7 |
 | `policy-blocked` | 2 |
@@ -20,7 +20,7 @@ Source: `classification.csv` rows with `chunk_id = chunk-01-comms-readback-trans
 
 | Source unit | Section | Claim | Planned state | Blocker | Notes |
 |---|---|---|---|---|---|
-| `icao9432-extracted::communications_2_8_1_en::0a964f42b6100596` | `communications_2_8_1_en` | If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either in full or in part. | `expected-gap` | `COMMS-1` | Record expected gap for COMMS-1; current facts do not model doubtful reception or in-full/in-part repetition requests. |
+| `icao9432-extracted::communications_2_8_1_en::0a964f42b6100596` | `communications_2_8_1_en` | If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either in full or in part. | `candidate-test` | `none` | Covered by fn-50 real radio-overlap evidence: stepped-on controller transmission produces ReceptionDoubt resolved by pilot SayAgain. |
 | `icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca` | `communications_2_8_1_en` | When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the call "ALL STATIONS". | `phraseology-later` | `PHRASE-1` | Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology. |
 | `icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf` | `communications_2_8_1_en` | No reply is expected to such general calls unless individual stations are subsequently called upon to acknowledge receipt. | `policy-blocked` | `POLICY-1` | Block on typed policy concept OperationalGuidancePolicy; do not assert one universal behaviour. |
 | `icao9432-extracted::communications_2_8_1_en::a685cef087951878` | `communications_2_8_1_en` | When establishing communications, an aircraft should use the full call sign of both the aircraft and the aeronautical station. | `phraseology-later` | `PHRASE-1` | Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology. |
@@ -49,10 +49,10 @@ Source: `classification.csv` rows with `chunk_id = chunk-01-comms-readback-trans
 - `icao9432-extracted::readback_2_8_3_en::58594a8ee6243296`: ATC route clearances shall always be read back. Target: `protocolEvidence`.
 - `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::17e1dfdf4ce57253`: The controller shall listen to the read-back to ascertain that the clearance or instruction has been correctly acknowledged by the flight crew. Target: `protocolEvidence`.
 - `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ace4ab7ff5d53a66`: The controller shall take immediate action to correct any discrepancies revealed by the read-back. Target: `protocolEvidence`.
+- `icao9432-extracted::communications_2_8_1_en::0a964f42b6100596`: If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either in full or in part. Target: `simEvidence`.
 
 ## Expected Gaps / Blocked / Not Applicable Units
 
-- `icao9432-extracted::communications_2_8_1_en::0a964f42b6100596` -> `expected-gap` via `COMMS-1`: If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either in full or in part.
 - `icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca` -> `phraseology-later` via `PHRASE-1`: When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the call "ALL STATIONS".
 - `icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf` -> `policy-blocked` via `POLICY-1`: No reply is expected to such general calls unless individual stations are subsequently called upon to acknowledge receipt.
 - `icao9432-extracted::communications_2_8_1_en::a685cef087951878` -> `phraseology-later` via `PHRASE-1`: When establishing communications, an aircraft should use the full call sign of both the aircraft and the aeronautical station.

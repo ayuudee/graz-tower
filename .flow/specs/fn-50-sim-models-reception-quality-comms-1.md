@@ -20,29 +20,26 @@ typed reception-doubt vocabulary added in
 - `EvidenceExpectContext.receptionDoubt(aircraftId)` selector returning
   `AuditReceptionDoubtSubject` with `requiresRepetitionResponse()`.
 
-However the sim does NOT currently emit any reception-quality signal:
-`TransmissionRecord` models speaker / receiver / utterance but does not
+Before this epic, the sim did not emit any reception-quality signal:
+`TransmissionRecord` modeled speaker / receiver / utterance but did not
 carry a typed reception-quality input that the adapter could read.
-The adapter is total over the speaker × utterance × payload matrix but
-returns `null` for every record on today's traces. As a result the
+The adapter was total over the speaker × utterance × payload matrix but
+returned `null` for every record on then-current traces. As a result the
 chunk-01 evidence test
 `Icao9432Chunk01ReceptionDoubtEvidenceTest::reception-doubt source unit
-is covered red against current LOWG trace` lands **covered-red**: the
-audit honestly reports a `Fail` outcome for the cited source ref, and
-the test asserts that outcome directly on `report.results` rather than
-via `assertNoFailures()`. JUnit passes (build green) while the audit's
-red outcome stands.
+is covered red against current LOWG trace` landed **covered-red**: the
+audit honestly reported a `Fail` outcome for the cited source ref, and
+the test asserted that outcome directly on `report.results` rather than
+via `assertNoFailures()`. JUnit passed (build green) while the audit's
+red outcome stood.
 
-This repair epic closes that gap by teaching the sim to model reception
-quality and emit observable reception-doubt signals into
-`TransmissionRecord` (or a parallel typed signal stream), so the new
-adapter projection can produce `ReceptionDoubt` facts in scenarios where
-doubt actually arises (overlapping transmissions, partial reception,
-unintelligibility). When the sim emits the relevant signal, the same
-chunk-01 test will flip from `covered-red` to `covered-green`; the
-assertion shape in the test method should then be updated to call
-`report.assertNoFailures()` and the `.plan` pointer
-(COMMS-1 → fn-50-sim-models-reception-quality-comms-1) deleted.
+This repair epic closed that gap by teaching the sim to model reception
+quality and emit observable reception-doubt signals into transmission
+records from a real overlapping-transmission scenario. The new adapter
+projection produces `ReceptionDoubt` facts where doubt actually arises,
+and the COMMS-1 evidence test now runs covered-green via
+`report.assertNoFailures()`. The `.plan` pointer
+(COMMS-1 → fn-50-sim-models-reception-quality-comms-1) is deleted.
 
 ## Closure Signal
 
@@ -56,14 +53,15 @@ Equivalently: in at least one sim scenario, the new adapter projection
 `EvidenceFactPayload.ReceptionDoubt(...)` facts driven by a real
 reception-quality signal on the underlying transmission record. The
 `AuditReceptionDoubtSubject.requiresRepetitionResponse()` selector
-returns `Pass` for the target aircraft (every emitted doubt fact has a
-matching `resolvedBy: SayAgainRef` because the controller / pilot
-agent's response logic also emits a `SayAgain` linked to the same
-transmission instance).
+returns `Pass` for the target aircraft in the COMMS-1 overlap scenario
+(the emitted doubt fact has a matching `resolvedBy: SayAgainRef` because
+the minimal non-cognitive pilot response logic emits a `SayAgain` linked
+to the same transmission stream). Full cognitive-mission repetition
+recovery is filed separately as `D-AUDIT.15-FOLLOWUP`.
 
 ## Acceptance Criteria
 
-- [ ] **R1** — `TransmissionRecord` (or a parallel typed signal stream)
+- [x] **R1** — `TransmissionRecord` (or a parallel typed signal stream)
   carries a reception-quality input that can express the four typed
   `ReceptionDoubtSource` leaves (`PartialReception`,
   `Unintelligibility`, `SteppedOn`, `Other(detail)`). The signal is
@@ -71,28 +69,27 @@ transmission instance).
   radio model, partial-reception by phase-of-flight masking, controller
   ambiguity detection) — NOT injected by tests via
   `fromProjectedPayloads`.
-- [ ] **R2** — `EvidenceFactAdapters.receptionDoubtFact(...)` branches
+- [x] **R2** — `EvidenceFactAdapters.receptionDoubtFact(...)` branches
   on the new typed input and emits
   `EvidenceFactPayload.ReceptionDoubt(...)` facts at sequence offset
-  `recordIndex * FACTS_PER_RECORD + 5`. Property tests at
-  `EvidenceFactsTest::reception-doubt projections are total over the
-  explicit speaker x utterance x payload matrix` update to assert
-  `Pass` on the "matching-payload" rows.
-- [ ] **R3** — The chunk-01 evidence test
+  `recordIndex * FACTS_PER_RECORD + 5`. Tests cover Clear-matrix
+  silence, all typed doubt causes, and resolved real-overlap evidence.
+- [x] **R3** — The chunk-01 evidence test
   `Icao9432Chunk01ReceptionDoubtEvidenceTest` re-runs `covered-green`:
   the test method asserts via `report.assertNoFailures()` (the
   `report.results` `Fail` assertion introduced in
   fn-48-icao-9432-chunk-01-drive-expected-gap.3 is replaced).
-- [ ] **R4** — The controller / pilot agent that observes a doubt
-  signal also emits a `protocol.SayAgain` transmission, and the
+- [x] **R4** — The pilot agent in the minimal COMMS-1 overlap scenario
+  that observes a doubt signal also emits a `protocol.SayAgain`
+  transmission, and the
   adapter populates `EvidenceFactPayload.ReceptionDoubt.resolvedBy`
-  with the matching `SayAgainRef(TransmissionId)`. Otherwise the
-  selector's pass-path would fail on un-resolved doubts.
-- [ ] **R5** — `.plan` pointer paragraph for COMMS-1 is deleted (since
+  with the matching `SayAgainRef(TransmissionId)`. Full cognitive-mission
+  repetition recovery is `D-AUDIT.15-FOLLOWUP`.
+- [x] **R5** — `.plan` pointer paragraph for COMMS-1 is deleted (since
   the unit is now `covered-green`).
-- [ ] **R6** — `./gradlew-nix build` and `./gradlew-nix detekt` both
+- [x] **R6** — `./gradlew-nix build` and `./gradlew-nix detekt` both
   green.
-- [ ] **R7** — No regression in existing sim golden tests
+- [x] **R7** — No regression in existing sim golden tests
   (`./gradlew-nix :sim:jvmTest`).
 
 ## Investigation hints

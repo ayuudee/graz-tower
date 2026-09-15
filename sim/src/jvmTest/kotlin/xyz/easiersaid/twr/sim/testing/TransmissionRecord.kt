@@ -46,6 +46,17 @@ fun SimEvent.TransmissionStart.toTransmissionRecord(): TransmissionRecord =
         utterance = transmission.utterance,
     )
 
+/** Extract typed records from events, merging final receive-quality observations. */
+fun List<SimEvent>.toTransmissionRecords(): List<TransmissionRecord> {
+    val qualityByTransmissionId = filterIsInstance<SimEvent.TransmissionReceptionObserved>()
+        .associate { event -> event.transmission.id to event.receptionQuality }
+    return filterIsInstance<SimEvent.TransmissionStart>().map { event ->
+        event.toTransmissionRecord().copy(
+            receptionQuality = qualityByTransmissionId[event.transmission.id] ?: ReceptionQuality.Clear,
+        )
+    }
+}
+
 /** First controller-issued instruction of type [I] addressed to [aircraft]. */
 inline fun <reified I : AtcInstruction> List<TransmissionRecord>.firstControllerInstructionOf(
     aircraft: AircraftId,

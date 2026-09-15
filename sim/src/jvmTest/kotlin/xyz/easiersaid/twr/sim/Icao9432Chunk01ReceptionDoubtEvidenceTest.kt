@@ -1,8 +1,8 @@
 package xyz.easiersaid.twr.sim
 
 import kotlin.test.Test
+import kotlin.test.assertIs
 import kotlin.test.assertTrue
-import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.protocol.AircraftId
 
 /**
@@ -10,37 +10,18 @@ import xyz.easiersaid.twr.protocol.AircraftId
  * (doubtful reception triggers repetition request). Closes the COMMS-1
  * expected-gap unit `communications_2_8_1_en::0a964f42b6100596`.
  *
- * **Landing: covered-red.** Today's sim has no reception-quality signal
- * infrastructure — `TransmissionRecord` models speaker / receiver /
- * utterance but does not model reception confidence, partial-reception
- * markers, overlapping-transmission detection ("stepped on"), or
- * unintelligibility. The new adapter projection
- * [EvidenceFactAdapters.receptionDoubtFact] is total over the
- * speaker × utterance × payload matrix but observes no doubt facts on
- * any LOWG circuit-training trace; the audit honestly reports `Fail`
- * for the cited source ref via the [AuditReceptionDoubtSubject]
- * selector.
- *
- * The test method does NOT call [EvidenceAuditReport.assertNoFailures] —
- * doing so would propagate the `Fail` outcome into a JUnit failure and
- * turn `./gradlew-nix build` red, incompatible with AGENTS.md commandment
- * 2 (no half-baked commits). Instead it asserts directly on
- * `report.results` that the expected `Fail` is present for the cited
- * source ref. JUnit passes (build green) while the audit's red outcome
- * stands. The spawned production-repair epic
- * `fn-50-sim-models-reception-quality-comms-1` tracks the sim-side addition of
- * reception-quality input; when that lands, the assertion shape in this
- * test should flip to `report.assertNoFailures()` and the `.plan`
- * pointer (COMMS-1 → fn-50-sim-models-reception-quality-comms-1) deleted.
+ * **Landing: covered-green.** The test observes a real sim radio-overlap
+ * scenario via [EvidenceFactAdapters.receptionDoubtOverlap]: a controller
+ * transmission is stepped on, the receiver pilot requests repetition with
+ * `SayAgain`, and the evidence adapter links the doubtful transmission to
+ * that `SayAgainRef`.
  *
  * Per AGENTS.md commandment 4 (tests prove the real job), this test
- * exercises the real sim trace via `EvidenceFactAdapters.lowgCircuitTraining`
+ * exercises real sim radio events via `EvidenceFactAdapters.receptionDoubtOverlap`
  * — it does NOT use `fromProjectedPayloads` to fabricate compliant doubt
- * facts and claim covered-green. The construction-site tests for the
- * typed-payload wiring (sealed `ReceptionDoubtSource` leaves, optional
- * `resolvedBy: SayAgainRef?`) and the selector's pass/fail paths live in
- * `EvidenceFactsTest` and use `fromProjectedPayloads` to prove the type
- * is wired, not that the sim observes doubt in real traces.
+ * facts. The broader cognitive-mission recovery path is deliberately filed
+ * as `D-AUDIT.15-FOLLOWUP`; this source unit requires the repetition request
+ * obligation, not full recovery of every mission-level instruction.
  *
  * One test method per source unit (R6 acceptance: source units do not
  * share methods so the assertion shape is unambiguous — green via
@@ -50,13 +31,11 @@ class Icao9432Chunk01ReceptionDoubtEvidenceTest {
     private val aircraft = AircraftId("OE-ABC")
 
     @Test
-    fun `reception-doubt source unit is covered red against current LOWG trace`() {
+    fun `reception-doubt source unit is covered green via real radio overlap`() {
         val report = simEvidence("icao9432-chunk01-reception-doubt") {
             observe {
-                EvidenceFactAdapters.lowgCircuitTraining(
+                EvidenceFactAdapters.receptionDoubtOverlap(
                     scenarioId = "icao9432-chunk01-reception-doubt",
-                    outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop),
-                    untilMinutes = LOWG_UNTIL_MINUTES,
                 )
             }
 
@@ -66,21 +45,19 @@ class Icao9432Chunk01ReceptionDoubtEvidenceTest {
             }
         }
 
-        // covered-red: assert directly on report.results, NOT via assertNoFailures.
-        // Calling assertNoFailures() here would propagate the Fail outcome into a
-        // JUnit failure and turn `./gradlew-nix build` red — incompatible with
-        // AGENTS.md commandment 2 (no half-baked commits). The honest red landing
-        // is tracked by spawned repair epic fn-50-sim-models-reception-quality-comms-1.
+        report.assertNoFailures()
         val sourceRef = ICAO9432.Communications.ReceptionDoubtRepetitionRequested
         val cited = report.results.filter { result -> result.sources.contains(sourceRef) }
         assertTrue(
-            cited.any { result -> result.outcome is EvidenceAuditOutcome.Fail },
-            "expected Fail outcome for ${sourceRef.canonicalId} (COMMS-1 covered-red); got: " +
-                cited.joinToString { "${it.id}=${it.outcome::class.simpleName}" },
+            cited.isNotEmpty(),
+            "expected cited outcome for ${sourceRef.canonicalId}; got no cited results",
         )
-    }
-
-    private companion object {
-        private const val LOWG_UNTIL_MINUTES: Long = 45L
+        cited.forEach { result ->
+            assertIs<EvidenceAuditOutcome.Pass>(
+                result.outcome,
+                "expected Pass outcome for ${sourceRef.canonicalId} (COMMS-1 covered-green); got: " +
+                cited.joinToString { "${it.id}=${it.outcome::class.simpleName}" },
+            )
+        }
     }
 }

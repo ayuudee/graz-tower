@@ -113,13 +113,24 @@ data class SimState(
      * frequency) and both get marked stepped-on; the radio carries silence
      * instead of two sequential reports.
      *
-     * **Single writer**: [Step.handlePilotTick] (set after each emission).
-     * Other pilot-emission paths (Step.kt:1132 readback, line 1156
-     * InitialContact, line 1210 respond-correction) emit at most one tx per
-     * call and gate on [pilotFrequencyFreeFrom] which already reflects state
-     * at their call time, so they don't need the per-aircraft tracker.
+     * **Writers**: [Step.handlePilotTick] (set after each emission),
+     * readback / InitialContact / respond-correction scheduling, and
+     * fn-50's minimal `SayAgain` recovery path. Every writer preserves the
+     * max of the existing floor and the newly scheduled pilot transmission's
+     * `endsAt`.
      */
     val pilotRadioFreeAt: Map<AircraftId, SimTime> = emptyMap(),
+    /**
+     * fn-50 (COMMS-1): aircraft with an outstanding reception-doubt
+     * repetition request.
+     *
+     * Set when a stepped-on controller-to-pilot transmission causes the pilot
+     * to request repetition. Cleared when a later clear controller-to-pilot
+     * transmission reaches that aircraft. While set, additional stepped-on
+     * controller transmissions are still observed as doubtful, but do not
+     * spawn recursive `SayAgain` traffic.
+     */
+    val pendingReceptionDoubtAircraft: Set<AircraftId> = emptySet(),
     /**
      * fn-12 (R3b): per-controller snapshot of the obstructions visible to
      * that controller AS OF the prior controller cycle. Updated at the

@@ -106,6 +106,7 @@ data class InFlightTransmission(
     val startedAt: SimTime,
     val endsAt: SimTime,
     val steppedOn: Boolean = false,
+    val repetitionOf: TransmissionId? = null,
 )
 
 /** Latencies and durations used by the comms layer. */

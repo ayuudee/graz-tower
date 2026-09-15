@@ -1,15 +1,5 @@
 [
   {
-    "source_unit_id": "icao9432-extracted::communications_2_8_1_en::0a964f42b6100596",
-    "section_id": "communications_2_8_1_en",
-    "claim_text": "If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either in full or in part.",
-    "planned_coverage_state": "expected-gap",
-    "blocking_item": "COMMS-1",
-    "policy_concept": "",
-    "test_authoring_notes": "Record expected gap for COMMS-1; current facts do not model doubtful reception or in-full/in-part repetition requests.",
-    "registry_path": "research/tools/requirements-spike/registry/ollama_first/candidates/icao9432-extracted/communications_2_8_1_en/icao9432-extracted::communications_2_8_1_en::0a964f42b6100596.json"
-  },
-  {
     "source_unit_id": "icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca",
     "section_id": "communications_2_8_1_en",
     "claim_text": "When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the call \"ALL STATIONS\".",

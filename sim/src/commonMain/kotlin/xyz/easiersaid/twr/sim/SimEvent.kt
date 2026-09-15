@@ -107,6 +107,22 @@ sealed interface SimEvent {
     }
 
     /**
+     * Final receive-quality observation for a completed transmission.
+     *
+     * Emitted from [TransmissionEnd] handling after overlap has been resolved,
+     * so [receptionQuality] describes the actual receive outcome rather than
+     * the optimistic state at key-up.
+     */
+    data class TransmissionReceptionObserved(
+        override val time: SimTime,
+        val transmission: InFlightTransmission,
+        val receptionQuality: ReceptionQuality,
+        override val seq: Long = 0,
+    ) : SimEvent {
+        override val source: AgentId = AgentId.System
+    }
+
+    /**
      * Fired after [CommsConstants.PILOT_COGNITIVE_DELAY] has elapsed since the
      * pilot finished hearing a non-stepped-on controller transmission. This
      * is where the pilot actually acts on the instruction (route/phase
@@ -270,6 +286,7 @@ internal fun SimEvent.withSeq(s: Long): SimEvent = when (this) {
     is SimEvent.Spawn -> copy(seq = s)
     is SimEvent.TransmissionStart -> copy(seq = s)
     is SimEvent.TransmissionEnd -> copy(seq = s)
+    is SimEvent.TransmissionReceptionObserved -> copy(seq = s)
     is SimEvent.PilotProcessingComplete -> copy(seq = s)
     is SimEvent.MissedHandoffDetected -> copy(seq = s)
     is SimEvent.FlightPlanFiled -> copy(seq = s)
