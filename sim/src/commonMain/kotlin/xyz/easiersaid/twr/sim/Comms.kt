@@ -69,6 +69,25 @@ sealed interface Utterance {
     data class FromController(val output: ControllerOutput) : Utterance
 }
 
+/** Final receive-quality classification for a transmission instance. */
+sealed interface ReceptionQuality {
+    data object Clear : ReceptionQuality
+    data class Doubtful(val cause: ReceptionDoubtCause) : ReceptionQuality
+}
+
+/** Typed source of reception doubt for ICAO 9432 §2.8.1.4 evidence. */
+sealed interface ReceptionDoubtCause {
+    data object PartialReception : ReceptionDoubtCause
+    data object Unintelligibility : ReceptionDoubtCause
+    data object SteppedOn : ReceptionDoubtCause
+
+    data class Other(val detail: String) : ReceptionDoubtCause {
+        init {
+            require(detail.isNotBlank()) { "reception-doubt detail must not be blank" }
+        }
+    }
+}
+
 /**
  * A transmission currently on (or about to go on) the air.
  *

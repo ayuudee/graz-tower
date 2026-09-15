@@ -627,17 +627,14 @@ class EvidenceFactsTest {
 
     // COMMS-1: reception-doubt evidence primitive (R1, R12).
     //
-    // The current sim has no reception-quality signal infrastructure, so the
-    // adapter projection [EvidenceFactAdapters.receptionDoubtFact] returns
-    // null for every record. These primitive-level tests pin that honest
-    // current behaviour across the full speaker × utterance × payload matrix
-    // + boundary cases. They also pin the typed-payload shape (sealed
-    // ReceptionDoubtSource leaves, optional resolvedBy: SayAgainRef?) and
-    // the selector's expected outcomes when the sim eventually emits
-    // doubt facts via fromProjectedPayloads — those construction-site tests
-    // prove the type is wired correctly without claiming covered-green for
-    // the source unit (per AGENTS.md commandment 4: tests prove the real
-    // job, not the synthetic type).
+    // The test-side transmission record now has an explicit reception-quality
+    // signal. These primitive-level tests pin both halves of the adapter:
+    // Clear emits no ReceptionDoubt fact across the full speaker × utterance
+    // × payload matrix, while Doubtful emits one unresolved fact at the
+    // reserved sequence offset. The selector construction-site tests prove
+    // the payload contract without claiming covered-green for the source unit;
+    // real COMMS-1 closure still requires the sim to produce doubt and
+    // SayAgain resolution from operational behavior.
 
     @Test
     fun `reception-doubt payload accepts all sealed source leaves and optional SayAgain resolution`() {
@@ -686,9 +683,9 @@ class EvidenceFactsTest {
     @Test
     fun `reception-doubt projections are total over the explicit speaker x utterance x payload matrix`() {
         // R12: every (speaker, utterance, payload) combination is exercised by the adapter
-        // and produces no reception-doubt facts under today's sim (which has no reception-
-        // quality signal infrastructure). This is the honest covered-red landing: the
-        // projection is total, but observes nothing.
+        // and produces no reception-doubt facts when the typed reception-quality signal is
+        // Clear. This pins the default no-signal boundary without hiding the fact that a
+        // Doubtful record now projects a real ReceptionDoubt fact.
         val aircraft = AircraftId("OE-ABC")
         val controllerId = ControllerId("LOWG_TWR")
         val matchingContactFrequency = ContactFrequency(
@@ -770,7 +767,45 @@ class EvidenceFactsTest {
             )
             assertTrue(
                 facts.facts.none { it.payload is EvidenceFactPayload.ReceptionDoubt },
-                "today's sim has no reception-quality signal — expected no ReceptionDoubt facts for $label",
+                "clear reception quality must produce no ReceptionDoubt facts for $label",
+            )
+        }
+    }
+
+    @Test
+    fun `reception-doubt projection emits unresolved fact for each typed doubt cause`() {
+        val aircraft = AircraftId("OE-ABC")
+        val causes = listOf(
+            ReceptionDoubtCause.PartialReception to ReceptionDoubtSource.PartialReception,
+            ReceptionDoubtCause.Unintelligibility to ReceptionDoubtSource.Unintelligibility,
+            ReceptionDoubtCause.SteppedOn to ReceptionDoubtSource.SteppedOn,
+            ReceptionDoubtCause.Other("garbled-callsign") to ReceptionDoubtSource.Other("garbled-callsign"),
+        )
+
+        causes.forEachIndexed { index, (cause, expectedSource) ->
+            val record = pilotTransmissionRecord(
+                index = index,
+                aircraft = aircraft,
+                transmission = Report(events = listOf(ReportEvent.Ready)),
+            ).copy(receptionQuality = ReceptionQuality.Doubtful(cause))
+
+            val factSet = EvidenceFactAdapters.fromTransmissionRecords(
+                scenarioId = "doubt-cause::$index",
+                records = listOf(record),
+            )
+            val fact = factSet.facts.single { it.payload is EvidenceFactPayload.ReceptionDoubt }
+            val payload = fact.payload as EvidenceFactPayload.ReceptionDoubt
+
+            assertEquals(aircraft, payload.aircraftId)
+            assertEquals(record.transmissionId, payload.transmissionRef)
+            assertEquals(expectedSource, payload.doubtSource)
+            assertNull(payload.resolvedBy)
+            assertEquals(EvidenceSequence(5), fact.provenance.sequence)
+            assertEquals(record.time, fact.provenance.simTime)
+            assertEquals(record.transmissionId, fact.provenance.sourceTransmissionId)
+            assertEquals(
+                "sim.records[0].pilot.receptionDoubt",
+                fact.provenance.extractionPath.value,
             )
         }
     }
@@ -794,17 +829,10 @@ class EvidenceFactsTest {
     }
 
     @Test
-    fun `reception-doubt projection is wired through controller Respond records (not only Instruct)`() {
+    fun `reception-doubt projection emits for controller Respond records (not only Instruct)`() {
         // Regression for codex impl-review finding: receptionDoubtFact must
         // execute for ControllerOutput.Respond records too — doubt is a
-        // property of the transmission instance, not the controller-output
-        // subtype. Today's sim has no reception-quality signal, so the
-        // projection returns null. The assertion is that the Respond arm
-        // produces no facts at all (the unprojected `Respond` arm still
-        // returns emptyList for instruction/frequency-transfer facts) —
-        // i.e., the code path is exercised without throwing or producing
-        // spurious facts. When the production-repair epic adds reception-
-        // quality input, ReceptionDoubt facts will start landing here.
+        // property of the transmission instance, not the controller-output subtype.
         val aircraft = AircraftId("OE-ABC")
         val respondOutput = ControllerOutput.Respond(
             target = aircraft,
@@ -823,6 +851,7 @@ class EvidenceFactsTest {
             speaker = SpeakerRef.Controller(ControllerId("LOWG_TWR")),
             receiver = ReceiverRef.Pilot(aircraft),
             utterance = Utterance.FromController(respondOutput),
+            receptionQuality = ReceptionQuality.Doubtful(ReceptionDoubtCause.PartialReception),
         )
 
         val facts = EvidenceFactAdapters.fromTransmissionRecords(
@@ -830,16 +859,14 @@ class EvidenceFactsTest {
             records = listOf(record),
         )
 
-        // No ReceptionDoubt facts (sim has no reception-quality signal) — but the
-        // projection was reached. Also: no Instruction or FrequencyTransfer facts
-        // either, because Respond does not produce them.
-        assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.ReceptionDoubt })
+        val payloads = facts.facts.map { it.payload }
+        assertEquals(1, payloads.count { it is EvidenceFactPayload.ReceptionDoubt })
         assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.Instruction })
         assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.FrequencyTransfer })
     }
 
     @Test
-    fun `reception-doubt projection on multiple mixed records emits no doubt facts under current sim`() {
+    fun `reception-doubt projection on multiple clear mixed records emits no doubt facts`() {
         val aircraft = AircraftId("OE-ABC")
         val records = listOf(
             controllerInstructionRecord(
@@ -864,7 +891,7 @@ class EvidenceFactsTest {
         )
 
         assertTrue(facts.facts.none { it.payload is EvidenceFactPayload.ReceptionDoubt })
-        // Other projections still fire on the same records — confirms doubt's null return
+        // Other projections still fire on the same records — confirms doubt's clear branch
         // is local to this projection (not a record-level filter that suppresses everything).
         assertTrue(facts.facts.any { it.payload is EvidenceFactPayload.FrequencyTransfer })
     }

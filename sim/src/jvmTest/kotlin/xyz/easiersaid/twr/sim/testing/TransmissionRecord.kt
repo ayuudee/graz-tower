@@ -11,6 +11,7 @@ import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.sim.ReceiverRef
+import xyz.easiersaid.twr.sim.ReceptionQuality
 import xyz.easiersaid.twr.sim.SimEvent
 import xyz.easiersaid.twr.sim.SpeakerRef
 import xyz.easiersaid.twr.sim.TransmissionId
@@ -32,6 +33,7 @@ data class TransmissionRecord(
     val speaker: SpeakerRef,
     val receiver: ReceiverRef,
     val utterance: Utterance,
+    val receptionQuality: ReceptionQuality = ReceptionQuality.Clear,
 )
 
 /** Extract a typed [TransmissionRecord] from a [SimEvent.TransmissionStart]. */

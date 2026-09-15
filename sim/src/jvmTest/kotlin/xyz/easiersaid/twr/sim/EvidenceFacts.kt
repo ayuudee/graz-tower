@@ -583,20 +583,17 @@ object EvidenceFactAdapters {
         output: ControllerOutput,
         phaseAtTransmission: Map<TransmissionId, PilotPhase>,
     ): List<EvidenceFact> {
-        // Reception-doubt observation is a property of the transmission
-        // instance itself (per ICAO 9432 §2.8.1.4 — doubt about message
-        // correctness), independent of whether the controller emitted an
-        // Instruct or a Respond. Wire it at the controller-arm level so
-        // BOTH ControllerOutput subtypes carry the projection. Today's
-        // sim has no reception-quality signal so the function returns
-        // null on every record (covered-red); when the production-repair
-        // epic adds the signal, this single call site lights up doubt
-        // facts for instructions AND responses.
-        // Wiring point for reception-doubt projection. Today the call
-        // returns null on every record (no reception-quality signal). The
-        // wiring still runs for both controller arms so that the production-
-        // repair epic can light it up with one signature change.
-        val receptionDoubtFact = receptionDoubtFact()
+        val targetAircraft = when (output) {
+            is ControllerOutput.Instruct -> output.target
+            is ControllerOutput.Respond -> output.target
+        }
+        val receptionDoubtFact = receptionDoubtFact(
+            scenarioId = scenarioId,
+            recordIndex = recordIndex,
+            record = record,
+            aircraftId = targetAircraft,
+            extractionSlot = "controller",
+        )
         val outputFacts = when (output) {
             is ControllerOutput.Instruct -> {
                 val instructionFact = fact(
@@ -738,10 +735,13 @@ object EvidenceFactAdapters {
             pilot = pilot,
             transmission = transmission,
         )
-        // Wiring point for the pilot arm of the reception-doubt projection.
-        // Same semantics as the controller-arm call above: returns null
-        // today, lights up when the repair epic adds the input.
-        val receptionDoubtFact = receptionDoubtFact()
+        val receptionDoubtFact = receptionDoubtFact(
+            scenarioId = scenarioId,
+            recordIndex = recordIndex,
+            record = record,
+            aircraftId = pilot.aircraftId,
+            extractionSlot = "pilot",
+        )
         return listOf(transmissionFact) +
             reportFacts +
             listOfNotNull(aerodromeInformationFact) +
@@ -984,20 +984,9 @@ object EvidenceFactAdapters {
      * frequency-transfer facts (`+3`), and pilot-notified frequency-change
      * facts (`+4`). Task .4 reserves `+6` (ClearancePacing).
      *
-     * **Honest covered-red landing.** The current sim has no
-     * reception-quality signal infrastructure: [TransmissionRecord] models
-     * speaker / receiver / utterance but does *not* model reception
-     * confidence, partial-reception markers, or overlapping-transmission
-     * detection. This adapter is therefore total — it is wired into both
-     * the controller and pilot speaker arms and exercises the full
-     * speaker × utterance × payload matrix — but it returns `null` for
-     * every record produced by today's sim. The audit honestly reports
-     * `Fail` for the cited source ref via the
-     * [EvidenceExpectContext.receptionDoubt] selector. The spawned
-     * production-repair epic adds the missing reception-quality input to
-     * `TransmissionRecord`; when that lands, this projection starts
-     * observing real doubt and the chunk-01 test transitions to
-     * covered-green.
+     * Clear transmissions emit no fact. Doubtful transmissions emit an
+     * unresolved fact; task fn-50.2 wires the operational `SayAgain` response
+     * and fills [EvidenceFactPayload.ReceptionDoubt.resolvedBy].
      *
      * Per AGENTS.md commandment 4 (tests prove the real job), we do NOT
      * fabricate doubt facts from `fromProjectedPayloads` to claim a synthetic
@@ -1006,27 +995,40 @@ object EvidenceFactAdapters {
      * a typed optional reference; `SayAgain` itself is not modified by this
      * projection.
      */
-    private fun receptionDoubtFact(): EvidenceFact? {
-        // No reception-quality signal exists on TransmissionRecord today, so
-        // the projection emits nothing on every record (covered-red landing).
-        // The function is intentionally parameterless to keep the signature
-        // honest — no `@Suppress("UnusedParameter")` lie about unused inputs
-        // (per AGENTS.md commandment 1). The wiring sites (controller
-        // Instruct / controller Respond / pilot transmission) still call
-        // through here so the regression tests in EvidenceFactsTest pin the
-        // wiring path; today the call always returns null.
-        //
-        // When the production-repair epic adds reception-quality input to
-        // TransmissionRecord, restore the
-        // `(scenarioId, recordIndex, record, aircraftId, extractionSlot)`
-        // signature, branch on the new typed input to emit
-        // EvidenceFactPayload.ReceptionDoubt(...) at sequence offset
-        // `recordIndex * FACTS_PER_RECORD + 5`, extraction path
-        // "sim.records[$recordIndex].$extractionSlot.receptionDoubt", and
-        // update the call sites in `controllerFacts` and `pilotFacts` to
-        // pass the params back.
-        return null
-    }
+    private fun receptionDoubtFact(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        aircraftId: AircraftId,
+        extractionSlot: String,
+    ): EvidenceFact? =
+        when (val quality = record.receptionQuality) {
+            ReceptionQuality.Clear -> null
+            is ReceptionQuality.Doubtful -> fact(
+                scenarioId = scenarioId,
+                origin = EvidenceFactOrigin.SimRun,
+                sequence = EvidenceSequence(recordIndex * FACTS_PER_RECORD + 5),
+                simTime = record.time,
+                sourceTransmissionId = record.transmissionId,
+                extractionPath = EvidenceExtractionPath(
+                    "sim.records[$recordIndex].$extractionSlot.receptionDoubt",
+                ),
+                payload = EvidenceFactPayload.ReceptionDoubt(
+                    aircraftId = aircraftId,
+                    transmissionRef = record.transmissionId,
+                    doubtSource = quality.cause.toReceptionDoubtSource(),
+                    resolvedBy = null,
+                ),
+            )
+        }
+
+    private fun ReceptionDoubtCause.toReceptionDoubtSource(): ReceptionDoubtSource =
+        when (this) {
+            ReceptionDoubtCause.PartialReception -> ReceptionDoubtSource.PartialReception
+            ReceptionDoubtCause.Unintelligibility -> ReceptionDoubtSource.Unintelligibility
+            ReceptionDoubtCause.SteppedOn -> ReceptionDoubtSource.SteppedOn
+            is ReceptionDoubtCause.Other -> ReceptionDoubtSource.Other(detail)
+        }
 
     private fun aerodromeInformationFact(
         scenarioId: String,

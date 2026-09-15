@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-15T09:04:34.121711Z",
+  "depends_on": [],
+  "epic": "fn-50-sim-models-reception-quality-comms-1",
+  "id": "fn-50-sim-models-reception-quality-comms-1.1",
+  "priority": 1,
+  "spec_path": ".flow/tasks/fn-50-sim-models-reception-quality-comms-1.1.md",
+  "status": "todo",
+  "title": "Design typed reception-quality signal and evidence projection",
+  "updated_at": "2026-09-15T09:04:34.121827Z"
+}

@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-15T09:04:34.319675Z",
+  "depends_on": [
+    "fn-50-sim-models-reception-quality-comms-1.2"
+  ],
+  "epic": "fn-50-sim-models-reception-quality-comms-1",
+  "id": "fn-50-sim-models-reception-quality-comms-1.3",
+  "priority": 3,
+  "spec_path": ".flow/tasks/fn-50-sim-models-reception-quality-comms-1.3.md",
+  "status": "todo",
+  "title": "Flip COMMS-1 covered-green and close chunk-01 framing",
+  "updated_at": "2026-09-15T09:04:34.319785Z"
+}
