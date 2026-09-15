@@ -20,9 +20,8 @@ Impact: these packages become the current structured-output product for existing
 Operational correctness: package claims are source-discrete and cite source documents/sections; Nolan and EPPLS remain excluded future sources unless explicitly onboarded.
 
 ## Done summary
-TBD
-
+Superseded by fn-20 final close-out reporting/package validation and fn-23 curation closeout. Any remaining source corpus work is now tracked explicitly by FN20-CUR-1, not this obsolete fn10 epic.
 ## Evidence
 - Commits:
-- Tests:
+- Tests: fn-20-fn10-source-unit-ingest-close-out-and.7 wrote final close-out report and updated docs., fn-23-fn20-pending-registry-curation.4 closed curation with audits and docs.
 - PRs:

@@ -18,8 +18,8 @@ Impact: later tasks depend on exact windows; over-broad windows can create dupli
 Operational correctness: keep source-specific authority ceilings: ICAO/SERA authoritative, CAP/H01/ICAO9432 operational guidance.
 
 ## Done summary
-Completed the 82-row source-window hardening pass. Current superseding queue is source_processing_queue_2026-05-09-fn10-windowed-v5: 232 manifest windows, 185 ready-to-ingest windows, 0 current hardening rows, 0 unresolved old rows, 0 unexpected outcomes. v5 supersedes earlier v1-v4 queues after live validation split CAP413 4.24-4.33 into narrower manifest windows.
+Flow housekeeping: task was operationally completed during the fn10 windowed source-processing pass, as already recorded in this task's Done summary. Later fn-20/fn-23 closeout superseded the queue and curation evidence.
 ## Evidence
 - Commits:
-- Tests: python3 research/tools/requirements-spike/quality/source_section_ledger/source_section_ledger_2026-04-30/build_source_section_ledger.py, python3 research/tools/requirements-spike/build_source_processing_queue.py --output-dir research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-09-fn10-windowed-v5, python3 research/tools/requirements-spike/ingest_section_batch.py --batch-manifest research/tools/requirements-spike/quality/source_processing_queue/source_processing_queue_2026-05-09-fn10-windowed-v5/ready_to_ingest_batch.json --output-root /tmp/requirements-source-units-fn10-2026-05-09-v5 --dry-run
-- PRs:
+- Tests: Existing task Done summary cites source_processing_queue_2026-05-09-fn10-windowed-v5 with 0 current hardening rows and dry-run validation.
+- PRs: Superseding closeout epics: fn-20-fn10-source-unit-ingest-close-out-and, fn-23-fn20-pending-registry-curation.

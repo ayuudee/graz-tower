@@ -188,12 +188,16 @@ Impact: M | Effort: M
 
 **FN43-GAP-2 — Evidence facts need critical-phase radio-silence projection**
 The permanent evidence DSL can cite ICAO 9432 critical-phase radio-silence
-guidance, but the observation port does not yet expose typed critical-phase
-windows, attempted transmissions inside those windows, or safety-necessity
-classification facts. Expected-gap ids may reference this backlog item only
-while they also name the affected source ref and the missing projection concept.
-Close when the evidence fact adapter emits phase-window and safety-necessity
-facts suitable for source-backed activation and adequacy reporting.
+guidance. fn-51 found the observation port now exposes typed critical-phase
+windows, but it still does not project controller transmissions inside those
+windows from real sim traces, nor does it expose typed safety-necessity
+classification for the "unless necessary for safety reasons" exception in ICAO
+9432 §4.1.2. Expected-gap ids may reference this backlog item only while they
+also name the affected source ref and the missing projection concept. The
+chunk-specific repair is tracked by `fn-52-implement-icao-9432-chunk-02.1`.
+Close when the evidence fact adapter emits critical-phase window,
+transmission, and safety-necessity facts suitable for source-backed activation
+and adequacy reporting.
 Impact: M | Effort: M
 
 **SIM-RED-1 — Broad sim JVM suite is red in reactive/emergency goldens** — DONE (2026-05-20)

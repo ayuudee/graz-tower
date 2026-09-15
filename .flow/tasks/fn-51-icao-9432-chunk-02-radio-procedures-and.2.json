@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-15T09:40:22.362782Z",
+  "depends_on": [
+    "fn-51-icao-9432-chunk-02-radio-procedures-and.1"
+  ],
+  "epic": "fn-51-icao-9432-chunk-02-radio-procedures-and",
+  "id": "fn-51-icao-9432-chunk-02-radio-procedures-and.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-51-icao-9432-chunk-02-radio-procedures-and.2.md",
+  "status": "todo",
+  "title": "Classify chunk 02 coverage states and expected gaps",
+  "updated_at": "2026-09-15T09:40:22.362885Z"
+}

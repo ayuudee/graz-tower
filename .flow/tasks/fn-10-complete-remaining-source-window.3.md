@@ -20,9 +20,8 @@ Impact: mistaken curation directly changes the product corpus. Keep decisions lo
 Operational correctness: regulatory/phraseology claims are accepted only when the source window supports them with document/section/line provenance.
 
 ## Done summary
-TBD
-
+Superseded by fn-23 pending registry curation. Residual pending records are now explicit in .plan as FN20-CUR-1 rather than hidden fn10 work.
 ## Evidence
 - Commits:
-- Tests:
-- PRs:
+- Tests: fn-23-fn20-pending-registry-curation.4 closed curation with audits and docs.
+- PRs: .plan FN20-CUR-1 records 106 pending records and their explicit classes.

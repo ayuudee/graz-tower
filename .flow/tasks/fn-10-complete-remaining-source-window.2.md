@@ -21,9 +21,8 @@ Impact: this task expands the registry substantially and may create many pending
 Operational correctness: every promoted unit must retain document ID, section ID, source line range, and authority ceiling from the manifest.
 
 ## Done summary
-TBD
-
+Superseded by later source-ingest closeout: fn-20 completed the v6 retry/ingest/promotion closeout and fn-23 completed pending registry curation. Closing this stale task keeps Flow from routing current ICAO 9432 work back to obsolete fn10 queue operations.
 ## Evidence
 - Commits:
-- Tests:
-- PRs:
+- Tests: fn-20-fn10-source-unit-ingest-close-out-and is done (7/7)., fn-23-fn20-pending-registry-curation is done (4/4).
+- PRs: Current .plan FN20-CUR-1 records residual pending records as explicit, not unexplained, source-text repair/human re-extraction work.
