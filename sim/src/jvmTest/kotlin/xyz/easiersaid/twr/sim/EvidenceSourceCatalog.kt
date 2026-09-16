@@ -148,8 +148,34 @@ object ICAO9432 {
             claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
         )
 
+        val TaxiLimitBeyondRunwayRequiresCrossOrHold: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::taxi_4_4_en::1367907005a34ad1",
+            title = "Taxi limit beyond runway requires cross clearance or hold-short instruction",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val AtisAcknowledgedNoDepartureInformationRequired: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::taxi_4_4_en::53f33b6da4f2be58",
+            title = "ATIS acknowledgement removes need to pass departure information in taxi instruction",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val RunwayVacatedBeyondHoldingPosition: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::taxi_4_4_en::eadf2541fcd51825",
+            title = "Runway vacated when entire aircraft beyond runway-holding position",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
         val HoldingPointLimit: Set<EvidenceSourceRef> =
             setOf(DepartingClearanceLimitNormallyHoldingPoint, TaxiInstructionClearanceLimitMandatory)
+
+        val Chunk03AuditItems: Set<EvidenceSourceRef> =
+            setOf(
+                TaxiInstructionClearanceLimitMandatory,
+                TaxiLimitBeyondRunwayRequiresCrossOrHold,
+                AtisAcknowledgedNoDepartureInformationRequired,
+                RunwayVacatedBeyondHoldingPosition,
+            )
     }
 
     object FinalApproachLanding {
@@ -264,6 +290,7 @@ object EvidenceSourceCatalog {
             ICAO9432.Readback.RequiredItems +
             ICAO9432.Readback.AdvisoryItems +
             ICAO9432.Taxi.HoldingPointLimit +
+            ICAO9432.Taxi.Chunk03AuditItems +
             ICAO9432.FinalApproachLanding.TouchAndGo +
             ICAO9432.TransferCommunications.RequiredProcedures +
             setOf(

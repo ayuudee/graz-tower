@@ -5,8 +5,28 @@ import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtomicReadback
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.AirTaxiTo
+import xyz.easiersaid.twr.protocol.BacktrackRunway
+import xyz.easiersaid.twr.protocol.CrossRunway
+import xyz.easiersaid.twr.protocol.ExpediteTaxi
+import xyz.easiersaid.twr.protocol.GiveWayToTraffic
+import xyz.easiersaid.twr.protocol.GroundInstruction
+import xyz.easiersaid.twr.protocol.HoldPosition
+import xyz.easiersaid.twr.protocol.HoldShortOf
+import xyz.easiersaid.twr.protocol.PushbackApproved
+import xyz.easiersaid.twr.protocol.PushbackFace
 import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.ReduceTaxiSpeed
 import xyz.easiersaid.twr.protocol.SimDuration
+import xyz.easiersaid.twr.protocol.StartupApproved
+import xyz.easiersaid.twr.protocol.StopImmediately
+import xyz.easiersaid.twr.protocol.TaxiClearance
+import xyz.easiersaid.twr.protocol.TaxiIntoHoldingBay
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
+import xyz.easiersaid.twr.protocol.TaxiToStand
+import xyz.easiersaid.twr.protocol.TaxiViaRunway
+import xyz.easiersaid.twr.protocol.TaxiWithCaution
+import xyz.easiersaid.twr.protocol.VacateRunway
 import xyz.easiersaid.twr.protocol.requiredReadbackAtoms
 
 enum class EvidenceClaimKind {
@@ -450,6 +470,12 @@ class EvidenceExpectContext internal constructor(
             facts = facts.orderedFacts(),
             activate = { factId -> activated += factId },
         )
+
+    fun taxiInstructions(): AuditTaxiInstructionSubject =
+        AuditTaxiInstructionSubject(
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
 }
 
 class AuditAircraftSubject internal constructor(
@@ -879,6 +905,73 @@ class AuditGroundStationTestSignalSubject internal constructor(
         }
     }
 }
+
+class AuditTaxiInstructionSubject internal constructor(
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun allHaveClearanceLimit(): EvidenceAuditOutcome {
+        val taxiFacts = facts.filter { fact ->
+            val instruction = fact.payload as? EvidenceFactPayload.Instruction ?: return@filter false
+            val groundInstruction = instruction.instruction as? GroundInstruction ?: return@filter false
+            groundInstruction.taxiLimitAuditShape() != null
+        }
+        if (taxiFacts.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing taxi-instruction evidence",
+                evidence = emptyList(),
+            )
+        }
+        taxiFacts.forEach { fact -> activate(fact.id) }
+        val missingLimit = taxiFacts.filter { fact ->
+            val instruction = (fact.payload as EvidenceFactPayload.Instruction).instruction as GroundInstruction
+            instruction.taxiLimitAuditShape()?.hasClearanceLimit == false
+        }
+        return if (missingLimit.isEmpty()) {
+            EvidenceAuditOutcome.Pass(
+                evidence = taxiFacts.map { fact ->
+                    val instruction = (fact.payload as EvidenceFactPayload.Instruction).instruction
+                    "${instruction::class.simpleName}@${fact.provenance.sequence.value}"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Typed taxi instruction(s) without clearance-limit field",
+                evidence = missingLimit.map { fact ->
+                    val instruction = (fact.payload as EvidenceFactPayload.Instruction).instruction
+                    "${instruction::class.simpleName}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
+    }
+}
+
+private data class TaxiLimitAuditShape(
+    val hasClearanceLimit: Boolean
+)
+
+private fun GroundInstruction.taxiLimitAuditShape(): TaxiLimitAuditShape? =
+    when (this) {
+        is StartupApproved -> null
+        is PushbackApproved -> null
+        is PushbackFace -> null
+        is TaxiToHoldingPoint -> TaxiLimitAuditShape(hasClearanceLimit = true)
+        is TaxiToStand -> TaxiLimitAuditShape(hasClearanceLimit = true)
+        is TaxiViaRunway -> TaxiLimitAuditShape(hasClearanceLimit = destination != null)
+        is AirTaxiTo -> TaxiLimitAuditShape(hasClearanceLimit = true)
+        is HoldPosition -> null
+        is HoldShortOf -> null
+        is CrossRunway -> null
+        is BacktrackRunway -> null
+        is VacateRunway -> null
+        is StopImmediately -> null
+        is TaxiIntoHoldingBay,
+        is TaxiWithCaution,
+        is ExpediteTaxi,
+        is ReduceTaxiSpeed,
+        -> TaxiLimitAuditShape(hasClearanceLimit = false)
+        is GiveWayToTraffic -> null
+    }
 
 sealed interface AuditEvidencePoint {
     val label: String
