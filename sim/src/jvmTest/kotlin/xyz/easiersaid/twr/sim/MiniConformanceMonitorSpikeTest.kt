@@ -7,6 +7,7 @@ import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.CircuitIntent
 import xyz.easiersaid.twr.protocol.FlyHeading
 import xyz.easiersaid.twr.protocol.Heading
 import xyz.easiersaid.twr.protocol.HeadingReadback
@@ -113,19 +114,24 @@ class MiniConformanceMonitorSpikeTest {
             basis = EvidenceBasis.SourceMapped(
                 sources = listOf(
                     SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::0ece166e11d7728e"),
-                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4"),
                 ),
             ),
             requiredCapabilities = setOf(MiniCapability.TowerCircuit, MiniCapability.LandingIntent),
         ) {
+            val request = reportsFrom<ReportEvent.Downwind>(aircraftId)
+                .firstOrNull { report ->
+                    report.events.filterIsInstance<ReportEvent.Downwind>()
+                        .any { event -> event.circuitIntent == CircuitIntent.TOUCH_AND_GO }
+                }
+                ?: return@MiniSourceContract fail("touch-and-go Downwind request missing")
             val touchAndGo = instructionsTo<ClearedTouchAndGo>(aircraftId).firstOrNull()
-                ?: return@MiniSourceContract fail("ClearedTouchAndGo missing")
+                ?: return@MiniSourceContract fail("ClearedTouchAndGo missing", request)
             val land = instructionsTo<ClearedToLand>(aircraftId).firstOrNull()
-                ?: return@MiniSourceContract fail("ClearedToLand missing", touchAndGo)
-            if (touchAndGo.time.millis < land.time.millis) {
-                pass(activationCount = 1, touchAndGo, land)
+                ?: return@MiniSourceContract fail("ClearedToLand missing", request, touchAndGo)
+            if (request.time.millis < touchAndGo.time.millis && touchAndGo.time.millis < land.time.millis) {
+                pass(activationCount = 1, request, touchAndGo, land)
             } else {
-                fail("touch-and-go clearance did not precede landing clearance", touchAndGo, land)
+                fail("touch-and-go request / clearance / landing order violated", request, touchAndGo, land)
             }
         }
 

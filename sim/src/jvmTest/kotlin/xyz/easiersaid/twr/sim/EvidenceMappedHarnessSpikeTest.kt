@@ -7,6 +7,7 @@ import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.CircuitIntent
 import xyz.easiersaid.twr.protocol.FlyHeading
 import xyz.easiersaid.twr.protocol.Heading
 import xyz.easiersaid.twr.protocol.HeadingReadback
@@ -118,7 +119,6 @@ class EvidenceMappedHarnessSpikeTest {
             basis = EvidenceBasis.SourceMapped(
                 sources = listOf(
                     SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::0ece166e11d7728e"),
-                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4"),
                 ),
             ),
             samples = listOf(
@@ -129,14 +129,20 @@ class EvidenceMappedHarnessSpikeTest {
                 ),
             ),
         ) {
+            val request = observation.reportsFrom<ReportEvent.Downwind>(aircraftId)
+                .firstOrNull { report ->
+                    report.events.filterIsInstance<ReportEvent.Downwind>()
+                        .any { event -> event.circuitIntent == CircuitIntent.TOUCH_AND_GO }
+                }
+                ?: return@EvidenceMappedCase fail("pilot touch-and-go Downwind request was not observed", observation.diagnostic)
             val touchAndGo = observation.instructionsTo<ClearedTouchAndGo>(aircraftId).firstOrNull()
                 ?: return@EvidenceMappedCase fail("ClearedTouchAndGo was not observed", observation.diagnostic)
             val land = observation.instructionsTo<ClearedToLand>(aircraftId).firstOrNull()
                 ?: return@EvidenceMappedCase fail("ClearedToLand was not observed", observation.diagnostic)
-            if (touchAndGo.time.millis < land.time.millis) {
-                pass("touchAndGo=${touchAndGo.time.millis}, land=${land.time.millis}")
+            if (request.time.millis < touchAndGo.time.millis && touchAndGo.time.millis < land.time.millis) {
+                pass("request=${request.time.millis}, touchAndGo=${touchAndGo.time.millis}, land=${land.time.millis}")
             } else {
-                fail("ClearedTouchAndGo did not precede ClearedToLand", observation.diagnostic)
+                fail("touch-and-go request / clearance / full-stop landing order violated", observation.diagnostic)
             }
         }
 

@@ -304,4 +304,135 @@ class Icao9432ModelGapSourceUnitSpecTest {
             }
         }.assertSatisfied().assertHasModelGap()
     }
+
+    @Test
+    fun `circuit arrival local procedure source units report missing policy concepts`() {
+        sourceUnitSpec("icao9432-circuit-arrival-local-procedure-policy-gaps") {
+            title("Circuit arrival local-procedure and traffic-dependent claims require explicit policy concepts")
+            sourceUnits(
+                listOf(
+                    SourceUnitRef("icao9432-extracted::aerodrome_traffic_circuit_4_6_part1_en::667985b4a6159d18"),
+                    SourceUnitRef("icao9432-extracted::aerodrome_traffic_circuit_4_6_part1_en::d65650486b4d1b8f"),
+                    SourceUnitRef("icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::28bea79b8da559cd"),
+                    SourceUnitRef("icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::34445db09fdd6e0a"),
+                    SourceUnitRef("icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::b64030acf6ef4bbd"),
+                    SourceUnitRef("icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::dcf776a1b9c8a303"),
+                ),
+            )
+            domain("policy", setOf("local-procedure", "traffic-dependent-controller-intervention"))
+            domain("trigger", setOf("planned-entry", "straight-in", "delay-accelerate", "routine-position-reports"))
+
+            partition(
+                name = "local procedure circuit arrival behaviour",
+                parameters = mapOf(
+                    "policy" to "local-procedure",
+                    "trigger" to "routine-position-reports",
+                ),
+            ) {
+                hit("local-procedure-policy-required")
+                modelGap(
+                    "The source units depend on local procedures, traffic situation, arrival direction, " +
+                        "or controller intervention policy. Current traces can observe some position " +
+                        "reports, but cannot prove which reports or circuit-entry timing local procedures require.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
+
+    @Test
+    fun `final approach low pass source units report missing low approach workflow`() {
+        sourceUnitSpec("icao9432-final-approach-low-pass-workflow-gap") {
+            title("Low pass and training low approach claims require pilot request and controller workflow evidence")
+            sourceUnits(
+                listOf(
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::63836b7aef62a6f6"),
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::e17d8b9b99c43496"),
+                ),
+            )
+            domain("workflow", setOf("low-pass-visual-inspection", "training-low-approach"))
+            domain("evidence", setOf("pilot-request", "controller-clearance", "no-landing-flight-path"))
+
+            partition(
+                name = "training low approach request",
+                parameters = mapOf(
+                    "workflow" to "training-low-approach",
+                    "evidence" to "pilot-request",
+                ),
+            ) {
+                hit("low-approach-workflow-required")
+                modelGap(
+                    "Protocol has a typed ClearedLowApproach instruction, but the sim has no source-mapped " +
+                        "pilot low-pass / low-approach request workflow and no scenario evidence that the " +
+                        "aircraft flies along or parallel to the runway without landing.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
+
+    @Test
+    fun `final and long final report source units report missing distance and rendered phraseology evidence`() {
+        sourceUnitSpec("icao9432-final-long-final-distance-phraseology-gap") {
+            title("FINAL and LONG FINAL source units require rendered reports and distance-at-report evidence")
+            sourceUnits(
+                listOf(
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044"),
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4"),
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075"),
+                ),
+            )
+            domain("report", setOf("final", "long-final"))
+            domain("distance-threshold", setOf("7km-4nm", "15km-8nm"))
+
+            partition(
+                name = "long final distance threshold",
+                parameters = mapOf(
+                    "report" to "long-final",
+                    "distance-threshold" to "7km-4nm",
+                ),
+            ) {
+                hit("distance-at-report-required")
+                modelGap(
+                    "Current traces expose typed Final / LongFinal reports, but do not prove the rendered " +
+                        "report wording or the aircraft distance from touchdown at the report threshold.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
+
+    @Test
+    fun `circuit arrival landing phraseology source units remain blocked by rendered phraseology`() {
+        sourceUnitSpec("icao9432-circuit-arrival-landing-phraseology-gap") {
+            title("Circuit arrival and landing source units that require rendered phraseology remain blocked by PHRASE-1")
+            sourceUnits(
+                listOf(
+                    SourceUnitRef("icao9432-extracted::aerodrome_traffic_circuit_4_6_part1_en::58ae778732ec6347"),
+                    SourceUnitRef("icao9432-extracted::aerodrome_traffic_circuit_4_6_part1_en::a4fcedaac8a838e1"),
+                    SourceUnitRef("icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::7e3aec5e5fd60c41"),
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::1327871f46c1d348"),
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::1960f59d8b9efecb"),
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::1db805d02051bf47"),
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::7bbc96aa5ee36893"),
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4"),
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::aaf5262d8e7750b2"),
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::b1c21e2f70bbf36f"),
+                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::fbae3a11e1d068a3"),
+                ),
+            )
+            domain("phraseology-surface", setOf("rendered-controller-utterance", "rendered-pilot-report"))
+
+            partition(
+                name = "rendered circuit arrival landing phraseology",
+                parameters = mapOf(
+                    "phraseology-surface" to "rendered-controller-utterance",
+                ),
+            ) {
+                hit("phraseology-required")
+                modelGap(
+                    "Typed protocol reports and instructions exist for some circuit and landing actions, " +
+                        "but this source set requires rendered phraseology, example dialogue, or ATIS / " +
+                        "pattern wording. That remains blocked by PHRASE-1.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
 }

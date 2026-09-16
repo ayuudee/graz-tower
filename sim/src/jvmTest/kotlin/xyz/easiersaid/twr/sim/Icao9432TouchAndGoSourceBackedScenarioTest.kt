@@ -14,6 +14,8 @@ import xyz.easiersaid.twr.protocol.Atis
 import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.ClearedToLand
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.CircuitIntent
+import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayConfiguration
@@ -34,12 +36,7 @@ class Icao9432TouchAndGoSourceBackedScenarioTest {
     fun `LOWG circuit training receives touch-and-go clearance before full-stop landing`() {
         sourceUnitSpec("icao9432-touch-and-go-circuit-training") {
             title("Touch-and-go intent produces touch-and-go clearance before full-stop landing")
-            sourceUnits(
-                listOf(
-                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::0ece166e11d7728e"),
-                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4"),
-                ),
-            )
+            sourceUnit(ICAO9432.FinalApproachLanding.TouchAndGoRequest.toSourceUnitRef())
             domain("aerodrome", setOf("LOWG"))
             domain("mission-outcome", setOf("touch-and-go-then-full-stop"))
             domain("traffic", setOf("single-aircraft"))
@@ -98,6 +95,18 @@ class Icao9432TouchAndGoSourceBackedScenarioTest {
                 val (finalState, records) = runUntilWithStateTrace(initialState, initialEvents, until)
                 val journey = finalState.formatJourney(aircraftId, records)
 
+                val touchAndGoRequestMs = records.firstPilotReportOf<ReportEvent.Downwind>(aircraftId)
+                    .map { record ->
+                        val report = (record.utterance as? Utterance.FromPilot)?.transmission as? Report
+                        val downwind = report?.events?.filterIsInstance<ReportEvent.Downwind>()?.firstOrNull()
+                            ?: fail("Expected Downwind report record to contain Downwind event.\n$journey")
+                        check(downwind.circuitIntent == CircuitIntent.TOUCH_AND_GO) {
+                            "Expected first Downwind report to request TOUCH_AND_GO; got ${downwind.circuitIntent}.\n$journey"
+                        }
+                        record.time.millis
+                    }
+                    .getOrElse { fail("Expected pilot Downwind report requesting touch-and-go.\n$journey") }
+                hit("touch-and-go-request")
                 val touchAndGoMs = records.firstControllerInstructionOf<ClearedTouchAndGo>(aircraftId)
                     .map { record -> record.time.millis }
                     .getOrElse { fail("Expected first circuit to receive ClearedTouchAndGo.\n$journey") }
@@ -106,6 +115,10 @@ class Icao9432TouchAndGoSourceBackedScenarioTest {
                     .map { record -> record.time.millis }
                     .getOrElse { fail("Expected final circuit to receive ClearedToLand.\n$journey") }
                 hit("full-stop-clearance")
+                check(touchAndGoRequestMs < touchAndGoMs) {
+                    "Expected touch-and-go request before ClearedTouchAndGo; " +
+                        "request=${touchAndGoRequestMs}ms, touchAndGo=${touchAndGoMs}ms.\n$journey"
+                }
                 check(touchAndGoMs < landMs) {
                     "Expected ClearedTouchAndGo to precede final full-stop ClearedToLand; " +
                         "touchAndGo=${touchAndGoMs}ms, land=${landMs}ms.\n$journey"
@@ -124,6 +137,7 @@ class Icao9432TouchAndGoSourceBackedScenarioTest {
                 check(finalAircraft.pilotMission?.isComplete == true && finalAircraft.phase == PilotPhase.Parked) {
                     "Expected touch-and-go plus full-stop circuit-training mission to complete and park.\n$journey"
                 }
+                requireHits("touch-and-go-request")
                 requireHits("touch-and-go-clearance")
                 requireHits("full-stop-clearance")
                 requireHits("runway-vacated")

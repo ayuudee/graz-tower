@@ -131,10 +131,9 @@ class EvidenceMappedTwentyCaseSpikeTest {
                 }
             }
 
-            sourceCase(
+            invariantCase(
                 id = "touch-and-go before full-stop landing",
-                LANDING_SOURCE_A,
-                LANDING_SOURCE_B,
+                name = "touch-and-go clearance precedes full-stop landing clearance",
             ) {
                 expect {
                     instruction<ClearedTouchAndGo>(aircraft) before
@@ -142,10 +141,9 @@ class EvidenceMappedTwentyCaseSpikeTest {
                 }
             }
 
-            sourceCase(
+            invariantCase(
                 id = "landing clearance before runway vacated",
-                LANDING_SOURCE_A,
-                LANDING_SOURCE_B,
+                name = "landing clearance precedes runway vacated",
             ) {
                 expect {
                     instruction<ClearedToLand>(aircraft) before
@@ -240,7 +238,5 @@ class EvidenceMappedTwentyCaseSpikeTest {
         const val READBACK_SOURCE_B = "icao9432-extracted::readback_2_8_3_en::25c245bc4728ed60"
         const val TAXI_SOURCE_A = "icao9432-extracted::taxi_4_4_en::417f64324f7495bf"
         const val TAXI_SOURCE_B = "icao9432-extracted::taxi_4_4_en::b9e7fc3605fe616e"
-        const val LANDING_SOURCE_A = "icao9432-extracted::final_approach_landing_4_7_en::0ece166e11d7728e"
-        const val LANDING_SOURCE_B = "icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4"
     }
 }

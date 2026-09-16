@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-16T11:59:29.361141Z",
+  "depends_on": [
+    "fn-55-icao-9432-chunk-05-circuit-arrival.1"
+  ],
+  "epic": "fn-55-icao-9432-chunk-05-circuit-arrival",
+  "id": "fn-55-icao-9432-chunk-05-circuit-arrival.2",
+  "priority": 2,
+  "spec_path": ".flow/tasks/fn-55-icao-9432-chunk-05-circuit-arrival.2.md",
+  "status": "done",
+  "title": "Author circuit arrival landing source-mapped evidence tests",
+  "updated_at": "2026-09-16T12:09:10Z"
+}

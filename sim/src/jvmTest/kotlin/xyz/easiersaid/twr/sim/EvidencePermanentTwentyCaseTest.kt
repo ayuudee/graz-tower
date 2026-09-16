@@ -106,16 +106,14 @@ class EvidencePermanentTwentyCaseTest {
                 }
             }
 
-            source("touch-and-go before full-stop landing") {
-                cites(ICAO9432.FinalApproachLanding.TouchAndGo)
+            invariant("touch-and-go before full-stop landing") {
                 expect {
                     (instructions<ClearedTouchAndGo>(aircraft).first() before
                         instructions<ClearedToLand>(aircraft).first()).toOutcome()
                 }
             }
 
-            source("landing clearance before runway vacated") {
-                cites(ICAO9432.FinalApproachLanding.TouchAndGo)
+            invariant("landing clearance before runway vacated") {
                 expect {
                     (instructions<ClearedToLand>(aircraft).first() before
                         reports<ReportEvent.RunwayVacated>(aircraft).first()).toOutcome()
