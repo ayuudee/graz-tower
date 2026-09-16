@@ -435,4 +435,133 @@ class Icao9432ModelGapSourceUnitSpecTest {
             }
         }.assertSatisfied().assertHasModelGap()
     }
+
+    @Test
+    fun `go-around non-vfr source units report missing procedure and policy evidence`() {
+        sourceUnitSpec("icao9432-go-around-procedure-policy-gaps") {
+            title("IFR missed approach and go-around radio brevity need explicit procedure and policy evidence")
+            sourceUnits(
+                listOf(
+                    ICAO9432.GoAroundProcedures.InstrumentMissedApproachDefault.toSourceUnitRef(),
+                    ICAO9432.GoAroundProcedures.GoAroundTransmissionBrevity.toSourceUnitRef(),
+                ),
+            )
+            domain("operation", setOf("instrument-approach", "vfr-circuit"))
+            domain("evidence", setOf("published-missed-approach", "radio-brevity-policy"))
+
+            partition(
+                name = "instrument missed approach default",
+                parameters = mapOf(
+                    "operation" to "instrument-approach",
+                    "evidence" to "published-missed-approach",
+                ),
+            ) {
+                hit("missed-approach-procedure-required")
+                modelGap(
+                    "The sim has pilot-side missed-approach task vocabulary, but no source-mapped " +
+                        "end-to-end instrument approach scenario proving that the aircraft follows a " +
+                        "published missed approach procedure unless ATC instructs otherwise.",
+                )
+            }
+
+            partition(
+                name = "go-around radio brevity",
+                parameters = mapOf(
+                    "operation" to "vfr-circuit",
+                    "evidence" to "radio-brevity-policy",
+                ),
+            ) {
+                hit("radio-brevity-policy-required")
+                modelGap(
+                    "Current traces can count transmissions in a scenario, but they do not expose a typed " +
+                        "radio-load or brevity policy that makes 'brief and kept to a minimum' an auditable " +
+                        "universal source claim.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
+
+    @Test
+    fun `after landing frequency and taxi timing source units report missing policy evidence`() {
+        sourceUnitSpec("icao9432-after-landing-policy-gaps") {
+            title("After-landing frequency retention and taxi timing require explicit policy concepts")
+            sourceUnits(
+                listOf(
+                    ICAO9432.AfterLanding.RemainTowerFrequencyUntilRunwayVacated.toSourceUnitRef(),
+                    ICAO9432.AfterLanding.TaxiInstructionsAfterLandingRoll.toSourceUnitRef(),
+                ),
+            )
+            domain("policy", setOf("frequency-retention", "taxi-instruction-timing"))
+            domain("exception", setOf("otherwise-advised", "absolutely-necessary"))
+
+            partition(
+                name = "tower frequency retained until vacated",
+                parameters = mapOf(
+                    "policy" to "frequency-retention",
+                    "exception" to "otherwise-advised",
+                ),
+            ) {
+                hit("frequency-retention-policy-required")
+                modelGap(
+                    "Current traces can observe some frequency changes, but do not prove the absence of " +
+                        "contrary advice or expose a policy concept for retaining tower frequency until the " +
+                        "runway is vacated.",
+                )
+            }
+
+            partition(
+                name = "taxi instruction after landing roll",
+                parameters = mapOf(
+                    "policy" to "taxi-instruction-timing",
+                    "exception" to "absolutely-necessary",
+                ),
+            ) {
+                hit("taxi-timing-policy-required")
+                modelGap(
+                    "Current traces do not classify taxi instructions by absolute necessity, so they cannot " +
+                        "turn the after-landing 'unless absolutely necessary' guidance into a universal " +
+                        "covered-green assertion.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
+
+    @Test
+    fun `essential aerodrome information categories report missing typed information model`() {
+        sourceUnitSpec("icao9432-essential-aerodrome-information-category-gaps") {
+            title("Essential aerodrome information category source units require typed hazard and facility models")
+            sourceUnits(
+                listOf(
+                    ICAO9432.AerodromeInformation.WaterOnMovementArea.toSourceUnitRef(),
+                    ICAO9432.AerodromeInformation.OmitWhenKnownFromOtherSources.toSourceUnitRef(),
+                    ICAO9432.AerodromeInformation.Definition.toSourceUnitRef(),
+                    ICAO9432.AerodromeInformation.EssentialAerodromeInformationTiming.toSourceUnitRef(),
+                    ICAO9432.AerodromeInformation.RoughOrBrokenSurfaces.toSourceUnitRef(),
+                    ICAO9432.AerodromeInformation.ConstructionOrMaintenance.toSourceUnitRef(),
+                    ICAO9432.AerodromeInformation.SnowBanksOrDrifts.toSourceUnitRef(),
+                    ICAO9432.AerodromeInformation.OtherTemporaryHazards.toSourceUnitRef(),
+                    ICAO9432.AerodromeInformation.LightingSystemFailure.toSourceUnitRef(),
+                    ICAO9432.AerodromeInformation.SnowSlushOrIce.toSourceUnitRef(),
+                    ICAO9432.AerodromeInformation.OtherPertinentInformation.toSourceUnitRef(),
+                ),
+            )
+            domain("information-kind", setOf("surface-condition", "temporary-hazard", "facility-serviceability"))
+            domain("aircraft-knowledge", setOf("known-from-other-source", "not-known"))
+
+            partition(
+                name = "movement area condition information",
+                parameters = mapOf(
+                    "information-kind" to "surface-condition",
+                    "aircraft-knowledge" to "not-known",
+                ),
+            ) {
+                hit("typed-essential-information-required")
+                modelGap(
+                    "The sim does not yet expose typed movement-area condition, temporary-hazard, " +
+                        "facility-serviceability, aircraft-known-information, or pertinence policy evidence " +
+                        "for essential aerodrome information.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
 }

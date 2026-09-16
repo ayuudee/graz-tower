@@ -206,6 +206,50 @@ object ICAO9432 {
             setOf(TouchAndGoRequest, ClearedTouchAndGoPhrase)
     }
 
+    object GoAroundProcedures {
+        val InstrumentMissedApproachDefault: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::go_around_4_8_en::43c33a8e74b02873",
+            title = "Instrument approach go-around follows missed approach procedure unless otherwise instructed",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val GoAroundTransmissionBrevity: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::go_around_4_8_en::6c8993a0519d5d64",
+            title = "Transmissions to aircraft going around should be brief and minimal",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val VfrContinuesTrafficCircuit: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::go_around_4_8_en::c3581d40a48406bb",
+            title = "VFR aircraft continues in the normal traffic circuit after go-around",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val Chunk06GoAroundItems: Set<EvidenceSourceRef> =
+            setOf(
+                InstrumentMissedApproachDefault,
+                GoAroundTransmissionBrevity,
+                VfrContinuesTrafficCircuit,
+            )
+    }
+
+    object AfterLanding {
+        val RemainTowerFrequencyUntilRunwayVacated: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::after_landing_4_9_en::4a512226eec962cb",
+            title = "Pilot remains on tower frequency until runway vacated unless otherwise advised",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val TaxiInstructionsAfterLandingRoll: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::after_landing_4_9_en::5d742dc66caa1790",
+            title = "Controllers should not issue taxi instructions until landing roll completed unless necessary",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val Chunk06PolicyItems: Set<EvidenceSourceRef> =
+            setOf(RemainTowerFrequencyUntilRunwayVacated, TaxiInstructionsAfterLandingRoll)
+    }
+
     object TransferCommunications {
         val ControllerAdvisedFrequencyChange: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e",
@@ -229,6 +273,81 @@ object ICAO9432 {
             title = "Essential aerodrome information timing",
             claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
         )
+
+        val WaterOnMovementArea: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::01c0a4bc62b1e926",
+            title = "Essential aerodrome information includes water on movement areas",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val OmitWhenKnownFromOtherSources: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::1306eb5cc586df34",
+            title = "Essential aerodrome information may be omitted when already known",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val Definition: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::18288908932d5ee8",
+            title = "Essential aerodrome information concerns movement area and associated facilities",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val RoughOrBrokenSurfaces: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::502221a46fcc2879",
+            title = "Essential aerodrome information includes rough or broken surfaces",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val ConstructionOrMaintenance: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::66196c8442372a96",
+            title = "Essential aerodrome information includes construction or maintenance work",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val SnowBanksOrDrifts: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::736cc42a00337fee",
+            title = "Essential aerodrome information includes adjacent snow banks or drifts",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val OtherTemporaryHazards: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::9b6c9dbc2af2b5b0",
+            title = "Essential aerodrome information includes other temporary hazards",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val LightingSystemFailure: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::a531dea421075380",
+            title = "Essential aerodrome information includes lighting system failure or irregular operation",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val SnowSlushOrIce: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::c874e24413f4cdee",
+            title = "Essential aerodrome information includes snow slush or ice on movement areas",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val OtherPertinentInformation: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::c92651071a9c009e",
+            title = "Essential aerodrome information includes other pertinent information",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val Chunk06ModelItems: Set<EvidenceSourceRef> =
+            setOf(
+                WaterOnMovementArea,
+                OmitWhenKnownFromOtherSources,
+                Definition,
+                EssentialAerodromeInformationTiming,
+                RoughOrBrokenSurfaces,
+                ConstructionOrMaintenance,
+                SnowBanksOrDrifts,
+                OtherTemporaryHazards,
+                LightingSystemFailure,
+                SnowSlushOrIce,
+                OtherPertinentInformation,
+            )
     }
 
     object TestProcedures {
@@ -304,9 +423,11 @@ object EvidenceSourceCatalog {
             ICAO9432.Taxi.Chunk03AuditItems +
             ICAO9432.TakeoffProcedures.Chunk04ScenarioItems +
             ICAO9432.FinalApproachLanding.TouchAndGo +
+            ICAO9432.GoAroundProcedures.Chunk06GoAroundItems +
+            ICAO9432.AfterLanding.Chunk06PolicyItems +
             ICAO9432.TransferCommunications.RequiredProcedures +
+            ICAO9432.AerodromeInformation.Chunk06ModelItems +
             setOf(
-                ICAO9432.AerodromeInformation.EssentialAerodromeInformationTiming,
                 ICAO9432.CriticalPhase.CriticalPhaseRadioSilence,
                 ICAO9432.TestProcedures.GroundStationTestSignalDuration,
             )
