@@ -440,6 +440,242 @@ object ICAO9432 {
             )
     }
 
+    object DistressUrgencyCommsFailure {
+        val Chunk08Items: Set<EvidenceSourceRef> =
+            setOf(
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::8b3b3b4117c04807",
+                    title = "Distress is serious or imminent danger requiring immediate assistance",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::c959f0325390e7fe",
+                    title = "Urgency concerns safety but does not require immediate assistance",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::3b1079aa56df2ce6",
+                    title = "Distress messages have priority over all other transmissions",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::1a20cd48e58a5693",
+                    title = "Urgency messages have priority except over distress",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::7d35c042421b5b03",
+                    title = "Stations refrain from frequencies carrying emergency traffic unless involved",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::9c34a1b8d6d623fa",
+                    title = "Other stations or aircraft assist if the called station does not reply",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::24f94381ed9e8ce1",
+                    title = "Distress communications normally continue on the current frequency",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::2fee92c222323e6a",
+                    title = "Other emergency communication frequencies may be used when necessary",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::82ee7048517d8478",
+                    title = "Replying station provides necessary emergency assistance",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98",
+                    title = "Pilots seek assistance when flight safety is in doubt",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::8e9f7818b91d08c3",
+                    title = "Intercepted unacknowledged distress may be acknowledged and broadcast",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::cb12c2f9b97c64b7",
+                    title = "Distress or urgency call normally uses the frequency in use",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::06f7a72397c325ac",
+                    title = "Superfluous transmissions may distract an emergency pilot",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::13d1c2accd0f7a73",
+                    title = "Emergency calls should be spoken slowly and distinctly",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::c30159856a1a5e7a",
+                    title = "Annex 10 contains detailed distress and urgency communication procedures",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::9907744b4723d14c",
+                    title = "Pilots may adapt emergency phraseology to needs and time available",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::bf04647e26f9c018",
+                    title = "MAYDAY or PAN PAN should preferably be spoken three times initially",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_urgency_intro_9_1_en::d742970b22d8de26",
+                    title = "MAYDAY identifies distress and PAN PAN identifies urgency",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_messages_9_2_en::23c9f447cd6c7814",
+                    title = "Distress message should contain station aircraft distress intention position and useful information",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_messages_9_2_en::f0e99a4c08ea0cb3",
+                    title = "Distress message elements should be in the shown order when possible",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_messages_9_2_en::27a450fa3bfcbc0a",
+                    title = "Distress message normally addresses current or responsible station",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_messages_9_2_en::94e94be0c800c982",
+                    title = "Non-distressed sender may vary distress message elements if clear",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_messages_9_2_en::4b37e039e7eb8afa",
+                    title = "Aircraft in distress may use any means including SSR 7700",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_messages_9_2_en::e2902de496f43a95",
+                    title = "Distress aircraft or controlling station may impose radio silence",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_messages_9_2_en::ed898005cd1a4da5",
+                    title = "Aircraft requested to maintain silence do so until distress traffic ends",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::distress_messages_9_2_en::c20024dad1b7144e",
+                    title = "Ground station terminates distress communication and silence when distress ends",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8",
+                    title = "Urgency message should contain required emergency message elements",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::b95d7bb1cb409bca",
+                    title = "Urgency call normally uses current frequency and current or responsible station",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d",
+                    title = "Other stations avoid interfering with urgency traffic",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c",
+                    title = "Controller safeguards other aircraft after emergency descent announcement",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e",
+                    title = "Emergency descent broadcast may be followed by specific instructions",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13",
+                    title = "Further questions may help ascertain emergency aircraft position",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::f05016444e2b8808",
+                    title = "Failed designated-frequency contact requires route-appropriate alternate frequency",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::fcb3a49672165b4f",
+                    title = "Failed alternate contact requires other route aircraft or stations",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::bc9bb12804033b07",
+                    title = "Failed attempts lead to twice-transmitted message prefaced TRANSMITTING BLIND",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::abbc376a430003b0",
+                    title = "Blind transmission may include addressees when necessary",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::975a63151706f68f",
+                    title = "Blind aircraft transmits intended message followed by complete repetition",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::045c2e33f59f5ede",
+                    title = "Blind procedure advises time of next intended transmission",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::7900c606e05e509b",
+                    title = "ATC or advisory aircraft transmits continuation intentions during communications failure",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::78c73a75fab644f4",
+                    title = "Receiver failure reports are prefaced TRANSMITTING BLIND DUE RECEIVER FAILURE",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::91e7d233bf3b64ff",
+                    title = "Airborne equipment failure selects SSR code 7600 when equipped",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2",
+                    title = "Unable station asks route aircraft to call and relay",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e",
+                    title = "Unable station asks other stations to call and relay",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::75055714e70d4560",
+                    title = "Station may blind-transmit non-clearance messages after failed attempts",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::b73dda299970c2f3",
+                    title = "Blind ATC clearances are prohibited except at originator request",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+                source(
+                    canonicalId = "icao9432-extracted::communications_failure_9_5_en::c1c14fab53a608c6",
+                    title = "Annex 10 contains general communications-failure rules",
+                    claimScope = EvidenceSourceClaimScope.ProjectionGapSource,
+                ),
+            )
+    }
+
     object TestProcedures {
         val GroundStationTestSignalDuration: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::test_procedures_2_8_4_en::d67d1f63cbbecd7d",
@@ -518,6 +754,7 @@ object EvidenceSourceCatalog {
             ICAO9432.TransferCommunications.RequiredProcedures +
             ICAO9432.AerodromeInformation.Chunk06ModelItems +
             ICAO9432.VehiclesAndTowing.Chunk07Items +
+            ICAO9432.DistressUrgencyCommsFailure.Chunk08Items +
             setOf(
                 ICAO9432.CriticalPhase.CriticalPhaseRadioSilence,
                 ICAO9432.TestProcedures.GroundStationTestSignalDuration,

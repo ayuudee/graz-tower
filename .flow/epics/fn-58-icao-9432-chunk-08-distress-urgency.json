@@ -1,0 +1,18 @@
+{
+  "branch_name": "main",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-16T13:23:14.454782Z",
+  "created_at": "2026-09-16T13:04:14.720609Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-58-icao-9432-chunk-08-distress-urgency",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-16T13:20:42.573200Z",
+  "spec_path": ".flow/specs/fn-58-icao-9432-chunk-08-distress-urgency.md",
+  "status": "done",
+  "title": "ICAO 9432 chunk 08 distress urgency comms failure source-mapped tests",
+  "updated_at": "2026-09-16T13:23:14.494814Z"
+}
