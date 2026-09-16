@@ -350,6 +350,96 @@ object ICAO9432 {
             )
     }
 
+    object VehiclesAndTowing {
+        val DriverVigilanceAndCompliance: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::122426242abf3225",
+            title = "Vehicle drivers should be vigilant and comply with ATC instructions",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val HoldPositionRequiresCallbackPermission: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::6061311019d039c7",
+            title = "Vehicle driver shall not proceed from hold position until callback permission",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val ApronProceedMayIncludeTrafficInstructions: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::606d053954eff037",
+            title = "Apron vehicle proceed permission may include traffic instructions",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val FirstCallIdentifiesVehicleRoute: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::7759017903acf140",
+            title = "Vehicle first-call identifies call sign position destination and route",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val StopAtLimitThenRequestFurtherPermission: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::84c61b2ef1f12ad5",
+            title = "Vehicle driver must stop at clearance limit and request further permission",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val StandbyRequiresPermissionBeforeProceeding: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::ed59ee805ff7fe77",
+            title = "Vehicle driver shall not proceed after standby until permission",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val DangerousSituationStopInstruction: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::0b45b4a4dc2acc0c",
+            title = "Vehicle may need dangerous-situation information and stop instruction",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val RunwayCrossingRequiresPermissionAndAcknowledgement: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::24f7b6a86407ef6f",
+            title = "Vehicle runway crossing requires positive permission and acknowledgement",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val TowDriverMustNotAssumeStationAware: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::29be4b26bb851605",
+            title = "Tow driver should not assume receiving station is aware aircraft is under tow",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val RunwayVehicleVacatesForAircraftOperation: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::331c1cfc98ead868",
+            title = "Vehicle on runway shall be instructed to leave for expected landing or takeoff",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val TowRequestStatesAircraftTypeAndOperator: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::4b103081585bfb71",
+            title = "Tow driver should state aircraft type and operator where applicable",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val RunwayVacatedReportAfterVehicleTowClear: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::735b3e9ada06105b",
+            title = "Vehicle and tow runway-vacated report waits until clear beyond holding point",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val Chunk07Items: Set<EvidenceSourceRef> =
+            setOf(
+                DriverVigilanceAndCompliance,
+                HoldPositionRequiresCallbackPermission,
+                ApronProceedMayIncludeTrafficInstructions,
+                FirstCallIdentifiesVehicleRoute,
+                StopAtLimitThenRequestFurtherPermission,
+                StandbyRequiresPermissionBeforeProceeding,
+                DangerousSituationStopInstruction,
+                RunwayCrossingRequiresPermissionAndAcknowledgement,
+                TowDriverMustNotAssumeStationAware,
+                RunwayVehicleVacatesForAircraftOperation,
+                TowRequestStatesAircraftTypeAndOperator,
+                RunwayVacatedReportAfterVehicleTowClear,
+            )
+    }
+
     object TestProcedures {
         val GroundStationTestSignalDuration: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::test_procedures_2_8_4_en::d67d1f63cbbecd7d",
@@ -427,6 +517,7 @@ object EvidenceSourceCatalog {
             ICAO9432.AfterLanding.Chunk06PolicyItems +
             ICAO9432.TransferCommunications.RequiredProcedures +
             ICAO9432.AerodromeInformation.Chunk06ModelItems +
+            ICAO9432.VehiclesAndTowing.Chunk07Items +
             setOf(
                 ICAO9432.CriticalPhase.CriticalPhaseRadioSilence,
                 ICAO9432.TestProcedures.GroundStationTestSignalDuration,

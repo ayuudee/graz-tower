@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-16T12:50:59.561440Z",
+  "depends_on": [
+    "fn-57-icao-9432-chunk-07-vehicles-towing.1"
+  ],
+  "epic": "fn-57-icao-9432-chunk-07-vehicles-towing",
+  "id": "fn-57-icao-9432-chunk-07-vehicles-towing.2",
+  "priority": 2,
+  "spec_path": ".flow/tasks/fn-57-icao-9432-chunk-07-vehicles-towing.2.md",
+  "status": "done",
+  "title": "Author chunk 07 source plan and expected gaps",
+  "updated_at": "2026-09-16T12:50:59.561579Z"
+}

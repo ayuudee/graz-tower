@@ -564,4 +564,106 @@ class Icao9432ModelGapSourceUnitSpecTest {
             }
         }.assertSatisfied().assertHasModelGap()
     }
+
+    @Test
+    fun `vehicle movement permission source units report missing vehicle actor lifecycle`() {
+        sourceUnitSpec("icao9432-vehicle-movement-permission-model-gaps") {
+            title("Vehicle movement permission claims require vehicle actors, positions, and proceed lifecycle")
+            sourceUnits(
+                listOf(
+                    ICAO9432.VehiclesAndTowing.DriverVigilanceAndCompliance.toSourceUnitRef(),
+                    ICAO9432.VehiclesAndTowing.HoldPositionRequiresCallbackPermission.toSourceUnitRef(),
+                    ICAO9432.VehiclesAndTowing.ApronProceedMayIncludeTrafficInstructions.toSourceUnitRef(),
+                    ICAO9432.VehiclesAndTowing.StopAtLimitThenRequestFurtherPermission.toSourceUnitRef(),
+                    ICAO9432.VehiclesAndTowing.StandbyRequiresPermissionBeforeProceeding.toSourceUnitRef(),
+                ),
+            )
+            domain("vehicle-state", setOf("standby", "hold-position", "proceeding", "stopped-at-limit"))
+            domain("permission", setOf("not-yet-given", "callback-given", "traffic-conditioned"))
+            domain("local-procedure", setOf("required", "not-modelled"))
+
+            partition(
+                name = "hold position requires callback permission",
+                parameters = mapOf(
+                    "vehicle-state" to "hold-position",
+                    "permission" to "not-yet-given",
+                    "local-procedure" to "not-modelled",
+                ),
+            ) {
+                hit("vehicle-actor-lifecycle-required")
+                modelGap(
+                    "The sim has no vehicle actor, vehicle position/destination state, vehicle proceed/hold " +
+                        "lifecycle, driver acknowledgement, or local-procedure compliance model. Aircraft taxi " +
+                        "state cannot prove vehicle-driver obligations.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
+
+    @Test
+    fun `vehicle runway crossing and vacating source units report missing vehicle runway model`() {
+        sourceUnitSpec("icao9432-vehicle-runway-crossing-vacating-model-gaps") {
+            title("Vehicle runway crossing and vacating claims require vehicle runway occupancy and geometry")
+            sourceUnits(
+                listOf(
+                    ICAO9432.VehiclesAndTowing.DangerousSituationStopInstruction.toSourceUnitRef(),
+                    ICAO9432.VehiclesAndTowing.RunwayCrossingRequiresPermissionAndAcknowledgement.toSourceUnitRef(),
+                    ICAO9432.VehiclesAndTowing.RunwayVehicleVacatesForAircraftOperation.toSourceUnitRef(),
+                    ICAO9432.VehiclesAndTowing.RunwayVacatedReportAfterVehicleTowClear.toSourceUnitRef(),
+                ),
+            )
+            domain("runway-state", setOf("vehicle-holding-short", "vehicle-crossing", "vehicle-on-runway"))
+            domain("aircraft-operation", setOf("landing-expected", "takeoff-expected", "none"))
+            domain("clearance-evidence", setOf("permission-and-acknowledgement", "vacated-beyond-holding-point"))
+
+            partition(
+                name = "vehicle runway crossing requires permission and acknowledgement",
+                parameters = mapOf(
+                    "runway-state" to "vehicle-crossing",
+                    "aircraft-operation" to "none",
+                    "clearance-evidence" to "permission-and-acknowledgement",
+                ),
+            ) {
+                hit("vehicle-runway-permission-required")
+                modelGap(
+                    "The sim has no vehicle runway-crossing permission, driver acknowledgement, vehicle " +
+                        "runway occupancy, aircraft-operation conflict rule, or vehicle/tow extent geometry " +
+                        "for proving clearance beyond a holding point.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
+
+    @Test
+    fun `vehicle towing and first-call source units report missing tow metadata and rendered vehicle phraseology`() {
+        sourceUnitSpec("icao9432-vehicle-towing-phraseology-model-gaps") {
+            title("Vehicle first-call and towing claims require vehicle transmissions, tow metadata, and rendered wording")
+            sourceUnits(
+                listOf(
+                    ICAO9432.VehiclesAndTowing.FirstCallIdentifiesVehicleRoute.toSourceUnitRef(),
+                    ICAO9432.VehiclesAndTowing.TowDriverMustNotAssumeStationAware.toSourceUnitRef(),
+                    ICAO9432.VehiclesAndTowing.TowRequestStatesAircraftTypeAndOperator.toSourceUnitRef(),
+                ),
+            )
+            domain("transmission", setOf("vehicle-first-call", "tow-request"))
+            domain("metadata", setOf("call-sign-position-destination-route", "aircraft-type-operator"))
+            domain("phraseology-surface", setOf("rendered-vehicle-utterance", "not-rendered"))
+
+            partition(
+                name = "tow request states aircraft type and operator",
+                parameters = mapOf(
+                    "transmission" to "tow-request",
+                    "metadata" to "aircraft-type-operator",
+                    "phraseology-surface" to "rendered-vehicle-utterance",
+                ),
+            ) {
+                hit("vehicle-transmission-and-tow-metadata-required")
+                modelGap(
+                    "The sim has no vehicle transmission actor, vehicle call sign, vehicle position/destination/" +
+                        "route fields, aircraft-under-tow metadata, receiving-station tow-awareness state, or " +
+                        "rendered vehicle/tow phraseology.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
 }
