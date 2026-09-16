@@ -178,6 +178,17 @@ object ICAO9432 {
             )
     }
 
+    object TakeoffProcedures {
+        val TowerTransferAtHoldingPosition: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587",
+            title = "Aircraft usually transferred to TOWER at or approaching runway holding position",
+            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+        )
+
+        val Chunk04ScenarioItems: Set<EvidenceSourceRef> =
+            setOf(TowerTransferAtHoldingPosition)
+    }
+
     object FinalApproachLanding {
         val TouchAndGoRequest: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::final_approach_landing_4_7_en::0ece166e11d7728e",
@@ -291,6 +302,7 @@ object EvidenceSourceCatalog {
             ICAO9432.Readback.AdvisoryItems +
             ICAO9432.Taxi.HoldingPointLimit +
             ICAO9432.Taxi.Chunk03AuditItems +
+            ICAO9432.TakeoffProcedures.Chunk04ScenarioItems +
             ICAO9432.FinalApproachLanding.TouchAndGo +
             ICAO9432.TransferCommunications.RequiredProcedures +
             setOf(

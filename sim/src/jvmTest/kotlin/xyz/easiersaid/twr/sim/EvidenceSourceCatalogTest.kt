@@ -23,6 +23,7 @@ class EvidenceSourceCatalogTest {
                 "icao9432-extracted::taxi_4_4_en::1367907005a34ad1",
                 "icao9432-extracted::taxi_4_4_en::53f33b6da4f2be58",
                 "icao9432-extracted::taxi_4_4_en::eadf2541fcd51825",
+                "icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587",
                 "icao9432-extracted::final_approach_landing_4_7_en::0ece166e11d7728e",
                 "icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4",
                 "icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e",

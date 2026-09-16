@@ -1,0 +1,17 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-16T08:46:09.486705Z",
+  "depends_on": [
+    "fn-54-icao-9432-chunk-04-runway-departure.2",
+    "fn-54-icao-9432-chunk-04-runway-departure.3"
+  ],
+  "epic": "fn-54-icao-9432-chunk-04-runway-departure",
+  "id": "fn-54-icao-9432-chunk-04-runway-departure.4",
+  "priority": 4,
+  "spec_path": ".flow/tasks/fn-54-icao-9432-chunk-04-runway-departure.4.md",
+  "status": "done",
+  "title": "Close chunk 04 coverage report",
+  "updated_at": "2026-09-16T09:21:43Z"
+}

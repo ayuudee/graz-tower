@@ -205,4 +205,103 @@ class Icao9432ModelGapSourceUnitSpecTest {
             }
         }.assertSatisfied().assertHasModelGap()
     }
+
+    @Test
+    fun `conditional runway clearance reports missing dual-sighting evidence`() {
+        sourceUnitSpec("icao9432-conditional-runway-clearance-dual-sighting") {
+            title("Conditional runway clearances require controller and pilot sighting of concerned traffic")
+            sourceUnit(
+                SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::2e598ad0323e9e2a"),
+            )
+            domain("movement", setOf("active-runway"))
+            domain("sighting", setOf("controller-and-pilot"))
+            domain("conditioned-object", setOf("aircraft", "vehicle"))
+
+            partition(
+                name = "active runway conditional clearance",
+                parameters = mapOf(
+                    "movement" to "active-runway",
+                    "sighting" to "controller-and-pilot",
+                    "conditioned-object" to "aircraft",
+                ),
+            ) {
+                hit("dual-sighting-required")
+                modelGap(
+                    "Current traces can observe ConditionalClearance instructions, but do not expose typed " +
+                        "evidence that both controller and pilot see the conditioned aircraft or vehicle.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
+
+    @Test
+    fun `runway departure policy source units report missing operational policy concepts`() {
+        sourceUnitSpec("icao9432-runway-departure-policy-gaps") {
+            title("Runway departure should and may clauses require explicit operational policy concepts")
+            sourceUnits(
+                listOf(
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::4e0bacdd1c2c06e0"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::2660849403bff7de"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::c386a5865bdd7876"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::dd301daf2b69fe83"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::0afe0064c4c933af"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::2b7c45264775e3e2"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::2cc8caf62c15688b"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6bee6c63069d8250"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::81490161201eb712"),
+                ),
+            )
+            domain("policy", setOf("operational-guidance", "controller-intervention"))
+            domain("trigger", setOf("poor-visibility", "traffic-development", "abandoned-takeoff", "departure-instruction"))
+
+            partition(
+                name = "policy-sensitive runway departure decision",
+                parameters = mapOf(
+                    "policy" to "operational-guidance",
+                    "trigger" to "traffic-development",
+                ),
+            ) {
+                hit("policy-required")
+                modelGap(
+                    "The source units use should/may/usually or traffic-contingency language. Current tests " +
+                        "lack typed policy concepts for poor visibility, conditional-clearance identification, " +
+                        "departure-instruction co-issuance, abandoned-takeoff timing, and runway-freeing " +
+                        "for landing traffic.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
+
+    @Test
+    fun `runway departure phraseology source units remain blocked by rendered phraseology`() {
+        sourceUnitSpec("icao9432-runway-departure-phraseology-gap") {
+            title("Runway departure source units that require rendered phraseology remain blocked by PHRASE-1")
+            sourceUnits(
+                listOf(
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::152f0ffb84869af5"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::db8a2c3dcd586b0e"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::9b30810984e06a35"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6b5a0d8b27525cbd"),
+                    SourceUnitRef("icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef"),
+                ),
+            )
+            domain("phraseology-surface", setOf("rendered-controller-utterance", "rendered-readback"))
+
+            partition(
+                name = "rendered runway departure phraseology",
+                parameters = mapOf(
+                    "phraseology-surface" to "rendered-controller-utterance",
+                ),
+            ) {
+                hit("phraseology-required")
+                modelGap(
+                    "Typed protocol instructions exist for some runway departure actions, but this source " +
+                        "set requires rendered phraseology and readback wording. That remains blocked by PHRASE-1.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
 }

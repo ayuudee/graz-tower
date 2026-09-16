@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-54-icao-9432-chunk-04-runway-departure",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-16T09:25:07.332733Z",
+  "created_at": "2026-09-16T08:45:58.298940Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-54-icao-9432-chunk-04-runway-departure",
+  "next_task": 5,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-16T08:49:03.035135Z",
+  "spec_path": ".flow/specs/fn-54-icao-9432-chunk-04-runway-departure.md",
+  "status": "done",
+  "title": "ICAO 9432 chunk 04 runway departure source-mapped tests",
+  "updated_at": "2026-09-16T09:25:07.475147Z"
+}
