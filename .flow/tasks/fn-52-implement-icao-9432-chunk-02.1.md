@@ -26,34 +26,16 @@ Do not rely on `fromProjectedPayloads`.
 - [x] Source-mapped test cites `icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4`.
 
 ## Done summary
-
-Projected `CriticalPhaseTransmission` facts from controller transmissions
-using the existing `phaseAtTransmission` lookup. The adapter now covers the
-four ICAO 9432 §4.1.2 phase buckets, with `Climbing` and `Final` documented as
-conservative over-approximations for initial climb and late final. Every
-emitted critical-phase controller transmission is classified as `Routine` until
-a reason-bearing safety-necessity policy type exists.
-
-The former window-only pressure test is now an honest covered-red assertion:
-the LOWG circuit trace surfaces routine controller transmissions in critical
-phase windows, so implementation/policy work has a failing source-mapped wall
-instead of a false green.
+Projected `CriticalPhaseTransmission` facts from real `SimTrace`
+transmission data and kept all safety-necessity classification `Routine` until
+a reason-bearing policy type exists. The source-mapped result remains
+covered-red/policy-blocked rather than green.
 
 ## Evidence
-
-- Commits:
-- Tests:
-  - `./gradlew-nix :sim:jvmTest --tests '*.EvidencePermanentTwentyCaseTest' --tests '*.EvidenceFactsTest' --tests '*.EvidenceProjectionPressureTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`
-  - `./gradlew-nix :sim:jvmTest`
-  - `./gradlew-nix detekt`
-  - `git diff --check`
-- PRs:
-  - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceFacts.kt`
-  - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceFactsTest.kt`
-  - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidencePermanentTwentyCaseTest.kt`
-  - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceProjectionPressureTest.kt`
-  - `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceSourceCatalog.kt`
-  - `research/tools/requirements-spike/quality/icao9432_programme/chunk_02_radio_procedures_policy/source_plan.md`
-  - `research/tools/requirements-spike/quality/icao9432_programme/chunk_02_radio_procedures_policy/expected_gaps.md`
-  - `research/tools/requirements-spike/quality/icao9432_programme/chunk_02_radio_procedures_policy/coverage_report.md`
-  - `research/tools/requirements-spike/quality/icao9432_programme/chunk_02_radio_procedures_policy/fn43_gap2_scout.md`
+- Commit: `195fae36 fn-52.1 project critical-phase transmissions`
+- Tests: `./gradlew-nix :sim:jvmTest`
+- Tests: `./gradlew-nix detekt`
+- Tests: `git diff --check`
+- Files: `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceFacts.kt`
+- Files: `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceProjectionPressureTest.kt`
+- Files: `research/tools/requirements-spike/quality/icao9432_programme/chunk_02_radio_procedures_policy/coverage_report.md`

@@ -28,18 +28,18 @@ Out of scope:
 
 ## Acceptance
 
-- [ ] Critical-phase projection emits real `CriticalPhaseTransmission` facts
+- [x] Critical-phase projection emits real `CriticalPhaseTransmission` facts
   from sim traces, not test-injected payloads.
-- [ ] Any safety-necessary exception classification is typed and review-aware;
+- [x] Any safety-necessary exception classification is typed and review-aware;
   no catch-all "necessary" default is introduced. Until a reason-bearing
   policy type exists, projected critical-phase transmissions are classified as
   `Routine`.
-- [ ] Start-up approval/start evidence is based on real lifecycle state or an
+- [x] Start-up approval/start evidence is based on real lifecycle state or an
   explicit model decision; mission-step completion alone is not treated as
   engine start.
-- [ ] Radio-test signal duration evidence can identify a typed test-signal
+- [x] Radio-test signal duration evidence can identify a typed test-signal
   transmission without rendered phraseology string matching.
-- [ ] Source-mapped fn-51 tests can be flipped from expected-gap only after the
+- [x] Source-mapped fn-51 tests can be flipped from expected-gap only after the
   relevant evidence is real.
 
 ## Review Considerations

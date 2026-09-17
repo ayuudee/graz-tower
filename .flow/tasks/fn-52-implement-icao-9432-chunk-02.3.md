@@ -14,8 +14,13 @@ phraseology string matching.
 - [x] Source-mapped test cites `icao9432-extracted::test_procedures_2_8_4_en::d67d1f63cbbecd7d` for the duration sub-obligation only.
 
 ## Done summary
-Typed ground-station test-signal identity and measured duration evidence for ICAO 9432 §2.8.4.4 duration only; phraseology/callsign content remains PHRASE-1.
+Added typed ground-station test-signal identity and measured duration evidence
+for the ICAO 9432 10-second duration sub-obligation while leaving spoken-number
+and station-callsign content blocked by `PHRASE-1`.
+
 ## Evidence
-- Commits:
-- Tests: ./gradlew-nix :sim:jvmTest, ./gradlew-nix detekt, git diff --check, .flow/bin/flowctl validate --epic fn-52-implement-icao-9432-chunk-02
-- PRs:
+- Commit: `212af937 fn-52.3 model ground-station test signals`
+- Tests: `./gradlew-nix :sim:jvmTest`
+- Tests: `./gradlew-nix detekt`
+- Tests: `git diff --check`
+- Tests: `.flow/bin/flowctl validate --epic fn-52-implement-icao-9432-chunk-02`
