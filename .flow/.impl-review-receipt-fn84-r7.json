@@ -1,0 +1,13 @@
+{
+  "type": "impl_review",
+  "id": "fn-84-icao-9432-phrase-1-after-landing.1",
+  "mode": "codex",
+  "base": "c4c97f9e",
+  "verdict": "SHIP",
+  "session_id": "01a0b6c0-2d8f-7713-86d7-dd330ede0a22",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T23:00:59.495163Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b6c0-2d8f-7713-86d7-dd330ede0a22\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"No surviving introduced findings.\\n\\n## Pre-existing issues (not blocking this verdict)\\n\\nNone.\\n\\nSuppressed findings: none.\\n\\nClassification counts: 0 introduced, 0 pre_existing.\\n\\nThe change looks review-clean against the supplied diff: the renderer scope stays narrow, `AirTaxiTo` remains unsupported, the \u00a74.9 taxi-to-stand proof requires a same-aircraft ordered `RUNWAY VACATED -> TAXI TO STAND -> route readback` exchange with typed destination/via parsing, and the split `CONTACT GROUND` residual is represented in tests, docs, and manifest.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":116020,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":649,\"reasoning_output_tokens\":516}}\n"
+}

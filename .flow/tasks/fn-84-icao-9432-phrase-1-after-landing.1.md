@@ -22,9 +22,9 @@ protocol leaves and leave unsupported example fragments visibly residual.
   FIRST RIGHT WHEN VACATED` remains residual.
 - [x] Update every affected source catalog, chunk 06 programme coverage/gap doc,
   and summary-count/manifest artifact touched by final-state counts.
-- [ ] Run focused tests, detekt, broad tests, flow validation, implementation
+- [x] Run focused tests, detekt, broad tests, flow validation, implementation
   review, and completion review.
-- [ ] Record implementation-review and completion-review receipts in the task
+- [x] Record implementation-review and completion-review receipts in the task
   evidence.
 
 ## Done summary
@@ -46,6 +46,6 @@ protocol leaves and leave unsupported example fragments visibly residual.
   - `./gradlew-nix :protocol:allTests :core:allTests :sim:jvmTest`
   - `scripts/ralph/flowctl validate --epic fn-84-icao-9432-phrase-1-after-landing --json`
   - `git diff --check`
-- Implementation review: `.flow/.impl-review-receipt-fn84-r6.json` (`SHIP`).
-- Completion review: pending.
+- Implementation review: `.flow/.impl-review-receipt-fn84-r7.json` (`SHIP`).
+- Completion review: `.flow/.completion-review-receipt-fn84.json`.
 - PRs:

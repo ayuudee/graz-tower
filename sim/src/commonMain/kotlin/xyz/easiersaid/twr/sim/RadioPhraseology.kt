@@ -2,23 +2,169 @@ package xyz.easiersaid.twr.sim
 
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
+import xyz.easiersaid.twr.protocol.AfterPassingLevelClimbTo
+import xyz.easiersaid.twr.protocol.AfterPassingLevelDescendTo
+import xyz.easiersaid.twr.protocol.AirTaxiTo
+import xyz.easiersaid.twr.protocol.AerodromeInstruction
+import xyz.easiersaid.twr.protocol.ApproachInstruction
+import xyz.easiersaid.twr.protocol.AvoidArea
+import xyz.easiersaid.twr.protocol.AvoidLevel
+import xyz.easiersaid.twr.protocol.BacktrackReadback
+import xyz.easiersaid.twr.protocol.BacktrackRunway
+import xyz.easiersaid.twr.protocol.BreakOff
+import xyz.easiersaid.twr.protocol.BreakOffReadback
+import xyz.easiersaid.twr.protocol.CancelClearance
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.Clearance
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
+import xyz.easiersaid.twr.protocol.ClearedForTakeoffReadback
+import xyz.easiersaid.twr.protocol.ClearedApproach
+import xyz.easiersaid.twr.protocol.ClearedApproachReadback
+import xyz.easiersaid.twr.protocol.ClearedLowApproach
+import xyz.easiersaid.twr.protocol.ClearedLowApproachReadback
+import xyz.easiersaid.twr.protocol.ClearedTo
+import xyz.easiersaid.twr.protocol.ClearedToEnterControlZone
+import xyz.easiersaid.twr.protocol.ClearedToLand
+import xyz.easiersaid.twr.protocol.ClearedToLandReadback
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.ClearedTouchAndGoReadback
+import xyz.easiersaid.twr.protocol.ClearedVisualApproach
+import xyz.easiersaid.twr.protocol.ClimbTo
+import xyz.easiersaid.twr.protocol.CommenceApproachAt
+import xyz.easiersaid.twr.protocol.ConditionalClearance
+import xyz.easiersaid.twr.protocol.ContinueApproach
+import xyz.easiersaid.twr.protocol.ContinuePresentHeading
 import xyz.easiersaid.twr.protocol.ContactFrequency
+import xyz.easiersaid.twr.protocol.ConfirmSquawk
+import xyz.easiersaid.twr.protocol.CrossRunway
+import xyz.easiersaid.twr.protocol.CrossRunwayReadback
+import xyz.easiersaid.twr.protocol.DescendTo
+import xyz.easiersaid.twr.protocol.DescendWhenReady
+import xyz.easiersaid.twr.protocol.Disregard
+import xyz.easiersaid.twr.protocol.DisregardAcknowledgementReadback
+import xyz.easiersaid.twr.protocol.DivertTo
+import xyz.easiersaid.twr.protocol.EmergencyInstruction
+import xyz.easiersaid.twr.protocol.ExtendDownwind
+import xyz.easiersaid.twr.protocol.ExtendDownwindReadback
+import xyz.easiersaid.twr.protocol.ExpediteClimb
+import xyz.easiersaid.twr.protocol.ExpediteDescend
+import xyz.easiersaid.twr.protocol.ExpediteTaxi
+import xyz.easiersaid.twr.protocol.FlyHeading
+import xyz.easiersaid.twr.protocol.FollowTraffic
 import xyz.easiersaid.twr.protocol.Frequency
+import xyz.easiersaid.twr.protocol.FrequencyInstruction
 import xyz.easiersaid.twr.protocol.FrequencyReadback
+import xyz.easiersaid.twr.protocol.FreeTextReadback
+import xyz.easiersaid.twr.protocol.GiveWayToTraffic
+import xyz.easiersaid.twr.protocol.GoAround
+import xyz.easiersaid.twr.protocol.GoAroundReadback
+import xyz.easiersaid.twr.protocol.GroundInstruction
+import xyz.easiersaid.twr.protocol.HeadingReadback
+import xyz.easiersaid.twr.protocol.HoldAt
+import xyz.easiersaid.twr.protocol.HoldPosition
+import xyz.easiersaid.twr.protocol.HoldPositionCancelTakeoff
+import xyz.easiersaid.twr.protocol.HoldReadback
+import xyz.easiersaid.twr.protocol.HoldShortOf
+import xyz.easiersaid.twr.protocol.HoldShortReadback
+import xyz.easiersaid.twr.protocol.HoldingAcknowledgementReadback
+import xyz.easiersaid.twr.protocol.IncreaseSpeedTo
+import xyz.easiersaid.twr.protocol.InterceptLocaliser
+import xyz.easiersaid.twr.protocol.JoinAirway
+import xyz.easiersaid.twr.protocol.JoinAirwayReadback
+import xyz.easiersaid.twr.protocol.JoinCircuit
+import xyz.easiersaid.twr.protocol.LeaveHoldProceedDirect
+import xyz.easiersaid.twr.protocol.LeaveHoldProceedDirectReadback
+import xyz.easiersaid.twr.protocol.LevelInstruction
+import xyz.easiersaid.twr.protocol.LevelReadback
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.LineUpReadback
+import xyz.easiersaid.twr.protocol.MaintainAltitudeUntilEstablished
+import xyz.easiersaid.twr.protocol.MaintainAtOrAbove
+import xyz.easiersaid.twr.protocol.MaintainAtOrBelow
+import xyz.easiersaid.twr.protocol.MaintainLevel
+import xyz.easiersaid.twr.protocol.MaintainSpeed
+import xyz.easiersaid.twr.protocol.MaintainVisualSeparation
+import xyz.easiersaid.twr.protocol.MakeAnotherCircuit
+import xyz.easiersaid.twr.protocol.MakeLongApproach
+import xyz.easiersaid.twr.protocol.MakeShortApproach
+import xyz.easiersaid.twr.protocol.MinimumCleanSpeed
+import xyz.easiersaid.twr.protocol.MonitorFrequency
+import xyz.easiersaid.twr.protocol.NumberInSequence
+import xyz.easiersaid.twr.protocol.Orbit
+import xyz.easiersaid.twr.protocol.OrbitReadback
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.PressureSettingReadback
+import xyz.easiersaid.twr.protocol.ProceedDirect
+import xyz.easiersaid.twr.protocol.PushbackApproved
+import xyz.easiersaid.twr.protocol.PushbackFace
 import xyz.easiersaid.twr.protocol.Readback
+import xyz.easiersaid.twr.protocol.RadarServiceTerminated
+import xyz.easiersaid.twr.protocol.ReduceSpeedTo
+import xyz.easiersaid.twr.protocol.ReduceTaxiSpeed
+import xyz.easiersaid.twr.protocol.RejoinSidAt
+import xyz.easiersaid.twr.protocol.RejoinSidAtReadback
+import xyz.easiersaid.twr.protocol.RemainOutsideControlledAirspace
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.ReportIntentions
+import xyz.easiersaid.twr.protocol.ReportInstruction
+import xyz.easiersaid.twr.protocol.ReportTrafficInSight
+import xyz.easiersaid.twr.protocol.ReportWhen
+import xyz.easiersaid.twr.protocol.ResumeNormalSpeed
+import xyz.easiersaid.twr.protocol.ResumeOwnNavigation
+import xyz.easiersaid.twr.protocol.ResumeOwnNavigationReadback
+import xyz.easiersaid.twr.protocol.RouteInstruction
+import xyz.easiersaid.twr.protocol.RouteAsFiled
+import xyz.easiersaid.twr.protocol.RouteAsFiledReadback
+import xyz.easiersaid.twr.protocol.RouteReadback
 import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.RunwayInUseAdvisory
+import xyz.easiersaid.twr.protocol.RunwayInUseReadback
+import xyz.easiersaid.twr.protocol.RunwayInstruction
+import xyz.easiersaid.twr.protocol.RunwayReadback
+import xyz.easiersaid.twr.protocol.SetPressure
+import xyz.easiersaid.twr.protocol.SetSquawk
+import xyz.easiersaid.twr.protocol.SequenceAcknowledgementReadback
+import xyz.easiersaid.twr.protocol.SequencingInstruction
 import xyz.easiersaid.twr.protocol.SimpleElement
+import xyz.easiersaid.twr.protocol.SpecialVfrClearance
+import xyz.easiersaid.twr.protocol.SpecialVfrReadback
+import xyz.easiersaid.twr.protocol.SpeedInstruction
+import xyz.easiersaid.twr.protocol.SpeedReadback
+import xyz.easiersaid.twr.protocol.SquawkIdent
+import xyz.easiersaid.twr.protocol.SquawkNormal
+import xyz.easiersaid.twr.protocol.SquawkReadback
+import xyz.easiersaid.twr.protocol.SquawkStandby
 import xyz.easiersaid.twr.protocol.StopImmediately
+import xyz.easiersaid.twr.protocol.StopImmediatelyReadback
+import xyz.easiersaid.twr.protocol.StopClimbAt
+import xyz.easiersaid.twr.protocol.StopDescentAt
+import xyz.easiersaid.twr.protocol.StopSquawk
+import xyz.easiersaid.twr.protocol.StopTurn
+import xyz.easiersaid.twr.protocol.StartupApproved
+import xyz.easiersaid.twr.protocol.SurveillanceInstruction
+import xyz.easiersaid.twr.protocol.TakeoffImmediatelyOrHoldShort
+import xyz.easiersaid.twr.protocol.TakeoffImmediatelyOrHoldShortReadback
+import xyz.easiersaid.twr.protocol.TakeoffImmediatelyOrVacateReadback
+import xyz.easiersaid.twr.protocol.TakeoffImmediatelyOrVacateRunway
 import xyz.easiersaid.twr.protocol.TaxiRouteReadback
+import xyz.easiersaid.twr.protocol.TaxiIntoHoldingBay
 import xyz.easiersaid.twr.protocol.TaxiToStand
+import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
+import xyz.easiersaid.twr.protocol.TaxiViaRunway
+import xyz.easiersaid.twr.protocol.TaxiViaRunwayReadback
+import xyz.easiersaid.twr.protocol.TaxiWithCaution
+import xyz.easiersaid.twr.protocol.TransitionLevelIssuance
+import xyz.easiersaid.twr.protocol.TransitionLevelReadback
+import xyz.easiersaid.twr.protocol.TurnBase
+import xyz.easiersaid.twr.protocol.TurnByDegrees
+import xyz.easiersaid.twr.protocol.TurnHeading
+import xyz.easiersaid.twr.protocol.VacateReadback
+import xyz.easiersaid.twr.protocol.VacateRunway
+import xyz.easiersaid.twr.protocol.VectorInstruction
+import xyz.easiersaid.twr.protocol.VisualApproachReadback
+import xyz.easiersaid.twr.protocol.WhenAbleProceedDirect
 
 enum class PhraseologyObligationKind {
     MandatoryWords,
@@ -132,25 +278,143 @@ sealed interface PilotReportPhraseologyRenderResult {
 }
 
 fun renderControllerPhraseology(output: ControllerOutput.Instruct): ControllerPhraseologyRenderResult {
-    val phraseology = when (val instruction = output.instruction) {
-        is LineUpAndWait -> lineUpAndWaitPhraseology(output.target, instruction.runway)
+    return when (val instruction = output.instruction) {
+        is GroundInstruction -> renderGroundInstructionPhraseology(output.target, instruction)
+        is RunwayInstruction -> renderRunwayInstructionPhraseology(output.target, instruction)
+        is RouteInstruction -> unsupportedInstruction(instruction)
+        is VectorInstruction -> unsupportedInstruction(instruction)
+        is LevelInstruction -> unsupportedInstruction(instruction)
+        is SpeedInstruction -> unsupportedInstruction(instruction)
+        is ApproachInstruction -> renderApproachInstructionPhraseology(instruction)
+        is ReportInstruction -> unsupportedInstruction(instruction)
+        is FrequencyInstruction -> renderFrequencyInstructionPhraseology(output.target, instruction)
+        is SurveillanceInstruction -> unsupportedInstruction(instruction)
+        is SequencingInstruction -> unsupportedInstruction(instruction)
+        is AerodromeInstruction -> unsupportedInstruction(instruction)
+        is EmergencyInstruction -> unsupportedInstruction(instruction)
+        is Clearance -> renderClearancePhraseology(instruction)
+        is SetPressure,
+        is RunwayInUseAdvisory,
+        is TransitionLevelIssuance,
+        is RemainOutsideControlledAirspace,
+        is CancelClearance,
+        is Disregard,
+        is AvoidArea,
+        -> unsupportedInstruction(instruction)
+    }
+}
+
+private fun renderGroundInstructionPhraseology(
+    aircraftId: AircraftId,
+    instruction: GroundInstruction,
+): ControllerPhraseologyRenderResult {
+    val phraseology = when (instruction) {
+        is StopImmediately -> stopImmediatelyPhraseology(aircraftId)
+        is TaxiToStand -> taxiToStandPhraseology(aircraftId, instruction.destination, instruction.via)
+        is StartupApproved,
+        is PushbackApproved,
+        is PushbackFace,
+        is TaxiToHoldingPoint,
+        is TaxiViaRunway,
+        is AirTaxiTo,
+        is HoldPosition,
+        is HoldShortOf,
+        is CrossRunway,
+        is BacktrackRunway,
+        is VacateRunway,
+        is TaxiIntoHoldingBay,
+        is TaxiWithCaution,
+        is ExpediteTaxi,
+        is ReduceTaxiSpeed,
+        is GiveWayToTraffic,
+        -> return unsupportedInstruction(instruction)
+    }
+    return ControllerPhraseologyRenderResult.Rendered(phraseology)
+}
+
+private fun renderRunwayInstructionPhraseology(
+    aircraftId: AircraftId,
+    instruction: RunwayInstruction,
+): ControllerPhraseologyRenderResult {
+    val phraseology = when (instruction) {
+        is LineUpAndWait -> lineUpAndWaitPhraseology(aircraftId, instruction.runway)
+        is ClearedForTakeoff -> takeoffClearancePhraseology(aircraftId, instruction.runway)
+        is ClearedTouchAndGo -> touchAndGoClearancePhraseology(aircraftId)
+        is StopImmediately -> stopImmediatelyPhraseology(aircraftId)
+        is ClearedToLand,
+        is ClearedLowApproach,
+        is GoAround,
+        is HoldPositionCancelTakeoff,
+        is BreakOff,
+        is TakeoffImmediatelyOrVacateRunway,
+        is TakeoffImmediatelyOrHoldShort,
+        is AfterLandingVacateVia,
+        -> return unsupportedInstruction(instruction)
+    }
+    return ControllerPhraseologyRenderResult.Rendered(phraseology)
+}
+
+private fun renderFrequencyInstructionPhraseology(
+    aircraftId: AircraftId,
+    instruction: FrequencyInstruction,
+): ControllerPhraseologyRenderResult {
+    val phraseology = when (instruction) {
         is ContactFrequency -> {
-            val frequency = instruction.frequency
-                ?: return ControllerPhraseologyRenderResult.UnsupportedInstruction(instruction)
+            val frequency = instruction.frequency ?: return unsupportedInstruction(instruction)
             contactFrequencyPhraseology(
-                aircraftId = output.target,
+                aircraftId = aircraftId,
                 unitName = instruction.role.name,
                 frequency = frequency,
             )
         }
-        is ClearedForTakeoff -> takeoffClearancePhraseology(output.target, instruction.runway)
-        is ClearedTouchAndGo -> touchAndGoClearancePhraseology(output.target)
-        is StopImmediately -> stopImmediatelyPhraseology(output.target)
-        is TaxiToStand -> taxiToStandPhraseology(output.target, instruction.destination, instruction.via)
-        else -> return ControllerPhraseologyRenderResult.UnsupportedInstruction(instruction)
+        is MonitorFrequency -> return unsupportedInstruction(instruction)
     }
     return ControllerPhraseologyRenderResult.Rendered(phraseology)
 }
+
+private fun renderApproachInstructionPhraseology(
+    instruction: ApproachInstruction,
+): ControllerPhraseologyRenderResult =
+    when (instruction) {
+        is GoAround,
+        is BreakOff,
+        is InterceptLocaliser,
+        is ClearedApproach,
+        is ClearedVisualApproach,
+        is ContinueApproach,
+        is JoinCircuit,
+        is MakeShortApproach,
+        is MakeLongApproach,
+        is ExtendDownwind,
+        is TurnBase,
+        is CommenceApproachAt,
+        is MaintainAltitudeUntilEstablished,
+        -> unsupportedInstruction(instruction)
+    }
+
+private fun renderClearancePhraseology(instruction: Clearance): ControllerPhraseologyRenderResult =
+    when (instruction) {
+        is ConditionalClearance,
+        is ClearedTo,
+        is ClearedToEnterControlZone,
+        is SpecialVfrClearance,
+        is HoldShortOf,
+        is CrossRunway,
+        is BacktrackRunway,
+        is LineUpAndWait,
+        is ClearedForTakeoff,
+        is ClearedToLand,
+        is ClearedTouchAndGo,
+        is ClearedLowApproach,
+        is ClearedApproach,
+        is ClearedVisualApproach,
+        is StartupApproved,
+        is PushbackApproved,
+        -> unsupportedInstruction(instruction)
+    }
+
+private fun unsupportedInstruction(instruction: AtcInstruction): ControllerPhraseologyRenderResult.UnsupportedInstruction =
+    ControllerPhraseologyRenderResult.UnsupportedInstruction(instruction)
 
 fun renderPilotReadbackPhraseology(
     aircraftId: AircraftId,
@@ -170,7 +434,46 @@ fun renderPilotReadbackPhraseology(
             destination = atom.destination,
             via = atom.via,
         )
-        else -> return PilotReadbackPhraseologyRenderResult.UnsupportedReadback(readback)
+        is BacktrackReadback,
+        is BreakOffReadback,
+        is ClearedApproachReadback,
+        is ClearedForTakeoffReadback,
+        is ClearedLowApproachReadback,
+        is ClearedToLandReadback,
+        is ClearedTouchAndGoReadback,
+        is CrossRunwayReadback,
+        DisregardAcknowledgementReadback,
+        is ExtendDownwindReadback,
+        is FreeTextReadback,
+        is GoAroundReadback,
+        is HeadingReadback,
+        is HoldingAcknowledgementReadback,
+        is HoldReadback,
+        is HoldShortReadback,
+        is JoinAirwayReadback,
+        is LeaveHoldProceedDirectReadback,
+        is LevelReadback,
+        is OrbitReadback,
+        is PressureSettingReadback,
+        is RejoinSidAtReadback,
+        ResumeOwnNavigationReadback,
+        RouteAsFiledReadback,
+        is RouteReadback,
+        is RunwayInUseReadback,
+        is RunwayReadback,
+        is SequenceAcknowledgementReadback,
+        is SpecialVfrReadback,
+        is SpeedReadback,
+        is SquawkReadback,
+        StopImmediatelyReadback,
+        is TakeoffImmediatelyOrHoldShortReadback,
+        is TakeoffImmediatelyOrVacateReadback,
+        is TaxiViaRunwayReadback,
+        is TransitionLevelReadback,
+        is VacateReadback,
+        is VisualApproachReadback,
+        null,
+        -> return PilotReadbackPhraseologyRenderResult.UnsupportedReadback(readback)
     }
     return PilotReadbackPhraseologyRenderResult.Rendered(phraseology)
 }
