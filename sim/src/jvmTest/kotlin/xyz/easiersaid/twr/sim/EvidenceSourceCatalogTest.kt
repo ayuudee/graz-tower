@@ -24,6 +24,7 @@ class EvidenceSourceCatalogTest {
                 "icao9432-extracted::taxi_4_4_en::53f33b6da4f2be58",
                 "icao9432-extracted::taxi_4_4_en::eadf2541fcd51825",
                 "icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587",
+                "icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3",
                 "icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03",
                 "icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef",
                 "icao9432-extracted::final_approach_landing_4_7_en::0ece166e11d7728e",
@@ -165,6 +166,7 @@ class EvidenceSourceCatalogTest {
     fun `rendered phraseology claim scope is limited to reviewed PHRASE-1 proof units`() {
         assertEquals(
             setOf(
+                "icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3",
                 "icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03",
                 "icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef",
                 "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",

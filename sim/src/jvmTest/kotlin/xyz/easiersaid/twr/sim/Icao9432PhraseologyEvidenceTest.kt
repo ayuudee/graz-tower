@@ -90,6 +90,14 @@ class Icao9432PhraseologyEvidenceTest {
                     untilMinutes = 45,
                 )
             }
+            source("takeoff clearance rendered phraseology") {
+                cites(ICAO9432.TakeoffProcedures.TakeoffClearancePhrase)
+                sample("aerodrome", "LOWG")
+                sample("active-runway", runway.value)
+                expect {
+                    renderedPhraseology(aircraft).takeoffClearance(runway)
+                }
+            }
             source("takeoff clearance includes runway number in declared confusion-risk branch") {
                 cites(ICAO9432.TakeoffProcedures.RunwayNumberInTakeoffClearance)
                 sample("aerodrome", "LOWG")

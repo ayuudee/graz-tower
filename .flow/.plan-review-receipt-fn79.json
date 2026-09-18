@@ -1,0 +1,12 @@
+{
+  "type": "plan_review",
+  "id": "fn-79-icao-9432-phrase-1-takeoff-clearance",
+  "mode": "codex",
+  "verdict": "SHIP",
+  "session_id": "01a0b65f-fe10-7a61-a3de-aa7156d8ad9f",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T21:15:58.531530Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b65f-fe10-7a61-a3de-aa7156d8ad9f\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"**Severity**: Minor  \\n**Location**: Approach / References  \\n**Problem**: The plan references `research/txt/icao9432-extracted.txt`, but does not explicitly say to verify that source unit `13264a6ac6d529c3` contains the claimed ICAO Doc 9432 \u00a74.5 wording before cataloging it. For regulatory phraseology evidence, that verification is load-bearing.  \\n**Suggestion**: Add a short implementation step before catalog/test edits: verify the extracted source row text and section mapping in `research/txt/icao9432-extracted.txt`.\\n\\n**Severity**: Nitpick  \\n**Location**: Task Description  \\n**Problem**: The task `Description` is still `TBD`, even though the acceptance block is complete. This is not blocking, but it weakens task readability for future flow runs.  \\n**Suggestion**: Replace `TBD` with a one-sentence summary matching the epic: implement source-mapped rendered takeoff-clearance phraseology evidence for the ICAO 9432 source unit.\\n\\nEverything else is consistent: the task mirrors the epic, scope is appropriately narrow, acceptance is testable, and the plan avoids operational behavior changes while preserving residual blocked rows.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":26516,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":783,\"reasoning_output_tokens\":516}}\n"
+}

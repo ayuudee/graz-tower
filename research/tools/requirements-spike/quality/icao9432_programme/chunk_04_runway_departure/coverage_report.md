@@ -6,19 +6,24 @@ Chunk: ICAO 9432 runway entry, line-up, and take-off.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 3 |
+| `covered-green` | 4 |
 | `covered-red` | 0 |
 | `model-gap` | 1 |
 | `policy-blocked` | 9 |
-| `phraseology-later` | 6 |
+| `phraseology-later` | 5 |
 
 Chunk 04 now has one configured-policy green row: the LOWG separate
 GROUND/TOWER departure branch is explicitly bound to transfer at the holding
 point, and the live trace proves that branch. This is not universal closure:
 ICAO 9432 §4.5.1 says "usually", so other service shapes remain policy
-questions. fn-61 adds renderer support for take-off clearance wording, but the
-`13264a6ac6d529c3` source unit remains support-only / review-only rather than
-standalone covered-green.
+questions.
+
+fn-79 adds source-mapped rendered phraseology evidence for the base take-off
+clearance wording in ICAO 9432 §4.5: `RUNWAY [designator] CLEARED FOR
+TAKE-OFF`. This is a narrow rendered-phraseology closure for
+`13264a6ac6d529c3`; it does not change controller behaviour or close
+immediate-departure, conditional-clearance, taxi-ambiguity, or
+stop-immediately phraseology rows.
 
 fn-76 adds a declared-branch rendered phraseology green row for ICAO 9432
 §4.5.8: where several runways are in use and pilot confusion is possible, the
@@ -35,7 +40,7 @@ conditional-clearance, taxi-ambiguity, or stop-immediately phraseology rows.
 
 | Source unit | Final state | Test / blocker | Claim |
 |---|---|---|---|
-| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3` | `phraseology-later` | `PHRASE-1`; support-only / review-only | Take-off clearance phraseology. |
+| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3` | `covered-green` rendered phraseology | `Icao9432PhraseologyEvidenceTest`; `RenderedPhraseologyTrace` | `RUNWAY [designator] CLEARED FOR TAKE-OFF` phraseology. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::152f0ffb84869af5` | `phraseology-later` | `PHRASE-1` | Immediate-departure line-up phraseology. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587` | `covered-green` configured policy | `Icao9432Chunk04RunwayDepartureEvidenceTest`; `TowerTransferPolicy.SeparateGroundTowerTransferAtHoldingPoint` | Aircraft are usually transferred to TOWER at/approaching runway-holding position for the configured LOWG separate-function branch. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751` | `phraseology-later` | `PHRASE-1` | Immediate-departure readiness query phraseology. |
@@ -70,8 +75,9 @@ conditional-clearance, taxi-ambiguity, or stop-immediately phraseology rows.
   trace correlation to the `ContactFrequency(TOWER)` transmission id and the
   aircraft's holding-point state. It is green only under an explicit configured
   LOWG policy branch, not universal closure.
-- Impact: no controller, pilot, sim behaviour, phraseology source coverage, or
-  policy behaviour was changed for chunk 04.
+- Impact: fn-79 adds source coverage for existing rendered take-off clearance
+  phraseology only. No controller, pilot, sim behaviour, or policy behaviour was
+  changed for chunk 04.
 - Operational correctness: ICAO 9432 §4.5.1's "usually" language is represented
   as configured LOWG policy, not unconditional doctrine; other
   `may`/`should`/traffic-contingency rows remain gaps.

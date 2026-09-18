@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T21:15:30.092949Z",
+  "depends_on": [],
+  "epic": "fn-79-icao-9432-phrase-1-takeoff-clearance",
+  "id": "fn-79-icao-9432-phrase-1-takeoff-clearance.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-79-icao-9432-phrase-1-takeoff-clearance.1.md",
+  "status": "todo",
+  "title": "Implement source-mapped takeoff-clearance phraseology evidence",
+  "updated_at": "2026-09-18T21:15:30.093051Z"
+}

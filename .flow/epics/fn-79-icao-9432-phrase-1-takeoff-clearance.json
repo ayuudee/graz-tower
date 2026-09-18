@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-79-icao-9432-takeoff-clearance-phraseology",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-18T21:21:37.004983Z",
+  "created_at": "2026-09-18T21:14:53.444988Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-79-icao-9432-phrase-1-takeoff-clearance",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-18T21:16:26.267435Z",
+  "spec_path": ".flow/specs/fn-79-icao-9432-phrase-1-takeoff-clearance.md",
+  "status": "done",
+  "title": "ICAO 9432 PHRASE-1 takeoff-clearance phraseology evidence",
+  "updated_at": "2026-09-18T21:21:37.115471Z"
+}
