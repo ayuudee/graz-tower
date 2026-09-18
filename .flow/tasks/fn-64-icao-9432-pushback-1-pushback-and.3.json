@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T11:45:27.367208Z",
+  "depends_on": [
+    "fn-64-icao-9432-pushback-1-pushback-and.2"
+  ],
+  "epic": "fn-64-icao-9432-pushback-1-pushback-and",
+  "id": "fn-64-icao-9432-pushback-1-pushback-and.3",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-64-icao-9432-pushback-1-pushback-and.3.md",
+  "status": "todo",
+  "title": "Review validate and close fn-64",
+  "updated_at": "2026-09-18T11:45:27.367310Z"
+}

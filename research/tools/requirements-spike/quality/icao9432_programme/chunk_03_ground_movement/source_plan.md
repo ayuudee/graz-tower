@@ -45,8 +45,8 @@ Result: pass, 11 rows.
 | Source unit | Section | Planned state | Blocker | Lines | Claim |
 |---|---|---|---|---:|---|
 | `icao9432-extracted::pushback_powerback_4_3_en::1aae1f61b91984e8` | `pushback_powerback_4_3_en` | `model-gap` | `PUSHBACK-1` | 4819-4916 | Power-back is aircraft reverse movement using engine power. |
-| `icao9432-extracted::pushback_powerback_4_3_en::5980a8f786170b01` | `pushback_powerback_4_3_en` | `model-gap` + `policy-blocked` | `PUSHBACK-1`, `LocalProcedurePolicy` | 4819-4916 | Requests for push-back or power-back go to ATC or apron management depending on local procedures. |
-| `icao9432-extracted::pushback_powerback_4_3_en::b3652213a568f55f` | `pushback_powerback_4_3_en` | `model-gap` | `PUSHBACK-1` | 4819-4916 | Ground crew gives a visual signal after the manoeuvre to indicate the aircraft is free to taxi. |
+| `icao9432-extracted::pushback_powerback_4_3_en::5980a8f786170b01` | `pushback_powerback_4_3_en` | `split: scenario-authored ATC/GROUND branch covered-green; apron-management branch policy-blocked` | `LocalProcedurePolicy` | 4819-4916 | Requests for push-back or power-back go to ATC or apron management depending on local procedures. |
+| `icao9432-extracted::pushback_powerback_4_3_en::b3652213a568f55f` | `pushback_powerback_4_3_en` | `covered-green` |  | 4819-4916 | Ground crew gives a visual signal after the manoeuvre to indicate the aircraft is free to taxi. |
 | `icao9432-extracted::pushback_powerback_4_3_en::da5fd317668b375a` | `pushback_powerback_4_3_en` | `phraseology-later` | `PHRASE-1` | 4819-4916 | Pilot stop-pushback phraseology. |
 | `icao9432-extracted::pushback_powerback_4_3_en::fc3dfdf7cc913637` | `pushback_powerback_4_3_en` | `phraseology-later` | `PHRASE-1` | 4819-4916 | Pilot / ground-crew pushback coordination phraseology. |
 | `icao9432-extracted::taxi_4_4_en::03985c8e2cf3f473` | `taxi_4_4_en` | `policy-blocked` | `POLICY-1`, `LocalProcedurePolicy` | 4917-5139 | Taxi clearance limit may be another aerodrome position depending on traffic. |
@@ -63,8 +63,8 @@ Result: pass, 11 rows.
     typed taxi-instruction leaves. The audit activates typed instruction facts
     and fails on taxi-like leaves without a clearance-limit field.
 - `Icao9432ModelGapSourceUnitSpecTest`:
-  - `1aae1f61b91984e8`, `5980a8f786170b01`, and `b3652213a568f55f` land as
-    `PUSHBACK-1` model gaps.
+  - `1aae1f61b91984e8` lands as a remaining `PUSHBACK-1` model gap because
+    powerback requires reverse movement using engine power, not tug pushback.
   - `1367907005a34ad1` lands as a compound taxi/runway-crossing clearance
     semantics gap.
   - `53f33b6da4f2be58` lands as a departure-information content evidence gap.
@@ -74,6 +74,10 @@ Result: pass, 11 rows.
   an explicit configured LOWG policy branch. It still demonstrates scenario
   evidence for `b9e7fc3605fe616e`, but it is not used as universal source
   closure for chunk 03.
+- `Icao9432PushbackSourceBackedScenarioTest` greens the scenario-authored
+  ATC/GROUND branch for `5980a8f786170b01` and the ground-crew completion
+  signal for `b3652213a568f55f`. It does not claim apron-management or
+  powerback coverage.
 
 ## Review Considerations
 
@@ -84,8 +88,8 @@ Result: pass, 11 rows.
 - Test architecture: tests must be high-level and source-mapped. Policy rows
   with "normally", "may", or "depending" language must not be made
   unconditional pass/fail rules.
-- Impact: pushback/powerback is intentionally not implemented here; no
-  ground-crew or apron-management actor should be introduced in this
-  test-authoring epic.
+- Impact: tug-style pushback now has a minimal source-mapped lifecycle.
+  Apron-management and engine-power powerback remain outside the implemented
+  actor/model surface.
 - Operational correctness: cite ICAO Doc 9432 §4.3 for pushback/powerback and
   §4.4 for taxi. Phraseology examples remain blocked by `PHRASE-1`.

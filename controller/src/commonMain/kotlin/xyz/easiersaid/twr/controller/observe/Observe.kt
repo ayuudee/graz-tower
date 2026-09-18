@@ -99,6 +99,8 @@ fun BeliefState.withCircuitIntentEvents(events: List<ControllerEvent>): BeliefSt
             is ControllerEvent.PositionReported,
             is ControllerEvent.ReadbackReceived,
             is ControllerEvent.StartupRequested,
+            is ControllerEvent.PushbackRequested,
+            is ControllerEvent.GroundCrewPushbackComplete,
             is ControllerEvent.TaxiRequested,
             is ControllerEvent.ResponsibilityTaken,
             is ControllerEvent.UnableReceived,
@@ -143,6 +145,8 @@ fun BeliefState.withRunwayObstructionEvents(events: List<ControllerEvent>): Beli
             is ControllerEvent.PositionReported,
             is ControllerEvent.ReadbackReceived,
             is ControllerEvent.StartupRequested,
+            is ControllerEvent.PushbackRequested,
+            is ControllerEvent.GroundCrewPushbackComplete,
             is ControllerEvent.TaxiRequested,
             is ControllerEvent.GoAroundDetected,
             is ControllerEvent.ResponsibilityTaken,
@@ -154,6 +158,32 @@ fun BeliefState.withRunwayObstructionEvents(events: List<ControllerEvent>): Beli
         }
     }
     return if (updated === runwayObstructions) this else copy(runwayObstructions = updated)
+}
+
+fun BeliefState.withPushbackCompletionEvents(events: List<ControllerEvent>): BeliefState {
+    if (events.isEmpty()) return this
+    val updated = events.fold(pushbackCompleted) { acc, ev ->
+        when (ev) {
+            is ControllerEvent.GroundCrewPushbackComplete -> acc + ev.aircraft
+            is ControllerEvent.ReadyForDepartureReceived,
+            is ControllerEvent.InitialContactReceived,
+            is ControllerEvent.PositionReported,
+            is ControllerEvent.ReadbackReceived,
+            is ControllerEvent.StartupRequested,
+            is ControllerEvent.PushbackRequested,
+            is ControllerEvent.TaxiRequested,
+            is ControllerEvent.GoAroundDetected,
+            is ControllerEvent.ResponsibilityTaken,
+            is ControllerEvent.UnableReceived,
+            is ControllerEvent.TrafficInSightReceived,
+            is ControllerEvent.PilotRequestReceived,
+            is ControllerEvent.CircuitIntentReported,
+            is ControllerEvent.AircraftArrivalCommitted,
+            is ControllerEvent.RunwayObstructionDetected,
+            is ControllerEvent.RunwayObstructionCleared -> acc
+        }
+    }
+    return if (updated === pushbackCompleted) this else copy(pushbackCompleted = updated)
 }
 
 /**
@@ -192,6 +222,7 @@ internal fun aircraftIdOf(event: ControllerEvent): AircraftId? = when (event) {
     is ControllerEvent.ReadyForDepartureReceived -> event.aircraft
     is ControllerEvent.ReadbackReceived -> event.aircraft
     is ControllerEvent.StartupRequested -> event.aircraft
+    is ControllerEvent.PushbackRequested -> event.aircraft
     is ControllerEvent.TaxiRequested -> event.aircraft
     is ControllerEvent.GoAroundDetected -> event.aircraft
     is ControllerEvent.ResponsibilityTaken -> event.aircraft
@@ -199,6 +230,10 @@ internal fun aircraftIdOf(event: ControllerEvent): AircraftId? = when (event) {
     is ControllerEvent.TrafficInSightReceived -> event.aircraft
     is ControllerEvent.PilotRequestReceived -> event.aircraft
     is ControllerEvent.CircuitIntentReported -> event.aircraft
+    // World-derived aircraft-scoped event, but not radio. It has its own
+    // belief fold (`withPushbackCompletionEvents`) and must not enter the
+    // recent-radio buffer.
+    is ControllerEvent.GroundCrewPushbackComplete -> null
     // fn-12 (R2): runway-scoped events have no aircraft id. The
     // recentRadio fold (which uses this lookup) skips events with no
     // aircraft via `?: return@fold acc`, so these contribute nothing
@@ -273,6 +308,8 @@ internal fun intentFromRadio(event: ControllerEvent): arrow.core.Option<Aircraft
     is ControllerEvent.PositionReported,
     is ControllerEvent.ReadbackReceived,
     is ControllerEvent.StartupRequested,
+    is ControllerEvent.PushbackRequested,
+    is ControllerEvent.GroundCrewPushbackComplete,
     is ControllerEvent.TaxiRequested,
     is ControllerEvent.GoAroundDetected,
     is ControllerEvent.ResponsibilityTaken,
@@ -286,7 +323,7 @@ internal fun intentFromRadio(event: ControllerEvent): arrow.core.Option<Aircraft
 }
 
 internal fun intentFromRequestType(rt: RequestType): AircraftIntent? = when (rt) {
-    is RequestStartup, is RequestTaxi -> AircraftIntent.Departing
+    is RequestStartup, is xyz.easiersaid.twr.protocol.RequestPushback, is RequestTaxi -> AircraftIntent.Departing
     is RequestVisualApproach, is RequestShortApproach,
     is RequestRightBase, is RequestApproach -> AircraftIntent.Arriving
     is RequestFrequencyChange -> null
@@ -414,6 +451,8 @@ fun BeliefState.withGoAroundInProgress(
             is ControllerEvent.InitialContactReceived,
             is ControllerEvent.ReadbackReceived,
             is ControllerEvent.StartupRequested,
+            is ControllerEvent.PushbackRequested,
+            is ControllerEvent.GroundCrewPushbackComplete,
             is ControllerEvent.TaxiRequested,
             is ControllerEvent.ResponsibilityTaken,
             is ControllerEvent.UnableReceived,
@@ -442,6 +481,8 @@ fun BeliefState.withGoAroundInProgress(
             is ControllerEvent.InitialContactReceived,
             is ControllerEvent.ReadbackReceived,
             is ControllerEvent.StartupRequested,
+            is ControllerEvent.PushbackRequested,
+            is ControllerEvent.GroundCrewPushbackComplete,
             is ControllerEvent.TaxiRequested,
             is ControllerEvent.ResponsibilityTaken,
             is ControllerEvent.UnableReceived,

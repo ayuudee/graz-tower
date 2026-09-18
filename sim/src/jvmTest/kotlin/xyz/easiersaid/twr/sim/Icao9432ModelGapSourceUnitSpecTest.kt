@@ -178,32 +178,28 @@ class Icao9432ModelGapSourceUnitSpecTest {
     }
 
     @Test
-    fun `pushback and powerback source units report missing actor and manoeuvre model`() {
+    fun `powerback source unit reports missing reverse-engine manoeuvre model`() {
         sourceUnitSpec("icao9432-pushback-powerback-model-gap") {
-            title("Pushback and powerback require aircraft manoeuvre, ground-crew, and local-procedure actors")
-            sourceUnits(
-                listOf(
-                    SourceUnitRef("icao9432-extracted::pushback_powerback_4_3_en::1aae1f61b91984e8"),
-                    SourceUnitRef("icao9432-extracted::pushback_powerback_4_3_en::5980a8f786170b01"),
-                    SourceUnitRef("icao9432-extracted::pushback_powerback_4_3_en::b3652213a568f55f"),
-                ),
+            title("Powerback requires aircraft reverse movement using engine power")
+            sourceUnit(
+                SourceUnitRef("icao9432-extracted::pushback_powerback_4_3_en::1aae1f61b91984e8"),
             )
-            domain("manoeuvre", setOf("pushback", "powerback"))
-            domain("responsible-party", setOf("atc", "apron-management", "ground-crew", "local-procedure-dependent"))
-            domain("completion-signal", setOf("visual-ground-crew-signal"))
+            domain("manoeuvre", setOf("powerback"))
+            domain("reverse-source", setOf("engine-power"))
+            domain("aircraft-type", setOf("powerback-capable", "not-powerback-capable"))
 
             partition(
-                name = "pushback completion before taxi",
+                name = "powerback reverse movement",
                 parameters = mapOf(
-                    "manoeuvre" to "pushback",
-                    "responsible-party" to "local-procedure-dependent",
-                    "completion-signal" to "visual-ground-crew-signal",
+                    "manoeuvre" to "powerback",
+                    "reverse-source" to "engine-power",
+                    "aircraft-type" to "powerback-capable",
                 ),
             ) {
-                hit("pushback-actor-model-required")
+                hit("powerback-model-required")
                 modelGap(
-                    "The sim has no pushback/powerback manoeuvre lifecycle, no apron-management actor, " +
-                        "and no ground-crew visual completion signal before taxi.",
+                    "The sim has a tug-style pushback approval and typed ground-crew completion signal, " +
+                        "but no aircraft reverse movement using engine power and no powerback-capable type model.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()

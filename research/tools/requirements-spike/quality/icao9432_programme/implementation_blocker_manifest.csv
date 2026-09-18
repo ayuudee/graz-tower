@@ -23,8 +23,8 @@ icao9432-extracted::test_procedures_2_8_4_en::b0c636108a61a135,chunk_02_radio_pr
 icao9432-extracted::test_procedures_2_8_4_en::d67d1f63cbbecd7d,chunk_02_radio_procedures_policy,split: duration covered-green / content phraseology-later,PHRASE-1,EvidenceProjectionPressureTest; fn-52-implement-icao-9432-chunk-02.3; PHRASE-1
 icao9432-extracted::test_procedures_2_8_4_en::daa4fadde3c06a1f,chunk_02_radio_procedures_policy,policy-blocked,POLICY-1,POLICY-1
 icao9432-extracted::pushback_powerback_4_3_en::1aae1f61b91984e8,chunk_03_ground_movement,model-gap,PUSHBACK-1,Icao9432ModelGapSourceUnitSpecTest; PUSHBACK-1
-icao9432-extracted::pushback_powerback_4_3_en::5980a8f786170b01,chunk_03_ground_movement,model-gap + policy-blocked,PUSHBACK-1;LocalProcedurePolicy,Icao9432ModelGapSourceUnitSpecTest; PUSHBACK-1; LocalProcedurePolicy
-icao9432-extracted::pushback_powerback_4_3_en::b3652213a568f55f,chunk_03_ground_movement,model-gap,PUSHBACK-1,Icao9432ModelGapSourceUnitSpecTest; PUSHBACK-1
+icao9432-extracted::pushback_powerback_4_3_en::5980a8f786170b01,chunk_03_ground_movement,split: scenario-authored ATC/GROUND branch covered-green; apron-management branch policy-blocked,LocalProcedurePolicy,Icao9432PushbackSourceBackedScenarioTest; LocalProcedurePolicy
+icao9432-extracted::pushback_powerback_4_3_en::b3652213a568f55f,chunk_03_ground_movement,covered-green,,Icao9432PushbackSourceBackedScenarioTest
 icao9432-extracted::pushback_powerback_4_3_en::da5fd317668b375a,chunk_03_ground_movement,phraseology-later,PHRASE-1,PHRASE-1
 icao9432-extracted::pushback_powerback_4_3_en::fc3dfdf7cc913637,chunk_03_ground_movement,phraseology-later,PHRASE-1,PHRASE-1
 icao9432-extracted::taxi_4_4_en::03985c8e2cf3f473,chunk_03_ground_movement,policy-blocked,POLICY-1;LocalProcedurePolicy,POLICY-1; LocalProcedurePolicy

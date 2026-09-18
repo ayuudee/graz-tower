@@ -4,6 +4,7 @@ import xyz.easiersaid.twr.controller.AircraftObservation
 import xyz.easiersaid.twr.controller.AircraftObservationInput
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.ControllerView
+import xyz.easiersaid.twr.controller.observe.ControllerEvent
 import xyz.easiersaid.twr.controller.from
 import xyz.easiersaid.twr.core.world.WorldIndex
 import xyz.easiersaid.twr.controller.RunwayObservation
@@ -158,6 +159,9 @@ fun buildControllerView(state: SimState, controllerId: ControllerId): Controller
         staffedRoles = staffingPanel.roles,
         outgoingMissedHandoffs = outgoingMissedHandoffs,
         atis = state.atisByAerodrome,
+        worldEvents = state.groundCrewPushbackComplete
+            .filter { aircraftId -> aircraftId in ownedIds }
+            .map(ControllerEvent::GroundCrewPushbackComplete),
     )
 }
 

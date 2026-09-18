@@ -45,4 +45,24 @@ class GroundDepartureTaskShapeSpec {
             steps,
         )
     }
+
+    @Test
+    fun `groundDepartureTask can require pushback before taxi`() {
+        val task = groundDepartureTask(requiresPushback = true)
+        val steps = task.children.filterIsInstance<PrimitiveTask>().map { it.step }
+        assertEquals(
+            listOf(
+                MissionStep.REQUEST_PUSHBACK,
+                MissionStep.AWAIT_PUSHBACK_APPROVAL,
+                MissionStep.AWAIT_GROUND_CREW_SIGNAL,
+                MissionStep.REQUEST_TAXI,
+                MissionStep.TAXI_TO_HOLDING,
+                MissionStep.RUN_UP_CHECKS,
+                MissionStep.REPORT_READY,
+                MissionStep.AWAIT_LINE_UP,
+                MissionStep.AWAIT_TAKEOFF_CLEARANCE,
+            ),
+            steps,
+        )
+    }
 }

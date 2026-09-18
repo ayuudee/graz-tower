@@ -298,6 +298,14 @@ object RegulationDatabase {
         category = RegulationCategory.PHRASEOLOGY,
     )
 
+    val ICAO9432_PUSHBACK_POWERBACK = RegulationRef(
+        document = "ICAO_9432", edition = RegulationRef.ICAO_9432_EDITION, section = "§4.3",
+        title = "Push-back and power-back",
+        principle = "Push-back or power-back requests are made to ATC or apron management according to local procedures; " +
+            "after completion the ground crew signals that the aircraft is free to taxi",
+        category = RegulationCategory.PHRASEOLOGY,
+    )
+
     val ICAO9432_TAXI = RegulationRef(
         document = "ICAO_9432", edition = RegulationRef.ICAO_9432_EDITION, section = "Ch.4",
         title = "Taxi clearance",

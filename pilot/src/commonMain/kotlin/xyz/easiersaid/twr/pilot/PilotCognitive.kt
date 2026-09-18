@@ -115,6 +115,7 @@ import xyz.easiersaid.twr.protocol.ResumeOwnNavigation
 import xyz.easiersaid.twr.protocol.TurnHeading
 import xyz.easiersaid.twr.protocol.Request
 import xyz.easiersaid.twr.protocol.RequestFrequencyChange
+import xyz.easiersaid.twr.protocol.RequestPushback
 import xyz.easiersaid.twr.protocol.SayAgain
 import xyz.easiersaid.twr.protocol.TrafficInSight
 import xyz.easiersaid.twr.protocol.RequestStartup
@@ -332,7 +333,9 @@ private fun isReportComplete(mission: PilotMission, step: MissionStep): Boolean 
     MissionStep.CALL_INBOUND -> mission.contactedOnFrequency
     MissionStep.GOING_AROUND -> false // completes after transmitting — same pattern as REPORT_READY
     // Steps that should never reach isReportComplete (wrong CompletionMode).
-    MissionStep.REQUEST_STARTUP, MissionStep.AWAIT_STARTUP_APPROVAL, MissionStep.REQUEST_TAXI,
+    MissionStep.REQUEST_STARTUP, MissionStep.AWAIT_STARTUP_APPROVAL,
+    MissionStep.REQUEST_PUSHBACK, MissionStep.AWAIT_PUSHBACK_APPROVAL, MissionStep.AWAIT_GROUND_CREW_SIGNAL,
+    MissionStep.REQUEST_TAXI,
     MissionStep.TAXI_TO_HOLDING, MissionStep.RUN_UP_CHECKS, MissionStep.AWAIT_LINE_UP,
     MissionStep.AWAIT_TAKEOFF_CLEARANCE, MissionStep.FLY_DEPARTURE, MissionStep.FLY_DOWNWIND,
     MissionStep.AWAIT_SEQUENCING, MissionStep.FLY_BASE, MissionStep.FLY_FINAL,
@@ -418,6 +421,9 @@ private fun isPhysicallyComplete(
         // Steps that should never reach isPhysicallyComplete (wrong CompletionMode).
         MissionStep.REQUEST_STARTUP,
         MissionStep.AWAIT_STARTUP_APPROVAL,
+        MissionStep.REQUEST_PUSHBACK,
+        MissionStep.AWAIT_PUSHBACK_APPROVAL,
+        MissionStep.AWAIT_GROUND_CREW_SIGNAL,
         MissionStep.REQUEST_TAXI,
         MissionStep.RUN_UP_CHECKS,
         MissionStep.REPORT_READY,
@@ -554,6 +560,7 @@ private fun stepTransmission(
 
     return when (step) {
     MissionStep.REQUEST_STARTUP -> if (isFirstTick) Request(RequestStartup()) else null
+    MissionStep.REQUEST_PUSHBACK -> if (isFirstTick) Request(RequestPushback) else null
     MissionStep.REQUEST_TAXI -> if (isFirstTick) Request(RequestTaxi()) else null
     MissionStep.REPORT_READY -> if (isFirstTick) Report(listOf(ReportEvent.Ready)) else null
     MissionStep.CALL_INBOUND -> if (isFirstTick) InitialContact(
@@ -630,6 +637,8 @@ private fun stepTransmission(
     MissionStep.GOING_AROUND -> if (isFirstTick) Report(listOf(ReportEvent.GoingAround)) else null
     // Steps with no pilot-initiated transmission.
     MissionStep.AWAIT_STARTUP_APPROVAL,
+    MissionStep.AWAIT_PUSHBACK_APPROVAL,
+    MissionStep.AWAIT_GROUND_CREW_SIGNAL,
     MissionStep.TAXI_TO_HOLDING,
     MissionStep.RUN_UP_CHECKS,
     MissionStep.AWAIT_TAKEOFF_CLEARANCE,
@@ -714,6 +723,19 @@ fun processInstruction(
         // ── Step-completion via mission-step matching ───────────────────
         is StartupApproved -> if (step == MissionStep.AWAIT_STARTUP_APPROVAL)
             mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now) else mission
+
+        is PushbackApproved -> if (step == MissionStep.REQUEST_PUSHBACK ||
+            step == MissionStep.AWAIT_PUSHBACK_APPROVAL
+        ) {
+            mission.copy(
+                root = mission.root
+                    .markComplete(MissionStep.REQUEST_PUSHBACK)
+                    .markComplete(MissionStep.AWAIT_PUSHBACK_APPROVAL),
+                stepEnteredAt = now,
+            )
+        } else {
+            mission
+        }
 
         is TaxiToHoldingPoint -> if (step in TAXI_TO_STEPS)
             mission.copy(root = mission.root.markComplete(step), stepEnteredAt = now) else mission
@@ -870,7 +892,6 @@ fun processInstruction(
         is NumberInSequence -> mission
         is Orbit -> mission
         is ProceedDirect -> mission
-        is PushbackApproved -> mission
         is PushbackFace -> mission
         is ReduceSpeedTo -> mission
         is ReduceTaxiSpeed -> mission

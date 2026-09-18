@@ -6,26 +6,28 @@ Chunk: ICAO 9432 ground movement: pushback, powerback, and taxi.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 1 |
+| `covered-green` / configured branch | 3 |
 | `covered-red` | 1 |
-| `model-gap` | 6 |
-| `policy-blocked` | 1 |
+| `model-gap` | 4 |
+| `policy-blocked` / branch-blocked | 2 |
 | `phraseology-later` | 2 |
 
-Chunk 03 now has one configured-policy green row: LOWG departures are explicitly
-bound to the normal runway-holding-point taxi-limit branch and the live trace
-proves that configured branch. This is not universal closure. The most
-important universal result remains the covered-red structural audit for ICAO
-9432 §4.4 taxi clearance limits: current typed taxi instructions do not
-guarantee a clearance-limit field across the whole taxi-like instruction space.
+Chunk 03 now has three green/configured-branch rows: LOWG departures are
+explicitly bound to the normal runway-holding-point taxi-limit branch, and the
+pushback-required LOWG departure proves the scenario-authored ATC/GROUND branch
+plus typed ground-crew completion signal. This is not universal closure for
+apron-management or powerback. The most important universal result remains the
+covered-red structural audit for ICAO 9432 §4.4 taxi clearance limits: current
+typed taxi instructions do not guarantee a clearance-limit field across the
+whole taxi-like instruction space.
 
 ## Coverage Table
 
 | Source unit | Final state | Test / blocker | Claim |
 |---|---|---|---|
 | `icao9432-extracted::pushback_powerback_4_3_en::1aae1f61b91984e8` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest`; `PUSHBACK-1` | Power-back is aircraft reverse movement using engine power. |
-| `icao9432-extracted::pushback_powerback_4_3_en::5980a8f786170b01` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `PUSHBACK-1`; `LocalProcedurePolicy` | Push-back/power-back requests go to ATC or apron management depending on local procedures. |
-| `icao9432-extracted::pushback_powerback_4_3_en::b3652213a568f55f` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest`; `PUSHBACK-1` | Ground crew signals when the aircraft is free to taxi. |
+| `icao9432-extracted::pushback_powerback_4_3_en::5980a8f786170b01` | `split: scenario-authored ATC/GROUND branch covered-green; apron-management branch policy-blocked` | `Icao9432PushbackSourceBackedScenarioTest`; `LocalProcedurePolicy` | Push-back/power-back requests go to ATC or apron management depending on local procedures. |
+| `icao9432-extracted::pushback_powerback_4_3_en::b3652213a568f55f` | `covered-green` | `Icao9432PushbackSourceBackedScenarioTest` | Ground crew signals when the aircraft is free to taxi. |
 | `icao9432-extracted::pushback_powerback_4_3_en::da5fd317668b375a` | `phraseology-later` | `PHRASE-1` | Stop-pushback phraseology. |
 | `icao9432-extracted::pushback_powerback_4_3_en::fc3dfdf7cc913637` | `phraseology-later` | `PHRASE-1` | Pilot / ground-crew pushback coordination phraseology. |
 | `icao9432-extracted::taxi_4_4_en::03985c8e2cf3f473` | `policy-blocked` | `POLICY-1`; `LocalProcedurePolicy` | Taxi limit may be another aerodrome position depending on traffic. |
@@ -41,18 +43,19 @@ guarantee a clearance-limit field across the whole taxi-like instruction space.
   `verbatimQuoteCheck.status = pass`, `lifecycle.state = accepted`, and
   normalized source quotes match `research/txt/icao9432-extracted.txt`.
 - Focused verification:
-  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432Chunk03GroundMovementEvidenceTest' --tests '*.Icao9432TaxiSourceBackedScenarioTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
+  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432Chunk03GroundMovementEvidenceTest' --tests '*.Icao9432TaxiSourceBackedScenarioTest' --tests '*.Icao9432PushbackSourceBackedScenarioTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
 
 ## Review Considerations
 
 - FP / type safety: source refs are typed and registry-validated. The taxi
   clearance-limit audit uses typed protocol leaves, not rendered strings.
 - Test architecture: the universal taxi-limit source lands covered-red rather
-  than being narrowed to one passing LOWG trace. The normal holding-point row is
-  green only under an explicit configured LOWG policy branch. Pushback and
-  runway-vacated rows are model gaps, not skipped rows.
-- Impact: no pushback, ground-crew, apron-management, phraseology, or
-  local-procedure policy behaviour was added.
+  than being narrowed to one passing LOWG trace. The normal holding-point row
+  and pushback authority row are green only under explicit scenario/configured branches.
+  Powerback and runway-vacated rows remain model gaps, not skipped rows.
+- Impact: tug-style pushback and typed ground-crew completion were added; no
+  apron-management, powerback, phraseology, or generalized local-procedure
+  policy behaviour was added.
 - Operational correctness: ICAO 9432 §4.3 local-procedure/pushback actor
   requirements and §4.4 "normally/may/depending" language are not asserted as
   unconditional simulator law.

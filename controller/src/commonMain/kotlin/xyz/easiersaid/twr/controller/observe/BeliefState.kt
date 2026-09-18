@@ -113,6 +113,11 @@ data class BeliefState(
      */
     val circuitIntent: Map<AircraftId, CircuitIntent> = emptyMap(),
     /**
+     * Aircraft whose tug-style pushback manoeuvre has completed and whose
+     * ground crew has signalled that the aircraft is free to taxi.
+     */
+    val pushbackCompleted: Set<AircraftId> = emptySet(),
+    /**
      * fn-12 (R4): per-runway active obstructions, populated by
      * [withRunwayObstructionEvents] from
      * [ControllerEvent.RunwayObstructionDetected] /

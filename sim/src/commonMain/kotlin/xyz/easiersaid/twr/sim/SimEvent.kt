@@ -138,6 +138,21 @@ sealed interface SimEvent {
     }
 
     /**
+     * Ground crew visual signal after pushback completion. This is the typed
+     * simulator observation for ICAO Doc 9432 §4.3.3's "manoeuvre complete,
+     * aircraft free to taxi" signal. It is System-sourced because fn-64 does
+     * not yet model a tug/vehicle actor; VEHICLE-1 may later replace the
+     * producer while preserving this lifecycle fact.
+     */
+    data class GroundCrewPushbackComplete(
+        override val time: SimTime,
+        val aircraftId: AircraftId,
+        override val seq: Long = 0,
+    ) : SimEvent {
+        override val source: AgentId = AgentId.System
+    }
+
+    /**
      * Pass 11 (D-AUDIT.6): an aircraft's filed plan reached the strip
      * board. Closes the "spawn is filing" gap — the strip exists at this
      * moment; the aircraft may or may not be physically present yet
@@ -288,6 +303,7 @@ internal fun SimEvent.withSeq(s: Long): SimEvent = when (this) {
     is SimEvent.TransmissionEnd -> copy(seq = s)
     is SimEvent.TransmissionReceptionObserved -> copy(seq = s)
     is SimEvent.PilotProcessingComplete -> copy(seq = s)
+    is SimEvent.GroundCrewPushbackComplete -> copy(seq = s)
     is SimEvent.MissedHandoffDetected -> copy(seq = s)
     is SimEvent.FlightPlanFiled -> copy(seq = s)
     is SimEvent.AtisIssued -> copy(seq = s)

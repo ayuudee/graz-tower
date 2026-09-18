@@ -316,12 +316,15 @@ sealed interface GroundDepartureStage : Stage {
     data object AwaitTaxiRequest : GroundDepartureStage {
         override val name = "AwaitTaxiRequest"; override val ordinal = 0
     }
+    data object AwaitPushbackCompletion : GroundDepartureStage {
+        override val name = "AwaitPushbackCompletion"; override val ordinal = 1
+    }
     data object AwaitAtHolding : GroundDepartureStage {
-        override val name = "AwaitAtHolding"; override val ordinal = 1
+        override val name = "AwaitAtHolding"; override val ordinal = 2
     }
     data object Complete : GroundDepartureStage {
         override val name = "Complete"
-        override val isComplete = true; override val ordinal = 2
+        override val isComplete = true; override val ordinal = 3
     }
 }
 

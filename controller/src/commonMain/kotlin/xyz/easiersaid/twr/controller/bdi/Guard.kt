@@ -352,6 +352,20 @@ data object TaxiRequested : RuleGuard {
         ctx.events.any { it is ControllerEvent.TaxiRequested && it.aircraft == ac.id }
 }
 
+/** Pilot has requested pushback this cycle. */
+data object PushbackRequested : RuleGuard {
+    override val failureMessage = "Pilot has not requested pushback"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ctx.events.any { it is ControllerEvent.PushbackRequested && it.aircraft == ac.id }
+}
+
+data object PushbackCompleted : RuleGuard {
+    override val failureMessage = "Ground crew has not signalled pushback complete"
+    override fun evaluate(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext) =
+        ac.id in ctx.beliefs.pushbackCompleted ||
+            ctx.events.any { it is ControllerEvent.GroundCrewPushbackComplete && it.aircraft == ac.id }
+}
+
 // ── Service intent (firewall-clean) ──────────────────────────────────
 //
 // These guards read controller-side belief slices populated only from

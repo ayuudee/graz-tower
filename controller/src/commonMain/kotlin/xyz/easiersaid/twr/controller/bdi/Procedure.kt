@@ -80,6 +80,7 @@ enum class ExpectedPilotAct {
     InitialContact,
     RequestTaxi,
     RequestStartup,
+    RequestPushback,
     ReadyForDeparture,
     PositionReport,
     TuneFrequency,

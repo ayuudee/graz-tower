@@ -131,6 +131,7 @@ data class SimState(
      * spawn recursive `SayAgain` traffic.
      */
     val pendingReceptionDoubtAircraft: Set<AircraftId> = emptySet(),
+    val groundCrewPushbackComplete: Set<AircraftId> = emptySet(),
     /**
      * fn-12 (R3b): per-controller snapshot of the obstructions visible to
      * that controller AS OF the prior controller cycle. Updated at the

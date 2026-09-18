@@ -22,6 +22,7 @@ import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.Request
 import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.RequestOrbit
+import xyz.easiersaid.twr.protocol.RequestPushback
 import xyz.easiersaid.twr.protocol.RequestRightBase
 import xyz.easiersaid.twr.protocol.RequestShortApproach
 import xyz.easiersaid.twr.protocol.RequestStartup
@@ -41,7 +42,7 @@ import xyz.easiersaid.twr.protocol.Wilco
  * Semantic events derived from received messages, belief deltas, and
  * world-state changes.
  *
- * **Three source classes** (post fn-12):
+ * **Event source classes**:
  *  1. **Radio-derived, aircraft-scoped** — derived from a
  *     [PilotTransmission] after physics + interpretation resolves it.
  *     Examples: [ReadyForDepartureReceived], [InitialContactReceived],
@@ -55,7 +56,13 @@ import xyz.easiersaid.twr.protocol.Wilco
  *     instance is [ResponsibilityTaken], emitted when responsibility for
  *     an aircraft is acquired (e.g. cross-aerodrome pickup); it carries
  *     `aircraft: AircraftId` and `aircraftIdOf` returns it normally.
- *  3. **World-state-derived, no-aircraft** — emitted directly by the
+ *  3. **World-state-derived, aircraft-scoped** — emitted by the sim
+ *     when an aircraft-specific world fact changes outside radio. The
+ *     current instance is [GroundCrewPushbackComplete], projected from
+ *     the sim's ground-crew pushback completion fact. It is not radio,
+ *     so it is exempt from `recentRadio` even though it carries an
+ *     `AircraftId`.
+ *  4. **World-state-derived, no-aircraft** — emitted directly by the
  *     sim's per-cycle world-diff producer when a world-model field
  *     changes value. The [RunwayObstructionDetected] and
  *     [RunwayObstructionCleared] leaves are the first instances. They
@@ -65,11 +72,11 @@ import xyz.easiersaid.twr.protocol.Wilco
  *     aircraft-scoped events or handle the null-aircraft case explicitly.
  *
  * Filtering by "has an `aircraft` field" is NOT a reliable proxy for
- * "radio-derived" — class 2 also carries `aircraft` without being radio-
- * derived. Use `deriveFromTransmission` as the canonical radio-derivation
- * site; everything else is non-radio.
+ * "radio-derived" — classes 2 and 3 also carry `aircraft` without being
+ * radio-derived. Use `deriveFromTransmission` as the canonical radio-
+ * derivation site; everything else is non-radio.
  *
- * All three source classes flow through the same [BeliefState] fold
+ * All source classes flow through the same [BeliefState] fold
  * pipeline. The firewall contract is "typed events from world or radio
  * or controller-side state, never raw audio, never blocking calls" — see
  * `wiki/design-decisions/2026-04-16-transmission-reception-architecture.md`
@@ -94,6 +101,8 @@ sealed interface ControllerEvent {
     data class PositionReported(val aircraft: AircraftId, val event: ReportEvent) : ControllerEvent
     data class ReadbackReceived(val aircraft: AircraftId, val readback: Readback) : ControllerEvent
     data class StartupRequested(val aircraft: AircraftId) : ControllerEvent
+    data class PushbackRequested(val aircraft: AircraftId) : ControllerEvent
+    data class GroundCrewPushbackComplete(val aircraft: AircraftId) : ControllerEvent
     data class TaxiRequested(val aircraft: AircraftId) : ControllerEvent
     data class GoAroundDetected(val aircraft: AircraftId) : ControllerEvent
     data class ResponsibilityTaken(val aircraft: AircraftId) : ControllerEvent
@@ -196,6 +205,7 @@ private fun deriveFromTransmission(aircraft: AircraftId, tx: PilotTransmission):
 private fun deriveFromRequest(aircraft: AircraftId, type: RequestType): List<ControllerEvent> =
     when (type) {
         is RequestStartup -> listOf(ControllerEvent.StartupRequested(aircraft))
+        is RequestPushback -> listOf(ControllerEvent.PushbackRequested(aircraft))
         is RequestTaxi -> listOf(ControllerEvent.TaxiRequested(aircraft))
         is RequestVisualApproach, is RequestShortApproach, is RequestRightBase, is RequestOrbit ->
             listOf(ControllerEvent.PilotRequestReceived(aircraft, type))

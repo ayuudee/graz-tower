@@ -653,7 +653,9 @@ sealed interface RouteOverride {
 
 enum class MissionStep {
     // Ground (pre-departure)
-    REQUEST_STARTUP, AWAIT_STARTUP_APPROVAL, REQUEST_TAXI, TAXI_TO_HOLDING,
+    REQUEST_STARTUP, AWAIT_STARTUP_APPROVAL,
+    REQUEST_PUSHBACK, AWAIT_PUSHBACK_APPROVAL, AWAIT_GROUND_CREW_SIGNAL,
+    REQUEST_TAXI, TAXI_TO_HOLDING,
     RUN_UP_CHECKS, REPORT_READY, AWAIT_LINE_UP, AWAIT_TAKEOFF_CLEARANCE,
     // Airborne (VFR circuit)
     FLY_DEPARTURE, FLY_DOWNWIND, REPORT_DOWNWIND, AWAIT_SEQUENCING,
@@ -791,14 +793,26 @@ enum class MissionStep {
  * LJLJ are candidates), D-PF.1 brings the steps back the right way — gated
  * on the airport's procedural requirement, not on cockpit type.
  */
-fun groundDepartureTask(): CompoundTask = CompoundTask(TaskName.GroundDeparture, listOf(
-    PrimitiveTask(MissionStep.REQUEST_TAXI, CompletionMode.INSTRUCTION_GATED),
-    PrimitiveTask(MissionStep.TAXI_TO_HOLDING, CompletionMode.PHYSICAL),
-    PrimitiveTask(MissionStep.RUN_UP_CHECKS, CompletionMode.TIMED),
-    PrimitiveTask(MissionStep.REPORT_READY, CompletionMode.REPORTED),
-    PrimitiveTask(MissionStep.AWAIT_LINE_UP, CompletionMode.INSTRUCTION_GATED),
-    PrimitiveTask(MissionStep.AWAIT_TAKEOFF_CLEARANCE, CompletionMode.INSTRUCTION_GATED),
-))
+fun groundDepartureTask(requiresPushback: Boolean = false): CompoundTask =
+    CompoundTask(TaskName.GroundDeparture, pushbackPrefix(requiresPushback) + listOf(
+        PrimitiveTask(MissionStep.REQUEST_TAXI, CompletionMode.INSTRUCTION_GATED),
+        PrimitiveTask(MissionStep.TAXI_TO_HOLDING, CompletionMode.PHYSICAL),
+        PrimitiveTask(MissionStep.RUN_UP_CHECKS, CompletionMode.TIMED),
+        PrimitiveTask(MissionStep.REPORT_READY, CompletionMode.REPORTED),
+        PrimitiveTask(MissionStep.AWAIT_LINE_UP, CompletionMode.INSTRUCTION_GATED),
+        PrimitiveTask(MissionStep.AWAIT_TAKEOFF_CLEARANCE, CompletionMode.INSTRUCTION_GATED),
+    ))
+
+private fun pushbackPrefix(requiresPushback: Boolean): List<PrimitiveTask> =
+    if (requiresPushback) {
+        listOf(
+            PrimitiveTask(MissionStep.REQUEST_PUSHBACK, CompletionMode.INSTRUCTION_GATED),
+            PrimitiveTask(MissionStep.AWAIT_PUSHBACK_APPROVAL, CompletionMode.INSTRUCTION_GATED),
+            PrimitiveTask(MissionStep.AWAIT_GROUND_CREW_SIGNAL, CompletionMode.INSTRUCTION_GATED),
+        )
+    } else {
+        emptyList()
+    }
 
 /** Build the CIRCUIT compound task (downwind through landing). */
 fun circuitTask(): CompoundTask = CompoundTask(TaskName.Circuit, listOf(
@@ -874,13 +888,17 @@ fun ifrGoAroundTask(): CompoundTask = CompoundTask(TaskName.GoAround, listOf(
  * [CircuitOutcome.GoAround] → [plannedGoAroundCircuitTask] (the planned
  * short-final go-around).
  */
-fun planMission(goal: HighLevelGoal, ifr: Boolean = false): CompoundTask = when (goal) {
+fun planMission(
+    goal: HighLevelGoal,
+    ifr: Boolean = false,
+    requiresPushback: Boolean = false,
+): CompoundTask = when (goal) {
     is HighLevelGoal.Departure -> if (!ifr) CompoundTask(TaskName.Depart, listOf(
-        groundDepartureTask(),
+        groundDepartureTask(requiresPushback = requiresPushback),
         PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
     )) else CompoundTask(TaskName.Depart, listOf(
-        groundDepartureTask(),
+        groundDepartureTask(requiresPushback = requiresPushback),
         PrimitiveTask(MissionStep.FLY_SID, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.FLY_EN_ROUTE, CompletionMode.PHYSICAL),
         PrimitiveTask(MissionStep.SHUTDOWN, CompletionMode.INSTANT),
@@ -908,7 +926,8 @@ fun planMission(goal: HighLevelGoal, ifr: Boolean = false): CompoundTask = when 
             }
         }
         CompoundTask(TaskName.CircuitTraining,
-            listOf(groundDepartureTask()) + circuitTasks + listOf(groundArrivalTask()))
+            listOf(groundDepartureTask(requiresPushback = requiresPushback)) +
+                circuitTasks + listOf(groundArrivalTask()))
     }
     is HighLevelGoal.Transit -> if (!ifr) {
         // G2: static composition representing "this is my plan right now".
@@ -934,7 +953,7 @@ fun planMission(goal: HighLevelGoal, ifr: Boolean = false): CompoundTask = when 
         // routing once `mission.joinLeg` is set by the controller's
         // ARR-JOIN-CIRCUIT rule.
         CompoundTask(TaskName.Transit, listOf(
-            groundDepartureTask(),
+            groundDepartureTask(requiresPushback = requiresPushback),
             PrimitiveTask(MissionStep.FLY_DEPARTURE, CompletionMode.PHYSICAL),
             arrivalJoinTask(),
             PrimitiveTask(MissionStep.FLY_DOWNWIND, CompletionMode.PHYSICAL),
@@ -1164,8 +1183,9 @@ fun createMission(
     startPhase: PilotPhase,
     time: SimTime,
     filedPlan: xyz.easiersaid.twr.protocol.FiledPlan? = null,
+    requiresPushback: Boolean = false,
 ): PilotMission {
-    var root = planMission(goal)
+    var root = planMission(goal, requiresPushback = requiresPushback)
     root = skipCompletedSteps(root, startPhase)
     val initialActiveRunway: Option<xyz.easiersaid.twr.protocol.RunwayAssignment<xyz.easiersaid.twr.protocol.RunwayAssignmentSource>> =
         filedPlan?.destinationRunway?.let {

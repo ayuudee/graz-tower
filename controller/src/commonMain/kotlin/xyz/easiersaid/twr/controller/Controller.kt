@@ -47,6 +47,7 @@ import xyz.easiersaid.twr.controller.observe.markCoordinationEscalationsEmitted
 import xyz.easiersaid.twr.controller.observe.withGoAroundInProgress
 import xyz.easiersaid.twr.controller.observe.withRecentRadio
 import xyz.easiersaid.twr.controller.observe.withCircuitIntentEvents
+import xyz.easiersaid.twr.controller.observe.withPushbackCompletionEvents
 import xyz.easiersaid.twr.controller.observe.withRunwayObstructionEvents
 import xyz.easiersaid.twr.controller.observe.deriveEventsFromMessages
 import xyz.easiersaid.twr.controller.observe.recordCoordinations
@@ -116,6 +117,7 @@ fun controllerDecide(view: ControllerView, previousBeliefs: BeliefState, world: 
         .withActiveRunway(view)
         .withRecentRadio(events, view.time)
         .withCircuitIntentEvents(events)
+        .withPushbackCompletionEvents(events)
         .withRunwayObstructionEvents(events)
         .let { b ->
             val commitments = reconcileCommitments(
@@ -285,6 +287,8 @@ private fun List<ControllerEvent>.contactedAircraft(): Set<AircraftId> =
             // RunwayObstructionDetected / RunwayObstructionCleared are
             // runway-scoped world events — no aircraft to mark.
             is ControllerEvent.StartupRequested,
+            is ControllerEvent.PushbackRequested,
+            is ControllerEvent.GroundCrewPushbackComplete,
             is ControllerEvent.TaxiRequested,
             is ControllerEvent.GoAroundDetected,
             is ControllerEvent.ResponsibilityTaken,

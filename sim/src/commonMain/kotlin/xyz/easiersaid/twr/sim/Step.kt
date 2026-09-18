@@ -6,6 +6,7 @@ import arrow.core.NonEmptyList
 import arrow.core.Some
 import arrow.core.getOrElse
 import xyz.easiersaid.twr.pilot.AircraftState
+import xyz.easiersaid.twr.pilot.MissionStep
 import xyz.easiersaid.twr.pilot.PilotConstants
 import xyz.easiersaid.twr.pilot.buildReadback
 import xyz.easiersaid.twr.pilot.processControllerResponse
@@ -212,6 +213,7 @@ fun step(state: SimState, event: SimEvent): Pair<SimState, List<SimEvent>> {
         is SimEvent.TransmissionEnd -> handleTransmissionEnd(atTime, event)
         is SimEvent.TransmissionReceptionObserved -> atTime to emptyList()
         is SimEvent.PilotProcessingComplete -> handlePilotProcessingComplete(atTime, event)
+        is SimEvent.GroundCrewPushbackComplete -> handleGroundCrewPushbackComplete(atTime, event)
         // Pass 9 (D-AUDIT.2 / Phase 9.B): MissedHandoffDetected has no
         // handler-state-change effect — it is a system-emitted operational
         // signal recorded by the integration test reading the event log.
@@ -695,8 +697,8 @@ private fun handleControllerTick(
     val priorObs = expiredState.priorObstructionsByController[event.controllerId] ?: emptyMap()
     val worldEvents = runwayObstructionEvents(spec.aerodromeId, priorObs, expiredState.world)
 
-    val view = buildControllerView(expiredState, event.controllerId)
-        .copy(worldEvents = worldEvents)
+    val projectedView = buildControllerView(expiredState, event.controllerId)
+    val view = projectedView.copy(worldEvents = projectedView.worldEvents + worldEvents)
     val prior = expiredState.beliefs[event.controllerId] ?: BeliefState.EMPTY
     val decision = controllerDecide(view, prior, expiredState.world)
 
@@ -970,6 +972,30 @@ private fun handleEngineFailure(
     val updated = ac.copy(engineRunning = false)
     val aircraft = LinkedHashMap(state.aircraft).apply { put(event.aircraftId, updated) }
     return state.copy(aircraft = aircraft) to emptyList()
+}
+
+private fun handleGroundCrewPushbackComplete(
+    state: SimState,
+    event: SimEvent.GroundCrewPushbackComplete,
+): Pair<SimState, List<SimEvent>> {
+    val ac = state.aircraft[event.aircraftId]
+        ?: error("GroundCrewPushbackComplete: no aircraft ${event.aircraftId} in state.aircraft")
+    val mission = ac.pilotMission
+        ?: error("GroundCrewPushbackComplete: aircraft ${event.aircraftId} has no pilot mission")
+    val step = mission.currentTask?.step
+    check(step == MissionStep.AWAIT_GROUND_CREW_SIGNAL) {
+        "GroundCrewPushbackComplete: aircraft ${event.aircraftId} mission step is $step, " +
+            "expected ${MissionStep.AWAIT_GROUND_CREW_SIGNAL}"
+    }
+    val updatedMission = mission.copy(
+        root = mission.root.markComplete(MissionStep.AWAIT_GROUND_CREW_SIGNAL),
+        stepEnteredAt = event.time,
+    )
+    val updatedAircraft = ac.copy(pilotMission = updatedMission)
+    return state.copy(
+        aircraft = LinkedHashMap(state.aircraft).apply { put(event.aircraftId, updatedAircraft) },
+        groundCrewPushbackComplete = state.groundCrewPushbackComplete + event.aircraftId,
+    ) to emptyList()
 }
 
 private fun handleSpawn(
@@ -1277,8 +1303,17 @@ private fun handleInstructFromController(
         val updatedAc = missionAc.copy(pilotMission = updatedMission)
         afterApply = afterApply.copy(aircraft = LinkedHashMap(afterApply.aircraft).apply { put(ac.id, updatedAc) })
     }
+    val pushbackCompletionEvents = when (instruct.instruction) {
+        is PushbackApproved -> listOf(
+            SimEvent.GroundCrewPushbackComplete(
+                time = eventTime + SimDuration.ofSeconds(5),
+                aircraftId = ac.id,
+            ),
+        )
+        else -> emptyList()
+    }
     val readback = buildReadback(instruct.instruction).getOrNull()
-        ?: return afterApply to emptyList()
+        ?: return afterApply to pushbackCompletionEvents
 
     val utterance = Utterance.FromPilot(readback)
     val (withReadbackId, readbackTxId) = afterApply.mintTransmissionId()
@@ -1356,7 +1391,7 @@ private fun handleInstructFromController(
     val withRadioFreeAt = afterIc.copy(
         pilotRadioFreeAt = afterIc.pilotRadioFreeAt + (ac.id to maxOf(existingFloor, finalRadioFreeAt)),
     )
-    return withRadioFreeAt.emit(listOf(readbackStart) + icEvents)
+    return withRadioFreeAt.emit(listOf(readbackStart) + icEvents + pushbackCompletionEvents)
 }
 
 /**

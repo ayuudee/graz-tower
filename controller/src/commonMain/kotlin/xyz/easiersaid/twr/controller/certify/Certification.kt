@@ -34,6 +34,7 @@ import xyz.easiersaid.twr.protocol.JoinCircuit
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.MonitorFrequency
 import xyz.easiersaid.twr.protocol.NumberInSequence
+import xyz.easiersaid.twr.protocol.PushbackApproved
 import xyz.easiersaid.twr.protocol.RadarServiceTerminated
 import xyz.easiersaid.twr.protocol.ReportWhen
 import xyz.easiersaid.twr.protocol.RunwayId
@@ -534,6 +535,7 @@ fun certificationPlanFor(
 ): Either<CertificationFailure, CertificationPlan> = when (instruction) {
     is TaxiToHoldingPoint,
     is TaxiToStand,
+    is PushbackApproved,
     is HoldPosition,
     is HoldShortOf,
     -> CertificationPlan(

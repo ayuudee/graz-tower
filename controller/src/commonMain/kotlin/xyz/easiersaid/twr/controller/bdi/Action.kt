@@ -32,6 +32,7 @@ import xyz.easiersaid.twr.protocol.JoinType
 import xyz.easiersaid.twr.protocol.Level
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.PushbackApproved
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.ReportWhen
 import xyz.easiersaid.twr.protocol.RoleName
@@ -553,6 +554,11 @@ data object TaxiToHoldingAction : RuleAction {
             TaxiToHoldingPoint(target = ac.id, destination = destination, runway = runway, via = via),
         ).right()
     }
+}
+
+data object PushbackApprovalAction : RuleAction {
+    override fun resolve(ac: AircraftObservation, commitment: Commitment, ctx: OperatorContext): Either<ActionResolutionFailure, ProposedAction> =
+        ProposedAction(PushbackApproved(target = ac.id)).right()
 }
 
 data object TaxiToStandAction : RuleAction {

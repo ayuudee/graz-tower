@@ -34,6 +34,7 @@ import xyz.easiersaid.twr.protocol.HoldPositionCancelTakeoff
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.NumberInSequence
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.PushbackApproved
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
@@ -71,6 +72,10 @@ class CertificationBoundarySpec {
             ?: error("HoldPositionCancelTakeoff should have a joint runway-surface plan")
         assertEquals(setOf(KernelRequirement.Runway, KernelRequirement.Surface), cancelTakeoff.requirements)
         assertTrue(cancelTakeoff.joint)
+
+        val pushback = certificationPlanFor(PushbackApproved(aircraft)).getOrNull()
+            ?: error("PushbackApproved should have a surface certification plan")
+        assertEquals(setOf(KernelRequirement.Surface), pushback.requirements)
 
         val vacate = certificationPlanFor(AfterLandingVacateVia(aircraft, PointId("E1"))).getOrNull()
             ?: error("AfterLandingVacateVia should have a joint runway-surface plan")
