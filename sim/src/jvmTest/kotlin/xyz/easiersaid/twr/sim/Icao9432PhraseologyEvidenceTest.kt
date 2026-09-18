@@ -3,9 +3,46 @@ package xyz.easiersaid.twr.sim
 import kotlin.test.Test
 import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.RunwayId
 
 class Icao9432PhraseologyEvidenceTest {
+    @Test
+    fun `LOWG frequency transfer renders ICAO 9432 contact instruction and readback`() {
+        val aircraft = AircraftId("OE-ABC")
+        val towerFrequency = Frequency.unsafe("118.200")
+
+        val report = simEvidence("icao9432-rendered-contact-frequency") {
+            observe {
+                EvidenceFactAdapters.lowgCircuitTraining(
+                    scenarioId = "icao9432-rendered-contact-frequency",
+                    outcomes = listOf(CircuitOutcome.FullStop),
+                    untilMinutes = 45,
+                )
+            }
+            source("contact frequency rendered phraseology") {
+                cites(ICAO9432.TransferCommunications.ContactFrequencyPhrase)
+                sample("aerodrome", "LOWG")
+                sample("target-unit", "TOWER")
+                sample("frequency", towerFrequency.mhz)
+                expect {
+                    renderedPhraseology(aircraft).contactFrequency("TOWER", towerFrequency)
+                }
+            }
+            source("contact frequency readback rendered phraseology") {
+                cites(ICAO9432.TransferCommunications.ContactFrequencyPhrase)
+                sample("aerodrome", "LOWG")
+                sample("target-unit", "TOWER")
+                sample("frequency", towerFrequency.mhz)
+                expect {
+                    renderedPilotReadbackPhraseology(aircraft).frequencyReadback(towerFrequency)
+                }
+            }
+        }
+
+        report.assertNoFailures()
+    }
+
     @Test
     fun `LOWG line-up exchange renders ICAO 9432 line-up instruction and acknowledgement`() {
         val aircraft = AircraftId("OE-ABC")

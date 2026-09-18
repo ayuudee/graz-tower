@@ -204,7 +204,6 @@ class EvidenceFactsTest {
             instruction = ContactFrequency(
                 target = aircraft,
                 role = RoleName.TOWER,
-                frequency = Frequency.unsafe("118.500"),
             ),
         )
 

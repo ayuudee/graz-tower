@@ -8,7 +8,7 @@ This file records chunk-01 source units that should not be converted into passin
 |---|---:|
 | `expected-gap` | 1 |
 | `not-applicable` | 1 |
-| `phraseology-later` | 7 |
+| `phraseology-later` | 6 |
 | `policy-blocked` | 2 |
 
 ## Records
@@ -25,11 +25,10 @@ This file records chunk-01 source units that should not be converted into passin
 | `icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9` | `phraseology-later` | `PHRASE-1` | An ATC route clearance is not an instruction to take off or enter an active runway. | Wait for rendered-transmission phraseology facts. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71` | `phraseology-later` | `PHRASE-1` | An aircraft should terminate the read-back by its call sign. | Wait for rendered-transmission phraseology facts. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ce25c18f1b44a6a8` | `not-applicable` | `none` | See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES | No behaviour claim for this simulator chunk. |
-| `icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc` | `phraseology-later` | `PHRASE-1` | Phraseology for frequency change includes 'CONTACT [Unit] [Frequency]' and readback 'Frequency Callsign'. | Wait for rendered-transmission phraseology facts. |
 
 ## Review Considerations
 
 - FP / type safety: these gap states are planning records; permanent expected gaps in code should use typed `EvidenceGapId`s.
 - Test architecture: a blocked unit is not skipped. It remains part of chunk coverage with an explicit blocker and handoff.
-- Impact: COMMS-1 has moved to covered-green via fn-50; remaining entries are phraseology, policy, model-gap, or not-applicable records.
+- Impact: COMMS-1 has moved to covered-green via fn-50 and the contact-frequency phraseology row moved to rendered phraseology via fn-78; remaining entries are phraseology, policy, model-gap, or not-applicable records.
 - Operational correctness: phraseology and policy units remain separate from structural readback semantics.

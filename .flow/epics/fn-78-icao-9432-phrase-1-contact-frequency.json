@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-78-icao-9432-phrase-1-contact-frequency",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-18T21:14:15.240419Z",
+  "created_at": "2026-09-18T21:06:28.593812Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-78-icao-9432-phrase-1-contact-frequency",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-18T21:07:28.987416Z",
+  "spec_path": ".flow/specs/fn-78-icao-9432-phrase-1-contact-frequency.md",
+  "status": "done",
+  "title": "ICAO 9432 PHRASE-1 contact-frequency phraseology evidence",
+  "updated_at": "2026-09-18T21:14:15.352129Z"
+}

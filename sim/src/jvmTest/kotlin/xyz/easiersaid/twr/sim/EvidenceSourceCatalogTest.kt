@@ -34,6 +34,7 @@ class EvidenceSourceCatalogTest {
                 "icao9432-extracted::after_landing_4_9_en::4a512226eec962cb",
                 "icao9432-extracted::after_landing_4_9_en::5d742dc66caa1790",
                 "icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e",
+                "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
                 "icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538",
                 "icao9432-extracted::essential_aerodrome_information_4_10_en::01c0a4bc62b1e926",
                 "icao9432-extracted::essential_aerodrome_information_4_10_en::1306eb5cc586df34",
@@ -166,6 +167,7 @@ class EvidenceSourceCatalogTest {
             setOf(
                 "icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03",
                 "icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef",
+                "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
                 "icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4",
             ),
             EvidenceSourceCatalog.All

@@ -265,6 +265,12 @@ object ICAO9432 {
     }
 
     object TransferCommunications {
+        val ContactFrequencyPhrase: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
+            title = "Frequency transfer uses CONTACT unit frequency and frequency callsign readback",
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
+        )
+
         val ControllerAdvisedFrequencyChange: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e",
             title = "Aircraft shall be advised before frequency change",
@@ -279,6 +285,9 @@ object ICAO9432 {
 
         val RequiredProcedures: Set<EvidenceSourceRef> =
             setOf(ControllerAdvisedFrequencyChange, PilotNotifiesAbsentAdvice)
+
+        val PhraseologyItems: Set<EvidenceSourceRef> =
+            setOf(ContactFrequencyPhrase)
     }
 
     object AerodromeInformation {
@@ -766,6 +775,7 @@ object EvidenceSourceCatalog {
             ICAO9432.GoAroundProcedures.Chunk06GoAroundItems +
             ICAO9432.AfterLanding.Chunk06PolicyItems +
             ICAO9432.TransferCommunications.RequiredProcedures +
+            ICAO9432.TransferCommunications.PhraseologyItems +
             ICAO9432.AerodromeInformation.Chunk06ModelItems +
             ICAO9432.VehiclesAndTowing.Chunk07Items +
             ICAO9432.DistressUrgencyCommsFailure.Chunk08Items +

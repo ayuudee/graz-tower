@@ -1,0 +1,14 @@
+{
+  "type": "impl_review",
+  "id": "fn-78-icao-9432-phrase-1-contact-frequency.1",
+  "mode": "codex",
+  "base": "HEAD~1",
+  "verdict": "SHIP",
+  "session_id": "01a0b65d-621f-7142-b840-ee147393d051",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T21:13:04.928188Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b65d-621f-7142-b840-ee147393d051\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"No blocking findings found.\\n\\nThe changes match the narrow fn-78 scope: explicit-frequency `ContactFrequency` now renders typed CONTACT/unit/frequency tokens, single-atom `FrequencyReadback` renders frequency/callsign tokens, the DSL asserts structural token identity, and the source catalog/docs move only the intended ICAO 9432 \u00a72.8.2.1 row.\\n\\n## Pre-existing issues (not blocking this verdict)\\n\\nNone.\\n\\nSuppressed findings: none.\\n\\nClassification counts: 0 introduced, 0 pre_existing.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":103648,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":637,\"reasoning_output_tokens\":516}}\n",
+  "focus": "source-mapped-evidence,phraseology,frequency-readback,no-overclaim"
+}

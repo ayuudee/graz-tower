@@ -6,11 +6,11 @@ Chunk: ICAO 9432 communications, transfer, and readback.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 10 |
+| `covered-green` | 11 |
 | `covered-red` | 0 |
 | `expected-gap` | 0 |
 | `not-applicable` | 1 |
-| `phraseology-later` | 7 |
+| `phraseology-later` | 6 |
 | `policy-blocked` | 2 |
 
 Closed initially at `fn-48-icao-9432-chunk-01-drive-expected-gap`
@@ -68,7 +68,7 @@ test-environment concern, not as a chunk closure blocker.
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ace4ab7ff5d53a66` | `covered-green` | `controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/requirements/Icao9432ReadbackConformanceSpec.kt` | The controller shall take immediate action to correct any discrepancies revealed by the read-back. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ce25c18f1b44a6a8` | `not-applicable` | `none` | See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES |
 | `icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01FrequencyTransferEvidenceTest.kt` (controller-advised path via existing `ContactFrequency` emission) | An aircraft shall be advised by the appropriate aeronautical station to change from one radio frequency to another in... |
-| `icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc` | `phraseology-later` | `PHRASE-1` | Phraseology for frequency change includes 'CONTACT [Unit] [Frequency]' and readback 'Frequency Callsign'. |
+| `icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432PhraseologyEvidenceTest.kt` (rendered controller CONTACT [unit] [frequency] plus pilot [frequency] [callsign] readback) | Phraseology for frequency change includes 'CONTACT [Unit] [Frequency]' and readback 'Frequency Callsign'. |
 | `icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01FrequencyTransferEvidenceTest.kt` (pilot-notified path via G2 LOWG → LJMB `RequestFrequencyChange` emission) | In the absence of such advice, the aircraft shall notify the aeronautical station before such a change takes place. |
 
 ## Repair / Follow-Up Handoff
@@ -82,10 +82,13 @@ test-environment concern, not as a chunk closure blocker.
 - `POLICY-1`: UNCHANGED. Still cross-chunk infrastructure; covers
   no-reply general calls and route-clearance timing
   (`readback_2_8_3_en::36e6ad16cffe8726`). Tracked in `.plan`.
-- `PHRASE-1`: UNCHANGED. Still cross-chunk infrastructure; covers
+- `PHRASE-1`: PARTIALLY CLOSED by fn-78 for the
+  `transfer_communications_2_8_2_en::96720e821bf926cc` CONTACT
+  frequency-change phraseology row. Still cross-chunk infrastructure; covers
   ALL STATIONS, full callsign, TAKE OFF word-use
   (`readback_2_8_3_en::f06dfa1cefd2d649`), readback callsign
-  termination, CONTACT phraseology units. Tracked in `.plan`.
+  termination, unit-only CONTACT variants, MONITOR, WHEN PASSING
+  conditionals, and other phraseology units. Tracked in `.plan`.
 - `FN33-MODEL-1`: PARTIALLY CLOSED. The §2.8.3.2 advisory-pacing
   source unit (`readback_2_8_3_en::ac9111d240cfd2c2`) landed
   `covered-green` at fn-48 via the new
@@ -118,8 +121,9 @@ test-environment concern, not as a chunk closure blocker.
 - Test architecture: green tests cover structural readback and
   hearback classification (pre-existing) PLUS frequency-transfer
   (FN44-GAP-1 covered-green, pilot-notified branch covered-green),
-  reception-doubt (COMMS-1 covered-green), and clearance pacing
-  (FN33-MODEL-1 covered-green Advisory). Phraseology, policy, and
+  reception-doubt (COMMS-1 covered-green), clearance pacing
+  (FN33-MODEL-1 covered-green Advisory), and rendered CONTACT
+  frequency-change phraseology (fn-78). Remaining phraseology, policy, and
   the two remaining FN33-MODEL-1 source units stay blocked.
 - Impact: fn-50 adds final reception-quality observations and a minimal
   non-cognitive pilot `SayAgain` recovery path for stepped-on controller

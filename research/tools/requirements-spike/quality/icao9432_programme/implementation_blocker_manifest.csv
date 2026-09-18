@@ -7,7 +7,7 @@ icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726,chunk_01_comms_readback_
 icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649,chunk_01_comms_readback_transfer,phraseology-later,PHRASE-1,PHRASE-1
 icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9,chunk_01_comms_readback_transfer,phraseology-later,PHRASE-1,PHRASE-1
 icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71,chunk_01_comms_readback_transfer,phraseology-later,PHRASE-1,PHRASE-1
-icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc,chunk_01_comms_readback_transfer,phraseology-later,PHRASE-1,PHRASE-1
+icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc,chunk_01_comms_readback_transfer,covered-green rendered phraseology,,Icao9432PhraseologyEvidenceTest; RenderedPhraseologyTrace
 icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::095624c5163849a4,chunk_02_radio_procedures_policy,covered-red + policy-blocked,POLICY-1,EvidenceProjectionPressureTest; fn-52-implement-icao-9432-chunk-02.1; POLICY-1
 icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::35ad4a7f3d8d2ead,chunk_02_radio_procedures_policy,phraseology-later,PHRASE-1,PHRASE-1
 icao9432-extracted::aerodrome_ch4_intro_start_4_1_to_4_2_en::39a4619cec62a93f,chunk_02_radio_procedures_policy,phraseology-later,PHRASE-1,PHRASE-1

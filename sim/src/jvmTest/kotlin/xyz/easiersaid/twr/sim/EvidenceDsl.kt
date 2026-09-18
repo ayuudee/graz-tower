@@ -9,6 +9,7 @@ import xyz.easiersaid.twr.protocol.AirTaxiTo
 import xyz.easiersaid.twr.protocol.BacktrackRunway
 import xyz.easiersaid.twr.protocol.CrossRunway
 import xyz.easiersaid.twr.protocol.ExpediteTaxi
+import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.GiveWayToTraffic
 import xyz.easiersaid.twr.protocol.GroundInstruction
 import xyz.easiersaid.twr.protocol.HoldPosition
@@ -1069,6 +1070,23 @@ class AuditRenderedPhraseologySubject internal constructor(
             failReason = "Missing rendered line-up-and-wait phraseology for ${aircraftId.value} runway ${runway.value}",
         )
 
+    fun contactFrequency(unitName: String, frequency: Frequency): EvidenceAuditOutcome =
+        phraseologyOutcome(
+            template = RenderedPhraseologyTemplate.ContactFrequencyInstruction,
+            expectedObligationKinds = setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.SemanticSlot,
+                PhraseologyObligationKind.Readback,
+            ),
+            expectedTokens = listOf(
+                PhraseologyToken.AircraftCallsign(aircraftId),
+                PhraseologyToken.Contact,
+                PhraseologyToken.UnitName(unitName),
+                PhraseologyToken.FrequencyValue(frequency),
+            ),
+            failReason = "Missing rendered contact-frequency phraseology for ${aircraftId.value} $unitName ${frequency.mhz}",
+        )
+
     private fun phraseologyOutcome(
         template: RenderedPhraseologyTemplate,
         expectedObligationKinds: Set<PhraseologyObligationKind>,
@@ -1121,23 +1139,46 @@ class AuditRenderedPilotReadbackPhraseologySubject internal constructor(
     private val activate: (FactId) -> Unit,
 ) {
     fun lineUpReadback(): EvidenceAuditOutcome {
-        val expectedObligationKinds = setOf(
-            PhraseologyObligationKind.OrderedPhrase,
-            PhraseologyObligationKind.Readback,
-            PhraseologyObligationKind.SemanticSlot,
-        )
+        val expectedObligationKinds = readbackObligations
         val expectedTokens = listOf(
             PhraseologyToken.Lining,
             PhraseologyToken.Up,
             PhraseologyToken.AircraftCallsign(aircraftId),
         )
+        return readbackPhraseologyOutcome(
+            template = RenderedPhraseologyTemplate.LineUpReadback,
+            expectedObligationKinds = expectedObligationKinds,
+            expectedTokens = expectedTokens,
+            failReason = "Missing rendered line-up readback phraseology for ${aircraftId.value}",
+        )
+    }
+
+    fun frequencyReadback(frequency: Frequency): EvidenceAuditOutcome {
+        val expectedTokens = listOf(
+            PhraseologyToken.FrequencyValue(frequency),
+            PhraseologyToken.AircraftCallsign(aircraftId),
+        )
+        return readbackPhraseologyOutcome(
+            template = RenderedPhraseologyTemplate.FrequencyReadback,
+            expectedObligationKinds = readbackObligations,
+            expectedTokens = expectedTokens,
+            failReason = "Missing rendered frequency readback phraseology for ${aircraftId.value} ${frequency.mhz}",
+        )
+    }
+
+    private fun readbackPhraseologyOutcome(
+        template: RenderedPhraseologyTemplate,
+        expectedObligationKinds: Set<PhraseologyObligationKind>,
+        expectedTokens: List<PhraseologyToken>,
+        failReason: String,
+    ): EvidenceAuditOutcome {
         val candidates = facts.filter { fact ->
             val payload = fact.payload as? EvidenceFactPayload.RenderedPilotReadbackPhraseology ?: return@filter false
-            payload.aircraftId == aircraftId && payload.template == RenderedPhraseologyTemplate.LineUpReadback
+            payload.aircraftId == aircraftId && payload.template == template
         }
         if (candidates.isEmpty()) {
             return EvidenceAuditOutcome.Fail(
-                reason = "Missing rendered line-up readback phraseology for ${aircraftId.value}",
+                reason = failReason,
                 evidence = emptyList(),
             )
         }
@@ -1155,13 +1196,22 @@ class AuditRenderedPilotReadbackPhraseologySubject internal constructor(
             )
         } else {
             EvidenceAuditOutcome.Fail(
-                reason = "Rendered line-up readback phraseology did not match expected tokens",
+                reason = "Rendered pilot readback phraseology did not match expected tokens",
                 evidence = candidates.map { fact ->
                     val payload = fact.payload as EvidenceFactPayload.RenderedPilotReadbackPhraseology
                     "${payload.template}:${payload.obligationKinds}:${payload.tokens}@${fact.provenance.sequence.value}"
                 },
             )
         }
+    }
+
+    private companion object {
+        val readbackObligations: Set<PhraseologyObligationKind> =
+            setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.Readback,
+                PhraseologyObligationKind.SemanticSlot,
+            )
     }
 }
 
