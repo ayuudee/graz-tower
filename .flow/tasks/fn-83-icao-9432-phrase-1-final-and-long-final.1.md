@@ -56,9 +56,9 @@ blocked in chunk-05 docs and the central manifest.
 ## Evidence
 - Commits:
 - Tests:
-  - `./gradlew-nix :sim:jvmTest --tests '*.Icao9432PhraseologyEvidenceTest' --tests '*.EvidenceSourceCatalogTest' --tests '*.EvidenceDslTest' --tests '*.EvidenceFactsTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest'`
-  - `./gradlew-nix detekt`
-  - `./gradlew-nix :protocol:allTests :core:allTests :sim:jvmTest`
-  - `scripts/ralph/flowctl validate --epic fn-83-icao-9432-phrase-1-final-and-long-final --json`
-  - `git diff --check`
+- `./gradlew-nix :sim:jvmTest --tests '*.Icao9432PhraseologyEvidenceTest' --tests '*.EvidenceSourceCatalogTest' --tests '*.EvidenceDslTest' --tests '*.EvidenceFactsTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest'`
+- `./gradlew-nix detekt`
+- `./gradlew-nix :protocol:allTests :core:allTests :sim:jvmTest`
+- `scripts/ralph/flowctl validate --epic fn-83-icao-9432-phrase-1-final-and-long-final --json`
+- `git diff --check`
 - PRs:

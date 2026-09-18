@@ -1,0 +1,14 @@
+{
+  "type": "impl_review",
+  "id": "fn-83-icao-9432-phrase-1-final-and-long-final.1",
+  "mode": "codex",
+  "base": "HEAD~1",
+  "verdict": "SHIP",
+  "session_id": "01a0b699-c82b-74f2-b3b9-fcf656001273",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T22:19:03.192112Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b699-c82b-74f2-b3b9-fcf656001273\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"No blocking findings.\\n\\nThe previous implementation-review issue around `expected_gaps.md` appears fixed in the embedded file: the three split `FINAL` / `LONG FINAL` rows are no longer in `## Phraseology-Later` and are represented under `## Split Residuals`, with the summary count at `phraseology-later | 10`.\\n\\nSuppressed findings: none.\\n\\nClassification counts: 0 introduced, 0 pre_existing.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":147177,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":620,\"reasoning_output_tokens\":516}}\n",
+  "focus": "Re-review fn-83 after expected_gaps split-section fix. Verify no remaining overclaiming, source split/docs consistency, manifest residual blockers, evidence projection totality/non-clear/non-pilot suppression, unsupported clear report shape handling, and sequence-offset uniqueness."
+}
