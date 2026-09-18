@@ -30,7 +30,7 @@ land as source-specific gaps.
 |---|---|---|---|---|
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3` | Take-off clearance phraseology: `RUNWAY [designator] CLEARED FOR TAKE-OFF`. | `phraseology-later` | `phraseology-later` | `PHRASE-1`; fn-61 adds renderer support, but the source unit remains support-only / review-only rather than standalone covered-green. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::152f0ffb84869af5` | Immediate-departure line-up phraseology. | `phraseology-later` | `phraseology-later` | `PHRASE-1`. |
-| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587` | At busy aerodromes with separate GROUND/TOWER, aircraft are usually transferred to TOWER at or approaching the runway-holding position. | `testable-now` | `policy-blocked` | LOWG departure trace can provide scenario evidence for the usual pattern only if it captures both order and location: `TaxiToHoldingPoint`, `ContactFrequency(role=TOWER)` while the aircraft is at/approaching the assigned runway holding point, then `Ready` / runway use. Final coverage remains policy-blocked because "usually" must not become universal law. |
+| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587` | At busy aerodromes with separate GROUND/TOWER, aircraft are usually transferred to TOWER at or approaching the runway-holding position. | `testable-now` | `covered-green` configured policy | LOWG departure trace captures both explicit policy branch and live behavior: `TaxiToHoldingPoint`, `ContactFrequency(role=TOWER)` while the aircraft is at the assigned runway holding point, then `Ready` / runway use. This remains configured LOWG coverage, not universal law. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751` | Immediate-departure readiness query phraseology. | `phraseology-later` | `phraseology-later` | `PHRASE-1`. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::4e0bacdd1c2c06e0` | Except emergency, controllers should not transmit while aircraft is taking off / early climb. | `needs-policy-type` | `policy-blocked` | `POLICY-1`; needs safety-necessity / emergency exception policy, not just routine-transmission observation. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03` | `LINE UP AND WAIT` phraseology and readback. | `phraseology-later` | `phraseology-later` | `PHRASE-1`; structural readback already exists elsewhere but rendered phraseology remains blocked. |
@@ -50,10 +50,10 @@ land as source-specific gaps.
 
 ## Planned Tests
 
-1. **LOWG runway-holding transfer scenario**: scenario evidence for
+1. **LOWG runway-holding transfer scenario**: configured-policy coverage for
    `19cfd36a9fce4587`, scoped to LOWG / separate GROUND+TOWER / single
-   departure, with final source-unit state `policy-blocked` because the source
-   says "usually". Required witnesses:
+   departure. The source says "usually", so this is not universal law.
+   Required witnesses:
    - `TaxiToHoldingPoint < ContactFrequency(role=TOWER) < Ready < LineUpAndWait`;
    - the aircraft is at/approaching the assigned runway holding point at the
      `ContactFrequency(role=TOWER)` transmission time, proven from state trace

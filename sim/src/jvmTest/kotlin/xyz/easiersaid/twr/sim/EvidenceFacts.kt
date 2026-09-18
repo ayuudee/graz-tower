@@ -265,6 +265,12 @@ sealed interface EvidenceFactPayload {
         override val kind: EvidenceFactKind = EvidenceFactKind.UnsupportedRenderedPhraseology
     }
 
+    data class ConfiguredPolicy(
+        val policy: ConfiguredPolicyBinding,
+    ) : EvidenceFactPayload {
+        override val kind: EvidenceFactKind = EvidenceFactKind.ConfiguredPolicy
+    }
+
     data class SampleFact(
         val name: String,
         val displayValue: String,
@@ -293,6 +299,7 @@ enum class EvidenceFactKind {
     GroundStationTestSignal,
     RenderedPhraseology,
     UnsupportedRenderedPhraseology,
+    ConfiguredPolicy,
     Sample,
 }
 

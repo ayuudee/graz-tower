@@ -479,6 +479,12 @@ class EvidenceExpectContext internal constructor(
             activate = { factId -> activated += factId },
         )
 
+    fun operationalPolicy(): AuditOperationalPolicySubject =
+        AuditOperationalPolicySubject(
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
+
     fun taxiInstructions(): AuditTaxiInstructionSubject =
         AuditTaxiInstructionSubject(
             facts = facts.orderedFacts(),
@@ -991,6 +997,47 @@ class AuditRenderedPhraseologySubject internal constructor(
                 PhraseologyObligationKind.SemanticSlot,
                 PhraseologyObligationKind.ForbiddenMeaning,
             )
+    }
+}
+
+class AuditOperationalPolicySubject internal constructor(
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun <S : OperationalPolicyScope> configured(
+        branch: OperationalPolicyBranch<S>,
+        scope: S,
+    ): EvidenceAuditOutcome {
+        val policyFacts = facts.filter { fact ->
+            fact.payload is EvidenceFactPayload.ConfiguredPolicy
+        }
+        if (policyFacts.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing configured operational-policy evidence for ${branch.id.value}",
+                evidence = emptyList(),
+            )
+        }
+        policyFacts.forEach { fact -> activate(fact.id) }
+        val matching = policyFacts.filter { fact ->
+            val payload = fact.payload as EvidenceFactPayload.ConfiguredPolicy
+            payload.policy.branch == branch && payload.policy.scope == scope
+        }
+        return if (matching.isNotEmpty()) {
+            EvidenceAuditOutcome.Pass(
+                matching.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.ConfiguredPolicy
+                    "${payload.policy.branch.id.value}@${fact.provenance.sequence.value}"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Configured operational policy did not match ${branch.id.value}",
+                evidence = policyFacts.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.ConfiguredPolicy
+                    "${payload.policy.scope}:${payload.policy.branch.id.value}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
     }
 }
 

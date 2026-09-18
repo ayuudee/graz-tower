@@ -51,7 +51,7 @@ Result: pass, 11 rows.
 | `icao9432-extracted::pushback_powerback_4_3_en::fc3dfdf7cc913637` | `pushback_powerback_4_3_en` | `phraseology-later` | `PHRASE-1` | 4819-4916 | Pilot / ground-crew pushback coordination phraseology. |
 | `icao9432-extracted::taxi_4_4_en::03985c8e2cf3f473` | `taxi_4_4_en` | `policy-blocked` | `POLICY-1`, `LocalProcedurePolicy` | 4917-5139 | Taxi clearance limit may be another aerodrome position depending on traffic. |
 | `icao9432-extracted::taxi_4_4_en::1367907005a34ad1` | `taxi_4_4_en` | `model-gap` | compound taxi/runway-crossing clearance semantics | 4917-5139 | Taxi limit beyond a runway requires explicit crossing clearance or hold-short instruction. |
-| `icao9432-extracted::taxi_4_4_en::417f64324f7495bf` | `taxi_4_4_en` | `policy-blocked` with scenario evidence | `POLICY-1`, `OperationalGuidancePolicy` | 4917-5139 | Departing-aircraft taxi clearance limit will normally be the runway holding point. |
+| `icao9432-extracted::taxi_4_4_en::417f64324f7495bf` | `taxi_4_4_en` | `covered-green` configured policy | `TaxiClearanceLimitPolicy.DeparturesNormallyToRunwayHoldingPoint` | 4917-5139 | Departing-aircraft taxi clearance limit will normally be the runway holding point for the configured LOWG branch. |
 | `icao9432-extracted::taxi_4_4_en::53f33b6da4f2be58` | `taxi_4_4_en` | `model-gap` | departure-information content evidence | 4917-5139 | With ATIS acknowledged, controller does not need to pass departure information when issuing taxi instructions. |
 | `icao9432-extracted::taxi_4_4_en::b9e7fc3605fe616e` | `taxi_4_4_en` | `covered-red` structural audit | current typed taxi-instruction space includes non-routed taxi ops | 4917-5139 | Taxi instruction always contains a clearance limit. |
 | `icao9432-extracted::taxi_4_4_en::eadf2541fcd51825` | `taxi_4_4_en` | `model-gap` | whole-aircraft holding-position geometry evidence | 4917-5139 | Runway is vacated when the entire aircraft is beyond the relevant runway-holding position. |
@@ -70,9 +70,10 @@ Result: pass, 11 rows.
   - `53f33b6da4f2be58` lands as a departure-information content evidence gap.
   - `eadf2541fcd51825` lands as a whole-aircraft holding-position geometry
     evidence gap.
-- Existing legacy `Icao9432TaxiSourceBackedScenarioTest` still demonstrates
-  the LOWG scenario leg for `417f64324f7495bf` and `b9e7fc3605fe616e`, but it
-  is not used as universal source closure for chunk 03.
+- `Icao9432TaxiSourceBackedScenarioTest` now greens `417f64324f7495bf` under
+  an explicit configured LOWG policy branch. It still demonstrates scenario
+  evidence for `b9e7fc3605fe616e`, but it is not used as universal source
+  closure for chunk 03.
 
 ## Review Considerations
 

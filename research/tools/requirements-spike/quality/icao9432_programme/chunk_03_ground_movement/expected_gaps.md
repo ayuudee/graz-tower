@@ -9,10 +9,17 @@ marked covered-green with the current model/evidence surface.
 
 | Source-unit state | Units |
 |---|---:|
+| `covered-green` configured policy | 1 |
 | `covered-red` | 1 |
 | `model-gap` | 6 |
-| `policy-blocked` | 2 |
+| `policy-blocked` | 1 |
 | `phraseology-later` | 2 |
+
+## Covered-Green Configured Policy
+
+| Source unit | Test | Reason |
+|---|---|---|
+| `icao9432-extracted::taxi_4_4_en::417f64324f7495bf` | `Icao9432TaxiSourceBackedScenarioTest` | LOWG/RWY 16C is explicitly bound to `TaxiClearanceLimitPolicy.DeparturesNormallyToRunwayHoldingPoint`, and the live trace proves the departing-aircraft taxi clearance limit is a runway holding point before runway use. This does not claim that every aerodrome must use a holding-point limit. |
 
 ## Covered-Red
 
@@ -36,7 +43,6 @@ marked covered-green with the current model/evidence surface.
 | Source unit | Blocker | Reason |
 |---|---|---|
 | `icao9432-extracted::taxi_4_4_en::03985c8e2cf3f473` | `POLICY-1`, `LocalProcedurePolicy` | The taxi limit may be another aerodrome position depending on traffic circumstances; this is local/traffic policy, not a universal source-mapped pass/fail. |
-| `icao9432-extracted::taxi_4_4_en::417f64324f7495bf` | `POLICY-1`, `OperationalGuidancePolicy` | The source says the departing-aircraft taxi clearance limit will *normally* be the runway holding point. LOWG demonstrates one scenario leg, but the source needs policy semantics to avoid turning "normally" into "always". |
 
 ## Phraseology-Later
 

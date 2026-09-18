@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T10:55:43.068675Z",
+  "depends_on": [],
+  "epic": "fn-60-icao-9432-policy-1-typed-policy",
+  "id": "fn-60-icao-9432-policy-1-typed-policy.1",
+  "priority": 1,
+  "spec_path": ".flow/tasks/fn-60-icao-9432-policy-1-typed-policy.1.md",
+  "status": "todo",
+  "title": "Build policy matrix and movement manifest",
+  "updated_at": "2026-09-18T10:55:56.914540Z"
+}

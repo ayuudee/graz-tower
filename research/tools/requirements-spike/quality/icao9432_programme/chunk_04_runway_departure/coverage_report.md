@@ -6,17 +6,17 @@ Chunk: ICAO 9432 runway entry, line-up, and take-off.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 0 |
+| `covered-green` | 1 |
 | `covered-red` | 0 |
 | `model-gap` | 1 |
-| `policy-blocked` | 10 |
+| `policy-blocked` | 9 |
 | `phraseology-later` | 8 |
 
-Chunk 04 deliberately produces no universal covered-green rows. The LOWG
-departure trace provides scenario evidence for the usual GROUND-to-TOWER
-transfer pattern in ICAO 9432 §4.5.1, but the source says "usually", so final
-coverage remains policy-blocked rather than promoted to universal law. fn-61
-adds renderer support for take-off clearance wording, but the
+Chunk 04 now has one configured-policy green row: the LOWG separate
+GROUND/TOWER departure branch is explicitly bound to transfer at the holding
+point, and the live trace proves that branch. This is not universal closure:
+ICAO 9432 §4.5.1 says "usually", so other service shapes remain policy
+questions. fn-61 adds renderer support for take-off clearance wording, but the
 `13264a6ac6d529c3` source unit remains support-only / review-only rather than
 standalone covered-green.
 
@@ -26,7 +26,7 @@ standalone covered-green.
 |---|---|---|---|
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3` | `phraseology-later` | `PHRASE-1`; support-only / review-only | Take-off clearance phraseology. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::152f0ffb84869af5` | `phraseology-later` | `PHRASE-1` | Immediate-departure line-up phraseology. |
-| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587` | `policy-blocked` with scenario evidence | `Icao9432Chunk04RunwayDepartureEvidenceTest`; `POLICY-1` | Aircraft are usually transferred to TOWER at/approaching runway-holding position. |
+| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587` | `covered-green` configured policy | `Icao9432Chunk04RunwayDepartureEvidenceTest`; `TowerTransferPolicy.SeparateGroundTowerTransferAtHoldingPoint` | Aircraft are usually transferred to TOWER at/approaching runway-holding position for the configured LOWG separate-function branch. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751` | `phraseology-later` | `PHRASE-1` | Immediate-departure readiness query phraseology. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::4e0bacdd1c2c06e0` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `POLICY-1` | Except emergency, controllers should not transmit during take-off / early climb. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03` | `phraseology-later` | `PHRASE-1` | `LINE UP AND WAIT` phraseology. |
@@ -57,9 +57,10 @@ standalone covered-green.
   records. No production state was added.
 - Test architecture: the LOWG transfer witness is a real scenario run with
   trace correlation to the `ContactFrequency(TOWER)` transmission id and the
-  aircraft's holding-point state. It is scenario evidence only, not universal
-  closure.
+  aircraft's holding-point state. It is green only under an explicit configured
+  LOWG policy branch, not universal closure.
 - Impact: no controller, pilot, sim behaviour, phraseology source coverage, or
   policy behaviour was changed for chunk 04.
-- Operational correctness: ICAO 9432 §4.5.1's "usually" language remains
-  policy-blocked; `may`/`should`/traffic-contingency rows remain gaps.
+- Operational correctness: ICAO 9432 §4.5.1's "usually" language is represented
+  as configured LOWG policy, not unconditional doctrine; other
+  `may`/`should`/traffic-contingency rows remain gaps.

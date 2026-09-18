@@ -46,6 +46,7 @@ class Icao9432TaxiSourceBackedScenarioTest {
             domain("aerodrome", setOf("LOWG"))
             domain("active-runway", setOf("16C"))
             domain("traffic", setOf("single-aircraft"))
+            domain("policy", setOf("departures-normally-to-runway-holding-point"))
 
             witness("LOWG 16C GA stand departure") {
                 val loaded = Fixtures.LOWG.load().getOrElse {
@@ -79,6 +80,19 @@ class Icao9432TaxiSourceBackedScenarioTest {
                 ).getOrElse { error("SimState.initial rejected the LOWG fixture: $it") }
 
                 val activeRunway = RunwayId("16C")
+                val policyScope = OperationalPolicyScope.AerodromeRunway(
+                    aerodrome = lowg,
+                    runway = activeRunway,
+                )
+                configuredPolicy(
+                    policy = ConfiguredOperationalPolicy(
+                        scope = policyScope,
+                        branch = TaxiClearanceLimitPolicy.DeparturesNormallyToRunwayHoldingPoint,
+                    ),
+                    branch = TaxiClearanceLimitPolicy.DeparturesNormallyToRunwayHoldingPoint,
+                    scope = policyScope,
+                )
+
                 val atis = Atis(
                     letter = 'A',
                     aerodrome = lowg,
@@ -138,6 +152,7 @@ class Icao9432TaxiSourceBackedScenarioTest {
                 requireHits("taxi-clearance")
                 requireHits("ready-report")
                 requireHits("runway-use-instruction")
+                requireHits("configured-policy")
             }
         }.assertSatisfied().assertNoModelGaps()
     }

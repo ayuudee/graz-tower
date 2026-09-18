@@ -9,15 +9,21 @@ covered-green with the current model/evidence surface.
 
 | Source-unit state | Units |
 |---|---:|
-| `policy-blocked` | 10 |
+| `covered-green` configured policy | 1 |
+| `policy-blocked` | 9 |
 | `model-gap` | 1 |
 | `phraseology-later` | 8 |
+
+## Covered-Green Configured Policy
+
+| Source unit | Test | Reason |
+|---|---|---|
+| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587` | `Icao9432Chunk04RunwayDepartureEvidenceTest` | LOWG separate GROUND/TOWER operations are explicitly bound to `TowerTransferPolicy.SeparateGroundTowerTransferAtHoldingPoint`, and the live trace proves GROUND transfers the aircraft to TOWER while it is holding short at the RWY 16C holding point before runway use. This does not claim a universal transfer point for every aerodrome/service shape. |
 
 ## Policy-Blocked
 
 | Source unit | Blocker | Reason |
 |---|---|---|
-| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587` | `POLICY-1`; scenario evidence only | ICAO 9432 §4.5.1 says aircraft are *usually* transferred to TOWER at/approaching the runway-holding position. The LOWG trace proves one usual-pattern scenario, not a universal law. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::4e0bacdd1c2c06e0` | `POLICY-1` | Needs typed emergency / safety-necessity policy before the "except emergency" communication rule can be asserted. |
 | `icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::2660849403bff7de` | `POLICY-1` | Needs conditional-clearance traffic-identification evidence and policy. |
 | `icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::c386a5865bdd7876` | `POLICY-1` | Needs policy for when aircraft type is insufficient and colour/company description is required. |

@@ -6,16 +6,18 @@ Chunk: ICAO 9432 ground movement: pushback, powerback, and taxi.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 0 |
+| `covered-green` | 1 |
 | `covered-red` | 1 |
 | `model-gap` | 6 |
-| `policy-blocked` | 2 |
+| `policy-blocked` | 1 |
 | `phraseology-later` | 2 |
 
-Chunk 03 deliberately produces no green universal closure. The most important
-result is the covered-red structural audit for ICAO 9432 §4.4 taxi clearance
-limits: current typed taxi instructions do not guarantee a clearance-limit
-field across the whole taxi-like instruction space.
+Chunk 03 now has one configured-policy green row: LOWG departures are explicitly
+bound to the normal runway-holding-point taxi-limit branch and the live trace
+proves that configured branch. This is not universal closure. The most
+important universal result remains the covered-red structural audit for ICAO
+9432 §4.4 taxi clearance limits: current typed taxi instructions do not
+guarantee a clearance-limit field across the whole taxi-like instruction space.
 
 ## Coverage Table
 
@@ -28,7 +30,7 @@ field across the whole taxi-like instruction space.
 | `icao9432-extracted::pushback_powerback_4_3_en::fc3dfdf7cc913637` | `phraseology-later` | `PHRASE-1` | Pilot / ground-crew pushback coordination phraseology. |
 | `icao9432-extracted::taxi_4_4_en::03985c8e2cf3f473` | `policy-blocked` | `POLICY-1`; `LocalProcedurePolicy` | Taxi limit may be another aerodrome position depending on traffic. |
 | `icao9432-extracted::taxi_4_4_en::1367907005a34ad1` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest` | Taxi limit beyond runway requires cross clearance or hold-short instruction. |
-| `icao9432-extracted::taxi_4_4_en::417f64324f7495bf` | `policy-blocked` with scenario evidence | `POLICY-1`; legacy `Icao9432TaxiSourceBackedScenarioTest` scenario leg | Departing taxi limit normally holding point. |
+| `icao9432-extracted::taxi_4_4_en::417f64324f7495bf` | `covered-green` configured policy | `Icao9432TaxiSourceBackedScenarioTest`; `TaxiClearanceLimitPolicy.DeparturesNormallyToRunwayHoldingPoint` | Departing taxi limit normally holding point for the configured LOWG branch. |
 | `icao9432-extracted::taxi_4_4_en::53f33b6da4f2be58` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest` | ATIS acknowledgement removes need to pass departure information with taxi instruction. |
 | `icao9432-extracted::taxi_4_4_en::b9e7fc3605fe616e` | `covered-red` | `Icao9432Chunk03GroundMovementEvidenceTest` | Taxi instruction always contains a clearance limit. |
 | `icao9432-extracted::taxi_4_4_en::eadf2541fcd51825` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest` | Runway vacated when entire aircraft is beyond holding position. |
@@ -39,15 +41,16 @@ field across the whole taxi-like instruction space.
   `verbatimQuoteCheck.status = pass`, `lifecycle.state = accepted`, and
   normalized source quotes match `research/txt/icao9432-extracted.txt`.
 - Focused verification:
-  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432Chunk03GroundMovementEvidenceTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
+  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432Chunk03GroundMovementEvidenceTest' --tests '*.Icao9432TaxiSourceBackedScenarioTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
 
 ## Review Considerations
 
 - FP / type safety: source refs are typed and registry-validated. The taxi
   clearance-limit audit uses typed protocol leaves, not rendered strings.
 - Test architecture: the universal taxi-limit source lands covered-red rather
-  than being narrowed to one passing LOWG trace. Pushback and runway-vacated
-  rows are model gaps, not skipped rows.
+  than being narrowed to one passing LOWG trace. The normal holding-point row is
+  green only under an explicit configured LOWG policy branch. Pushback and
+  runway-vacated rows are model gaps, not skipped rows.
 - Impact: no pushback, ground-crew, apron-management, phraseology, or
   local-procedure policy behaviour was added.
 - Operational correctness: ICAO 9432 §4.3 local-procedure/pushback actor

@@ -5,12 +5,14 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 import xyz.easiersaid.twr.pilot.CircuitOutcome
+import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedForTakeoffReadback
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
 
@@ -160,6 +162,80 @@ class EvidenceDslTest {
             source("touch and go missing") {
                 cites(ICAO9432.FinalApproachLanding.ClearedTouchAndGoPhrase)
                 expect { renderedPhraseology(aircraft).touchAndGoClearance() }
+            }
+        }
+
+        assertTrue(report.results.single().outcome is EvidenceAuditOutcome.Fail)
+    }
+
+    @Test
+    fun `operationalPolicy selector requires explicit configured branch and scope`() {
+        val scope = OperationalPolicyScope.AerodromeRunway(
+            aerodrome = AerodromeId("LOWG"),
+            runway = RunwayId("16C"),
+        )
+        val facts = EvidenceFactAdapters.fromProjectedPayloads(
+            scenarioId = "policy-selector",
+            payloads = listOf(
+                EvidenceFactPayload.ConfiguredPolicy(
+                    ConfiguredOperationalPolicy(
+                        scope = scope,
+                        branch = TaxiClearanceLimitPolicy.DeparturesNormallyToRunwayHoldingPoint,
+                    ),
+                ),
+            ),
+        )
+
+        val report = simEvidence("policy-selector") {
+            observe { facts }
+            source("configured taxi branch") {
+                cites(ICAO9432.Taxi.HoldingPointLimit)
+                expect {
+                    operationalPolicy().configured(
+                        branch = TaxiClearanceLimitPolicy.DeparturesNormallyToRunwayHoldingPoint,
+                        scope = scope,
+                    )
+                }
+            }
+            source("wrong taxi branch") {
+                cites(ICAO9432.Taxi.HoldingPointLimit)
+                expect {
+                    operationalPolicy().configured(
+                        branch = TaxiClearanceLimitPolicy.AlternateAerodromePositionAllowed,
+                        scope = scope,
+                    )
+                }
+            }
+        }
+
+        assertTrue(report.results[0].outcome is EvidenceAuditOutcome.Pass)
+        assertTrue(report.results[0].activationFactIds.isNotEmpty())
+        assertTrue(report.results[1].outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(report.results[1].activationFactIds.isNotEmpty())
+    }
+
+    @Test
+    fun `operationalPolicy selector fails when only an enum exists and no fact is observed`() {
+        val scope = OperationalPolicyScope.AerodromeServiceShape(
+            aerodrome = AerodromeId("LOWG"),
+            roles = setOf(RoleName.GROUND, RoleName.TOWER),
+        )
+        val report = simEvidence("policy-selector-missing") {
+            observe {
+                EvidenceFactSet(
+                    scenarioId = "policy-selector-missing",
+                    facts = emptyList(),
+                    diagnostic = "no configured policies",
+                )
+            }
+            source("missing configured policy") {
+                cites(ICAO9432.TakeoffProcedures.TowerTransferAtHoldingPosition)
+                expect {
+                    operationalPolicy().configured(
+                        branch = TowerTransferPolicy.SeparateGroundTowerTransferAtHoldingPoint,
+                        scope = scope,
+                    )
+                }
             }
         }
 

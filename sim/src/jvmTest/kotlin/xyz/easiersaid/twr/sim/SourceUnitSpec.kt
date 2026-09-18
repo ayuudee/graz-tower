@@ -142,6 +142,18 @@ class SpecProbeContext internal constructor(
         }
     }
 
+    fun <S : OperationalPolicyScope> configuredPolicy(
+        policy: ConfiguredOperationalPolicy<S, out OperationalPolicyBranch<S>>,
+        branch: OperationalPolicyBranch<S>,
+        scope: S,
+    ) {
+        check(policy.branch == branch && policy.scope == scope) {
+            "Expected configured policy ${branch.id.value} in scope $scope; " +
+                "got ${policy.branch.id.value} in scope ${policy.scope}"
+        }
+        hit("configured-policy")
+    }
+
     fun modelGap(reason: String): Nothing {
         require(reason.isNotBlank()) { "model gap reason must not be blank" }
         throw SpecModelGap(reason)

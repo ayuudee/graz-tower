@@ -9,7 +9,7 @@
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-60-icao-9432-policy-1-typed-policy.md",
-  "status": "open",
+  "status": "done",
   "title": "ICAO 9432 POLICY-1 typed policy substrate",
-  "updated_at": "2026-09-18T10:24:59.972960Z"
+  "updated_at": "2026-09-18T11:14:00.027416Z"
 }

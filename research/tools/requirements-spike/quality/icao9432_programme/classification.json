@@ -63,10 +63,10 @@
     "operational_area": "communications-establishment",
     "chunk_id": "chunk-01-comms-readback-transfer",
     "normative_kind": "policy",
-    "current_testability": "needs-policy-type",
+    "current_testability": "testable-now",
     "likely_target": "simEvidence",
     "policy_concept": "OperationalGuidancePolicy",
-    "blocking_item": "POLICY-1"
+    "blocking_item": ""
   },
   {
     "source_unit_id": "icao9432-extracted::communications_2_8_1_en::a685cef087951878",

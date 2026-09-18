@@ -28,10 +28,10 @@ icao9432-extracted::pushback_powerback_4_3_en::b3652213a568f55f,chunk_03_ground_
 icao9432-extracted::pushback_powerback_4_3_en::da5fd317668b375a,chunk_03_ground_movement,phraseology-later,PHRASE-1,PHRASE-1
 icao9432-extracted::pushback_powerback_4_3_en::fc3dfdf7cc913637,chunk_03_ground_movement,phraseology-later,PHRASE-1,PHRASE-1
 icao9432-extracted::taxi_4_4_en::03985c8e2cf3f473,chunk_03_ground_movement,policy-blocked,POLICY-1;LocalProcedurePolicy,POLICY-1; LocalProcedurePolicy
-icao9432-extracted::taxi_4_4_en::417f64324f7495bf,chunk_03_ground_movement,policy-blocked with scenario evidence,POLICY-1,POLICY-1; legacy Icao9432TaxiSourceBackedScenarioTest scenario leg
+icao9432-extracted::taxi_4_4_en::417f64324f7495bf,chunk_03_ground_movement,covered-green,,Icao9432TaxiSourceBackedScenarioTest; configured LOWG taxi clearance limit policy
 icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3,chunk_04_runway_departure,phraseology-later,PHRASE-1,PHRASE-1; support-only / review-only
 icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::152f0ffb84869af5,chunk_04_runway_departure,phraseology-later,PHRASE-1,PHRASE-1
-icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587,chunk_04_runway_departure,policy-blocked with scenario evidence,POLICY-1,Icao9432Chunk04RunwayDepartureEvidenceTest; POLICY-1
+icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587,chunk_04_runway_departure,covered-green,,Icao9432Chunk04RunwayDepartureEvidenceTest; configured LOWG separate GROUND/TOWER transfer policy
 icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751,chunk_04_runway_departure,phraseology-later,PHRASE-1,PHRASE-1
 icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::4e0bacdd1c2c06e0,chunk_04_runway_departure,policy-blocked,POLICY-1,Icao9432ModelGapSourceUnitSpecTest; POLICY-1
 icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03,chunk_04_runway_departure,phraseology-later,PHRASE-1,PHRASE-1

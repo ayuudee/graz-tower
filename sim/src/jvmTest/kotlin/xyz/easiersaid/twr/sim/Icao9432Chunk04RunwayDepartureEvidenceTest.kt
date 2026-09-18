@@ -37,9 +37,8 @@ import xyz.easiersaid.twr.sim.testing.runUntilWithStateTrace
  *
  * §4.5.1 says that, at busy aerodromes with separate GROUND and TOWER
  * functions, aircraft are **usually** transferred to TOWER at or when
- * approaching the runway-holding position. This test proves only the LOWG
- * scenario instance; final chunk coverage remains policy-blocked rather than
- * universal covered-green because "usually" is not an unconditional rule.
+ * approaching the runway-holding position. This test proves only the configured
+ * LOWG scenario branch; it does not turn "usually" into an unconditional rule.
  */
 class Icao9432Chunk04RunwayDepartureEvidenceTest {
     @Test
@@ -50,6 +49,7 @@ class Icao9432Chunk04RunwayDepartureEvidenceTest {
             domain("aerodrome", setOf("LOWG"))
             domain("active-runway", setOf("16C"))
             domain("service-shape", setOf("separate-ground-and-tower"))
+            domain("policy", setOf("separate-ground-tower-transfer-at-holding-point"))
 
             witness("LOWG 16C GA stand departure") {
                 val loaded = Fixtures.LOWG.load().getOrElse {
@@ -83,6 +83,19 @@ class Icao9432Chunk04RunwayDepartureEvidenceTest {
                 ).getOrElse { fail("SimState.initial rejected the LOWG fixture: $it") }
 
                 val activeRunway = RunwayId("16C")
+                val policyScope = OperationalPolicyScope.AerodromeServiceShape(
+                    aerodrome = lowg,
+                    roles = setOf(RoleName.GROUND, RoleName.TOWER),
+                )
+                configuredPolicy(
+                    policy = ConfiguredOperationalPolicy(
+                        scope = policyScope,
+                        branch = TowerTransferPolicy.SeparateGroundTowerTransferAtHoldingPoint,
+                    ),
+                    branch = TowerTransferPolicy.SeparateGroundTowerTransferAtHoldingPoint,
+                    scope = policyScope,
+                )
+
                 val atis = Atis(
                     letter = 'A',
                     aerodrome = lowg,
@@ -166,6 +179,7 @@ class Icao9432Chunk04RunwayDepartureEvidenceTest {
                 requireHits("tower-transfer")
                 requireHits("ready-report")
                 requireHits("runway-use-instruction")
+                requireHits("configured-policy")
             }
         }.assertSatisfied().assertNoModelGaps()
     }
