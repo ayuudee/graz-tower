@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T13:11:20.718165Z",
+  "depends_on": [],
+  "epic": "fn-68-icao-9432-emergency-1a-emergency",
+  "id": "fn-68-icao-9432-emergency-1a-emergency.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-68-icao-9432-emergency-1a-emergency.1.md",
+  "status": "todo",
+  "title": "Build emergency classification and payload movement manifest",
+  "updated_at": "2026-09-18T13:11:20.718277Z"
+}

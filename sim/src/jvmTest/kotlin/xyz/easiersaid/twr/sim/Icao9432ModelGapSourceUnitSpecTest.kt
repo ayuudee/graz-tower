@@ -5,8 +5,6 @@ import kotlin.test.assertEquals
 
 class Icao9432ModelGapSourceUnitSpecTest {
     private val chunk08DistressUrgencyClassificationRefs: List<SourceUnitRef> = chunk08Refs(
-        "icao9432-extracted::distress_urgency_intro_9_1_en::8b3b3b4117c04807",
-        "icao9432-extracted::distress_urgency_intro_9_1_en::c959f0325390e7fe",
         "icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98",
         "icao9432-extracted::distress_urgency_intro_9_1_en::13d1c2accd0f7a73",
         "icao9432-extracted::distress_urgency_intro_9_1_en::c30159856a1a5e7a",
@@ -23,8 +21,6 @@ class Icao9432ModelGapSourceUnitSpecTest {
     private val chunk08EmergencyMessagePhraseologyRefs: List<SourceUnitRef> = chunk08Refs(
         "icao9432-extracted::distress_urgency_intro_9_1_en::9907744b4723d14c",
         "icao9432-extracted::distress_urgency_intro_9_1_en::bf04647e26f9c018",
-        "icao9432-extracted::distress_urgency_intro_9_1_en::d742970b22d8de26",
-        "icao9432-extracted::distress_messages_9_2_en::23c9f447cd6c7814",
         "icao9432-extracted::distress_messages_9_2_en::f0e99a4c08ea0cb3",
         "icao9432-extracted::distress_messages_9_2_en::27a450fa3bfcbc0a",
         "icao9432-extracted::distress_messages_9_2_en::94e94be0c800c982",
@@ -74,6 +70,13 @@ class Icao9432ModelGapSourceUnitSpecTest {
         "icao9432-extracted::communications_failure_9_5_en::c1c14fab53a608c6",
     )
 
+    private val chunk08CoveredOrSplitRefs: List<SourceUnitRef> = chunk08Refs(
+        "icao9432-extracted::distress_urgency_intro_9_1_en::8b3b3b4117c04807",
+        "icao9432-extracted::distress_urgency_intro_9_1_en::c959f0325390e7fe",
+        "icao9432-extracted::distress_urgency_intro_9_1_en::d742970b22d8de26",
+        "icao9432-extracted::distress_messages_9_2_en::23c9f447cd6c7814",
+    )
+
     private val chunk08GapSpecRefGroups: List<List<SourceUnitRef>> =
         listOf(
             chunk08DistressUrgencyClassificationRefs,
@@ -84,6 +87,7 @@ class Icao9432ModelGapSourceUnitSpecTest {
             chunk08CommsFailureRoutingRefs,
             chunk08BlindTransmissionRefs,
             chunk08SsrAndBlindClearanceRefs,
+            chunk08CoveredOrSplitRefs,
         )
 
     @Test
@@ -725,7 +729,7 @@ class Icao9432ModelGapSourceUnitSpecTest {
     }
 
     @Test
-    fun `chunk 08 emergency gap specs cite every accepted source unit exactly once`() {
+    fun `chunk 08 emergency source specs cite every accepted source unit exactly once`() {
         val citedRefs = chunk08GapSpecRefGroups.flatten()
         val distinctCitedRefs = citedRefs.toSet()
 
@@ -733,7 +737,7 @@ class Icao9432ModelGapSourceUnitSpecTest {
         assertEquals(
             citedRefs.size,
             distinctCitedRefs.size,
-            "chunk 08 source refs must appear in exactly one grouped gap spec",
+            "chunk 08 source refs must appear in exactly one grouped source spec",
         )
         assertEquals(
             ICAO9432.DistressUrgencyCommsFailure.Chunk08Items.map { source -> source.toSourceUnitRef() }.toSet(),

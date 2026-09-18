@@ -32,8 +32,8 @@ scenario traces must not be reused as emergency-compliance evidence.
 
 | Source unit | Source text / claim | Initial classifier | Planned state | Planned evidence / blocker |
 |---|---|---|---|---|
-| `icao9432-extracted::distress_urgency_intro_9_1_en::8b3b3b4117c04807` | Distress is serious/imminent danger requiring immediate assistance. | `needs-sim-model` | `model-gap` | `EMERGENCY-1`; no typed distress condition or assistance-requirement state. |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::c959f0325390e7fe` | Urgency concerns safety but does not require immediate assistance. | `needs-sim-model` | `model-gap` | `EMERGENCY-1`; no typed urgency condition distinct from distress. |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::8b3b3b4117c04807` | Distress is serious/imminent danger requiring immediate assistance. | `needs-sim-model` | `covered-green structured distress-classification branch` | `Icao9432EmergencyClassificationPayloadSourceBackedTest`; MAYDAY emergency projection carries serious/imminent danger and immediate-assistance semantics. |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::c959f0325390e7fe` | Urgency concerns safety but does not require immediate assistance. | `needs-sim-model` | `covered-green structured urgency-classification branch` | `Icao9432EmergencyClassificationPayloadSourceBackedTest`; PAN PAN emergency projection carries safety concern without immediate assistance. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::3b1079aa56df2ce6` | Distress messages have priority over all other transmissions. | `needs-sim-model` | `model-gap` | `EMERGENCY-1`; no emergency priority class or radio arbitration. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::1a20cd48e58a5693` | Urgency messages have priority except over distress. | `needs-sim-model` | `model-gap` | `EMERGENCY-1`; no urgency priority below distress and above routine traffic. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::7d35c042421b5b03` | Stations shall refrain from using a frequency carrying emergency traffic unless involved. | `needs-sim-model` | `model-gap` | `EMERGENCY-1`; no emergency-traffic frequency silence state. |
@@ -49,8 +49,8 @@ scenario traces must not be reused as emergency-compliance evidence.
 | `icao9432-extracted::distress_urgency_intro_9_1_en::c30159856a1a5e7a` | Distress and urgency procedures are detailed in Annex 10 Volume II. | `needs-sim-model` | `model-gap` | `EMERGENCY-1`; no Annex 10 emergency-procedure conformance model. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::9907744b4723d14c` | Pilots should adapt Chapter 9 phraseology to needs/time available. | `phraseology-later` | `model-gap` + `phraseology-later` | `EMERGENCY-1`; `PHRASE-1`; no emergency context/time-pressure phraseology adaptation model. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::bf04647e26f9c018` | MAYDAY or PAN PAN should preferably be spoken three times initially. | `phraseology-later` | `model-gap` + `phraseology-later` | `EMERGENCY-1`; `PHRASE-1`; no rendered initial emergency call. |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::d742970b22d8de26` | MAYDAY identifies distress; PAN PAN identifies urgency. | `phraseology-later` | `model-gap` + `phraseology-later` | `EMERGENCY-1`; `PHRASE-1`; no rendered MAYDAY/PAN PAN emergency classification. |
-| `icao9432-extracted::distress_messages_9_2_en::23c9f447cd6c7814` | Distress message should contain station addressed, aircraft ID, distress nature, intentions, position, level, heading, and useful information. | `phraseology-later` | `model-gap` + `phraseology-later` | `EMERGENCY-1`; `PHRASE-1`; no emergency-message payload or rendered ordering. |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::d742970b22d8de26` | MAYDAY identifies distress; PAN PAN identifies urgency. | `phraseology-later` | `split: protocol emergency-type discriminator mapping covered-green; rendered spoken-word identification phraseology-later` | `Icao9432EmergencyClassificationPayloadSourceBackedTest`; typed discriminator maps MAYDAY to distress and PAN PAN to urgency. Rendered spoken wording and repeated initial call remain `PHRASE-1`. |
+| `icao9432-extracted::distress_messages_9_2_en::23c9f447cd6c7814` | Distress message should contain station addressed, aircraft ID, distress nature, intentions, position, level, heading, and useful information. | `phraseology-later` | `split: all-fields-present structured distress-message payload representation covered-green; rendered wording/order phraseology-later` | `Icao9432EmergencyClassificationPayloadSourceBackedTest`; all-fields-present distress payload representation exposes station addressed, aircraft identification, nature, intentions, position, level, heading, and useful information as structured fields. Field availability, operational omission, partial-message compliance, rendered wording, and order remain out of scope. |
 | `icao9432-extracted::distress_messages_9_2_en::f0e99a4c08ea0cb3` | Distress-message elements should be in the shown order if possible. | `phraseology-later` | `model-gap` + `phraseology-later` | `EMERGENCY-1`; `PHRASE-1`; no rendered distress-message ordering. |
 | `icao9432-extracted::distress_messages_9_2_en::27a450fa3bfcbc0a` | Distress message normally addresses current station or responsible-area station. | `needs-sim-model` | `model-gap` + `policy-blocked` | `EMERGENCY-1`; `OperationalGuidancePolicy`; no emergency addressing policy. |
 | `icao9432-extracted::distress_messages_9_2_en::94e94be0c800c982` | Non-distressed transmitting station may vary elements if circumstance is clear. | `needs-sim-model` | `model-gap` + `policy-blocked` | `EMERGENCY-1`; `OperationalGuidancePolicy`; no relayed/non-distressed distress-message variant model. |
@@ -92,20 +92,22 @@ scenario traces must not be reused as emergency-compliance evidence.
      phraseology, and blind addressee handling;
    - SSR 7600/7700 and blind-clearance prohibition/exception behaviour.
 2. Add a chunk-level exact-union guard proving that the source refs cited by
-   chunk 08 gap specs exactly equal
+   chunk 08 source specs exactly equal
    `ICAO9432.DistressUrgencyCommsFailure.Chunk08Items`.
-3. Do not add covered-green scenario tests. There is no current emergency or
-   communications-failure trace to prove these source units.
+3. fn-68 adds covered-green/split tests only for typed emergency
+   classification and structured distress payload branches. Priority, silence,
+   descent, communications-failure, SSR, and rendered phraseology/order remain
+   future implementation boundaries.
 
 ## Review Considerations
 
-- FP / type safety: no production state changes are planned. Future emergency
-  support should introduce typed emergency/radio-failure/priority concepts
-  rather than overloading ordinary radio events. Chunk 08 catalog refs should
-  use `ProjectionGapSource` to avoid implying covered scenario evidence.
-- Test architecture: source-unit gap specs should make `EMERGENCY-1` concrete
-  and auditable. They should not be broad skip lists, and an exact-union guard
-  should ensure no grouped spec silently omits a source unit.
+- FP / type safety: fn-68 uses a closed local source-unit projection over
+  existing `PilotTransmission.Emergency`, not a new global evidence payload.
+  Future emergency support should introduce typed emergency/radio-failure/
+  priority concepts rather than overloading ordinary radio events.
+- Test architecture: source-unit specs make `EMERGENCY-1` concrete and
+  auditable. They are not broad skip lists, and an exact-union guard ensures no
+  grouped spec silently omits a source unit.
 - Impact: this chunk creates a clear future implementation boundary for
   emergency modelling without changing current normal-flight behaviour.
 - Operational correctness: ICAO 9432 Chapter 9 emergency traffic and aircraft

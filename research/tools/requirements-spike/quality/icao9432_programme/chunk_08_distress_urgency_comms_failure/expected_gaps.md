@@ -9,21 +9,21 @@ marked covered-green with the current model/evidence surface.
 
 | Source-unit state | Units |
 |---|---:|
-| `model-gap` | 22 |
+| `covered-green` / split structured branch | 4 |
+| `model-gap` | 20 |
 | `model-gap` + `policy-blocked` | 15 |
-| `model-gap` + `phraseology-later` | 9 |
+| `model-gap` + `phraseology-later` | 7 |
 | `phraseology-later` | 0 |
 
-No chunk 08 source unit is covered-green in this pass. `EMERGENCY-1` remains
-the dominant blocker; all phraseology rows also need emergency state/payload
-surface before they can be honestly tested.
+fn-68 moved the narrow structured emergency-classification and distress-message
+payload branches to source-backed coverage. `EMERGENCY-1` remains the dominant
+blocker for priority, silence, assistance, emergency descent, communications
+failure, SSR, and emergency phraseology/order work.
 
 ## Model Gaps
 
 | Source unit | Blocker | Reason |
 |---|---|---|
-| `icao9432-extracted::distress_urgency_intro_9_1_en::8b3b3b4117c04807` | `EMERGENCY-1` | No typed distress condition or immediate-assistance requirement. |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::c959f0325390e7fe` | `EMERGENCY-1` | No typed urgency condition distinct from distress. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::3b1079aa56df2ce6` | `EMERGENCY-1` | No distress priority class or emergency radio arbitration. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::1a20cd48e58a5693` | `EMERGENCY-1` | No urgency priority class below distress and above routine traffic. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::7d35c042421b5b03` | `EMERGENCY-1` | No frequency silence state while emergency traffic is active. |
@@ -72,9 +72,16 @@ surface before they can be honestly tested.
 | `icao9432-extracted::distress_urgency_intro_9_1_en::13d1c2accd0f7a73` | `EMERGENCY-1`; `PHRASE-1` | No speech-rate/distinctness or rendered emergency utterance evidence. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::9907744b4723d14c` | `EMERGENCY-1`; `PHRASE-1` | No emergency context/time-pressure phraseology adaptation model. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::bf04647e26f9c018` | `EMERGENCY-1`; `PHRASE-1` | No rendered initial emergency call with repeated MAYDAY/PAN PAN. |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::d742970b22d8de26` | `EMERGENCY-1`; `PHRASE-1` | No rendered MAYDAY/PAN PAN emergency classification. |
-| `icao9432-extracted::distress_messages_9_2_en::23c9f447cd6c7814` | `EMERGENCY-1`; `PHRASE-1` | No emergency-message payload or rendered element ordering. |
 | `icao9432-extracted::distress_messages_9_2_en::f0e99a4c08ea0cb3` | `EMERGENCY-1`; `PHRASE-1` | No rendered distress-message element order. |
 | `icao9432-extracted::communications_failure_9_5_en::bc9bb12804033b07` | `EMERGENCY-1`; `PHRASE-1` | No blind-transmission mode or rendered TRANSMITTING BLIND prefix. |
 | `icao9432-extracted::communications_failure_9_5_en::abbc376a430003b0` | `EMERGENCY-1`; `PHRASE-1` | No blind-transmission addressee policy/rendering. |
 | `icao9432-extracted::communications_failure_9_5_en::78c73a75fab644f4` | `EMERGENCY-1`; `PHRASE-1` | No receiver-failure mode or rendered TRANSMITTING BLIND DUE RECEIVER FAILURE prefix. |
+
+## Covered Or Split Rows
+
+| Source unit | State | Evidence |
+|---|---|---|
+| `icao9432-extracted::distress_urgency_intro_9_1_en::8b3b3b4117c04807` | `covered-green structured distress-classification branch` | `Icao9432EmergencyClassificationPayloadSourceBackedTest`; MAYDAY emergency projection carries serious/imminent danger and immediate-assistance semantics. |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::c959f0325390e7fe` | `covered-green structured urgency-classification branch` | `Icao9432EmergencyClassificationPayloadSourceBackedTest`; PAN PAN emergency projection carries safety concern without immediate assistance. |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::d742970b22d8de26` | `split: protocol emergency-type discriminator mapping covered-green; rendered spoken-word identification phraseology-later` | `Icao9432EmergencyClassificationPayloadSourceBackedTest`; typed discriminator maps MAYDAY to distress and PAN PAN to urgency. Rendered spoken wording and repeated initial call remain `PHRASE-1`. |
+| `icao9432-extracted::distress_messages_9_2_en::23c9f447cd6c7814` | `split: all-fields-present structured distress-message payload representation covered-green; rendered wording/order phraseology-later` | `Icao9432EmergencyClassificationPayloadSourceBackedTest`; all-fields-present distress payload representation exposes station addressed, aircraft identification, nature, intentions, position, level, heading, and useful information as structured fields. Field availability, operational omission, partial-message compliance, rendered wording, and order remain out of scope. |
