@@ -665,34 +665,32 @@ class Icao9432ModelGapSourceUnitSpecTest {
     }
 
     @Test
-    fun `vehicle runway crossing and vacating source units report missing vehicle runway model`() {
-        sourceUnitSpec("icao9432-vehicle-runway-crossing-vacating-model-gaps") {
-            title("Vehicle runway crossing and vacating claims require vehicle runway occupancy and geometry")
+    fun `vehicle runway conflict source units report missing expected operation and hazard policy models`() {
+        sourceUnitSpec("icao9432-vehicle-runway-conflict-model-gaps") {
+            title("Vehicle runway conflict claims require hazard policy or expected aircraft operation facts")
             sourceUnits(
                 listOf(
                     ICAO9432.VehiclesAndTowing.DangerousSituationStopInstruction.toSourceUnitRef(),
-                    ICAO9432.VehiclesAndTowing.RunwayCrossingRequiresPermissionAndAcknowledgement.toSourceUnitRef(),
                     ICAO9432.VehiclesAndTowing.RunwayVehicleVacatesForAircraftOperation.toSourceUnitRef(),
-                    ICAO9432.VehiclesAndTowing.RunwayVacatedReportAfterVehicleTowClear.toSourceUnitRef(),
                 ),
             )
-            domain("runway-state", setOf("vehicle-holding-short", "vehicle-crossing", "vehicle-on-runway"))
+            domain("runway-state", setOf("vehicle-moving-on-movement-area", "vehicle-on-runway"))
             domain("aircraft-operation", setOf("landing-expected", "takeoff-expected", "none"))
-            domain("clearance-evidence", setOf("permission-and-acknowledgement", "vacated-beyond-holding-point"))
+            domain("intervention", setOf("dangerous-situation-stop", "vacate-for-aircraft-operation"))
 
             partition(
-                name = "vehicle runway crossing requires permission and acknowledgement",
+                name = "vehicle on runway requires expected aircraft operation trigger",
                 parameters = mapOf(
-                    "runway-state" to "vehicle-crossing",
-                    "aircraft-operation" to "none",
-                    "clearance-evidence" to "permission-and-acknowledgement",
+                    "runway-state" to "vehicle-on-runway",
+                    "aircraft-operation" to "landing-expected",
+                    "intervention" to "vacate-for-aircraft-operation",
                 ),
             ) {
-                hit("vehicle-runway-permission-required")
+                hit("vehicle-runway-conflict-policy-required")
                 modelGap(
-                    "The sim has no vehicle runway-crossing permission, driver acknowledgement, vehicle " +
-                        "runway occupancy, aircraft-operation conflict rule, or vehicle/tow extent geometry " +
-                        "for proving clearance beyond a holding point.",
+                    "The sim has vehicle runway-crossing permission and vehicle-only clear-beyond-holding-point " +
+                        "evidence, but no dangerous-situation relation, intervention policy, or explicit expected " +
+                        "landing/takeoff trigger for instructing a runway vehicle to vacate.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()

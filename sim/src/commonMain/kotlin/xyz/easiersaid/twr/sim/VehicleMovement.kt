@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.sim
 
 import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
 
 @JvmInline
@@ -18,6 +19,9 @@ data class VehicleState(
     val route: List<PointId>,
     val phase: VehicleMovementPhase = VehicleMovementPhase.NotCalled,
     val activePermission: ActiveVehiclePermission? = null,
+    val activeRunwayCrossing: ActiveRunwayCrossingPermission? = null,
+    val activeRunwayVacate: ActiveRunwayVacate? = null,
+    val runwayState: VehicleRunwayState = VehicleRunwayState.OffRunway,
 )
 
 sealed interface VehicleMovementPhase {
@@ -34,6 +38,26 @@ data class ActiveVehiclePermission(
     val id: VehiclePermissionId,
     val clearanceLimit: PointId,
     val route: List<PointId>,
+    val issuedAt: SimTime,
+)
+
+sealed interface VehicleRunwayState {
+    data object OffRunway : VehicleRunwayState
+    data class HoldingShort(val runway: RunwayId) : VehicleRunwayState
+    data class Crossing(val runway: RunwayId) : VehicleRunwayState
+    data class OnRunway(val runway: RunwayId) : VehicleRunwayState
+    data class ClearBeyondHoldingPoint(val runway: RunwayId) : VehicleRunwayState
+}
+
+data class ActiveRunwayCrossingPermission(
+    val runway: RunwayId,
+    val crossingTo: PointId,
+    val issuedAt: SimTime,
+)
+
+data class ActiveRunwayVacate(
+    val id: VehiclePermissionId,
+    val runway: RunwayId,
     val issuedAt: SimTime,
 )
 
@@ -58,6 +82,16 @@ sealed interface VehicleDriverTransmission {
         val destination: PointId,
     ) : VehicleDriverTransmission
 
+    data class AcknowledgeRunwayCrossing(
+        override val vehicle: VehicleId,
+        val runway: RunwayId,
+    ) : VehicleDriverTransmission
+
+    data class RunwayVacated(
+        override val vehicle: VehicleId,
+        val runway: RunwayId,
+    ) : VehicleDriverTransmission
+
     data class Acknowledge(
         override val vehicle: VehicleId,
         val instruction: VehicleControllerTransmission,
@@ -73,6 +107,22 @@ sealed interface VehicleControllerTransmission {
 
     data class HoldPosition(
         override val vehicle: VehicleId,
+    ) : VehicleControllerTransmission
+
+    data class HoldShortRunway(
+        override val vehicle: VehicleId,
+        val runway: RunwayId,
+    ) : VehicleControllerTransmission
+
+    data class CrossRunway(
+        override val vehicle: VehicleId,
+        val runway: RunwayId,
+        val crossingTo: PointId,
+    ) : VehicleControllerTransmission
+
+    data class VacateRunway(
+        override val vehicle: VehicleId,
+        val runway: RunwayId,
     ) : VehicleControllerTransmission
 
     data class ProceedTo(

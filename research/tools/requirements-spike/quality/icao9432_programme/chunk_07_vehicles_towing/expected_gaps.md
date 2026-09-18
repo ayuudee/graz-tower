@@ -9,8 +9,8 @@ marked covered-green with the current model/evidence surface.
 
 | Source-unit state | Units |
 |---|---:|
-| `covered-green` / split structured branch | 4 |
-| `model-gap` | 3 |
+| `covered-green` / split structured branch | 6 |
+| `model-gap` | 1 |
 | `model-gap` + `policy-blocked` | 4 |
 | `model-gap` + `phraseology-later` | 1 |
 | `phraseology-later` | 0 |
@@ -18,16 +18,16 @@ marked covered-green with the current model/evidence surface.
 fn-66 moved the §5.2 movement-permission lifecycle rows to source-backed
 coverage and split the first-call row: structured call sign/position/
 destination/route content is covered, rendered wording remains `PHRASE-1`.
-Runway, towing, apron traffic, and vigilance/local-procedure rows remain the
-dominant blockers.
+fn-65 moved the §5.3.1 positive runway-crossing permission row and the
+vehicle-only branch of the runway-vacated timing row to source-backed coverage.
+Towing, apron traffic, expected-aircraft-operation conflict triggers, and
+vigilance/local-procedure rows remain the dominant blockers.
 
 ## Model Gaps
 
 | Source unit | Blocker | Reason |
 |---|---|---|
-| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::24f7b6a86407ef6f` | `VEHICLE-1` | No vehicle runway-crossing permission and acknowledgement model. |
-| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::331c1cfc98ead868` | `VEHICLE-1` | No vehicle runway occupancy or aircraft-operation conflict rule. |
-| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::735b3e9ada06105b` | `VEHICLE-1` | No vehicle/tow extent or designated-runway-area clearance geometry. |
+| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::331c1cfc98ead868` | `ExpectedAircraftOperationTrigger` | No explicit expected landing/takeoff trigger that obliges the controller to instruct a runway vehicle to leave. |
 
 ## Model Gaps With Policy
 
@@ -52,3 +52,5 @@ dominant blockers.
 | `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::7759017903acf140` | `split: structured first-call content covered-green; rendered wording phraseology-later` | `Icao9432VehicleMovementSourceBackedScenarioTest`; typed vehicle first call carries call sign, position, destination, and route. Rendered wording remains `PHRASE-1`. |
 | `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::84c61b2ef1f12ad5` | `covered-green` | `Icao9432VehicleMovementSourceBackedScenarioTest`; vehicle stops at an intermediate clearance limit and requests onward permission before continuing. |
 | `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::ed59ee805ff7fe77` | `covered-green` | `Icao9432VehicleMovementSourceBackedScenarioTest`; vehicle remains stationary after standby and only proceeds after later permission. |
+| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::24f7b6a86407ef6f` | `covered-green` | `Icao9432VehicleRunwaySourceBackedScenarioTest`; vehicle starts holding short, receives positive runway-crossing permission, and begins crossing only after driver acknowledgement. |
+| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::735b3e9ada06105b` | `split: vehicle-only clear-beyond-holding-point covered-green; tow/combined extent geometry blocked` | `Icao9432VehicleRunwaySourceBackedScenarioTest`; vehicle-only runway-vacated report is accepted only after explicit clear-beyond-holding-point evidence. Tow/combined extent remains `TowExtentGeometry`. |

@@ -215,8 +215,11 @@ private fun pilotUtteranceDuration(transmission: PilotTransmission): SimDuration
 @Suppress("MagicNumber")
 private fun vehicleControllerUtteranceDuration(transmission: VehicleControllerTransmission): SimDuration =
     when (transmission) {
+        is VehicleControllerTransmission.CrossRunway -> SimDuration.ofMillis(2500)
+        is VehicleControllerTransmission.HoldShortRunway -> SimDuration.ofMillis(2200)
         is VehicleControllerTransmission.HoldPosition -> SimDuration.ofMillis(1500)
         is VehicleControllerTransmission.Standby -> SimDuration.ofMillis(1200)
+        is VehicleControllerTransmission.VacateRunway -> SimDuration.ofMillis(2500)
         is VehicleControllerTransmission.ProceedTo -> SimDuration.ofMillis(3000)
     }
 
@@ -225,6 +228,8 @@ private fun vehicleDriverUtteranceDuration(transmission: VehicleDriverTransmissi
     when (transmission) {
         is VehicleDriverTransmission.InitialCall -> SimDuration.ofMillis(3500)
         is VehicleDriverTransmission.RequestFurtherPermission -> SimDuration.ofMillis(2200)
+        is VehicleDriverTransmission.AcknowledgeRunwayCrossing -> SimDuration.ofMillis(1800)
+        is VehicleDriverTransmission.RunwayVacated -> SimDuration.ofMillis(1800)
         is VehicleDriverTransmission.Acknowledge -> SimDuration.ofMillis(1800)
     }
 

@@ -215,6 +215,7 @@ fun step(state: SimState, event: SimEvent): Pair<SimState, List<SimEvent>> {
         is SimEvent.PilotProcessingComplete -> handlePilotProcessingComplete(atTime, event)
         is SimEvent.VehicleDriverProcessingComplete -> handleVehicleDriverProcessingComplete(atTime, event)
         is SimEvent.VehicleArriveAtLimit -> handleVehicleArriveAtLimit(atTime, event)
+        is SimEvent.VehicleClearBeyondHoldingPoint -> handleVehicleClearBeyondHoldingPoint(atTime, event)
         is SimEvent.GroundCrewPushbackComplete -> handleGroundCrewPushbackComplete(atTime, event)
         // Pass 9 (D-AUDIT.2 / Phase 9.B): MissedHandoffDetected has no
         // handler-state-change effect — it is a system-emitted operational
@@ -1213,6 +1214,9 @@ private fun applyVehicleDriverTransmission(
             route = transmission.route,
             phase = VehicleMovementPhase.AwaitingPermission,
             activePermission = null,
+            activeRunwayCrossing = null,
+            activeRunwayVacate = null,
+            runwayState = VehicleRunwayState.OffRunway,
         )
         is VehicleDriverTransmission.RequestFurtherPermission -> {
             check(vehicle.position == transmission.from) {
@@ -1223,6 +1227,32 @@ private fun applyVehicleDriverTransmission(
                 destination = transmission.destination,
                 phase = VehicleMovementPhase.AwaitingPermission,
                 activePermission = null,
+                activeRunwayCrossing = null,
+                activeRunwayVacate = null,
+            )
+        }
+        is VehicleDriverTransmission.AcknowledgeRunwayCrossing -> {
+            val permission = vehicle.activeRunwayCrossing
+            check(permission?.runway == transmission.runway) {
+                "Vehicle ${transmission.vehicle.value} acknowledged crossing runway " +
+                    "${transmission.runway.value} without matching positive permission"
+            }
+            vehicle.copy(
+                position = PointId("RUNWAY-${transmission.runway.value}"),
+                runwayState = VehicleRunwayState.Crossing(transmission.runway),
+                activeRunwayCrossing = null,
+                activeRunwayVacate = null,
+            )
+        }
+        is VehicleDriverTransmission.RunwayVacated -> {
+            check(vehicle.runwayState == VehicleRunwayState.ClearBeyondHoldingPoint(transmission.runway)) {
+                "Vehicle ${transmission.vehicle.value} reported runway ${transmission.runway.value} vacated " +
+                    "before clear-beyond-holding-point evidence: ${vehicle.runwayState}"
+            }
+            vehicle.copy(
+                runwayState = VehicleRunwayState.OffRunway,
+                phase = VehicleMovementPhase.Complete,
+                activeRunwayVacate = null,
             )
         }
         is VehicleDriverTransmission.Acknowledge -> vehicle
@@ -1324,11 +1354,14 @@ private fun handleVehicleDriverProcessingComplete(
             vehicleId = instruction.vehicle,
             phase = VehicleMovementPhase.HoldingPosition,
         )
+        is VehicleControllerTransmission.HoldShortRunway -> setVehicleHoldingShort(state, instruction)
         is VehicleControllerTransmission.Standby -> setVehicleBlockedPhase(
             state = state,
             vehicleId = instruction.vehicle,
             phase = VehicleMovementPhase.Standby,
         )
+        is VehicleControllerTransmission.CrossRunway -> applyVehicleRunwayCrossingPermission(state, instruction, event.time)
+        is VehicleControllerTransmission.VacateRunway -> applyVehicleVacateInstruction(state, instruction)
         is VehicleControllerTransmission.ProceedTo -> applyVehicleProceedPermission(state, instruction, event.time)
     }
 }
@@ -1340,7 +1373,12 @@ private fun setVehicleBlockedPhase(
 ): Pair<SimState, List<SimEvent>> {
     val vehicle = state.vehicles[vehicleId]
         ?: error("Vehicle instruction for unknown vehicle ${vehicleId.value}")
-    val updated = vehicle.copy(phase = phase, activePermission = null)
+    val updated = vehicle.copy(
+        phase = phase,
+        activePermission = null,
+        activeRunwayCrossing = null,
+        activeRunwayVacate = null,
+    )
     return state.copy(vehicles = state.vehicles + (vehicleId to updated)) to emptyList()
 }
 
@@ -1361,6 +1399,8 @@ private fun applyVehicleProceedPermission(
     val updated = vehicle.copy(
         phase = VehicleMovementPhase.MovingToLimit,
         activePermission = permission,
+        activeRunwayCrossing = null,
+        activeRunwayVacate = null,
     )
     val arrive = SimEvent.VehicleArriveAtLimit(
         time = eventTime + SimDuration.ofSeconds(5),
@@ -1371,6 +1411,75 @@ private fun applyVehicleProceedPermission(
         vehicles = state.vehicles + (instruction.vehicle to updated),
         nextVehiclePermissionId = state.nextVehiclePermissionId + 1L,
     ).emit(listOf(arrive))
+}
+
+private fun setVehicleHoldingShort(
+    state: SimState,
+    instruction: VehicleControllerTransmission.HoldShortRunway,
+): Pair<SimState, List<SimEvent>> {
+    val vehicle = state.vehicles[instruction.vehicle]
+        ?: error("Vehicle hold-short instruction for unknown vehicle ${instruction.vehicle.value}")
+    val updated = vehicle.copy(
+        runwayState = VehicleRunwayState.HoldingShort(instruction.runway),
+        phase = VehicleMovementPhase.StoppedAtLimit,
+        activePermission = null,
+        activeRunwayCrossing = null,
+        activeRunwayVacate = null,
+    )
+    return state.copy(vehicles = state.vehicles + (instruction.vehicle to updated)) to emptyList()
+}
+
+private fun applyVehicleRunwayCrossingPermission(
+    state: SimState,
+    instruction: VehicleControllerTransmission.CrossRunway,
+    eventTime: SimTime,
+): Pair<SimState, List<SimEvent>> {
+    val vehicle = state.vehicles[instruction.vehicle]
+        ?: error("Vehicle runway-crossing instruction for unknown vehicle ${instruction.vehicle.value}")
+    check(vehicle.runwayState == VehicleRunwayState.HoldingShort(instruction.runway)) {
+        "Vehicle ${instruction.vehicle.value} cannot receive crossing permission for runway " +
+            "${instruction.runway.value} while runwayState=${vehicle.runwayState}"
+    }
+    val updated = vehicle.copy(
+        activeRunwayCrossing = ActiveRunwayCrossingPermission(
+            runway = instruction.runway,
+            crossingTo = instruction.crossingTo,
+            issuedAt = eventTime,
+        ),
+    )
+    return state.copy(vehicles = state.vehicles + (instruction.vehicle to updated)) to emptyList()
+}
+
+private fun applyVehicleVacateInstruction(
+    state: SimState,
+    instruction: VehicleControllerTransmission.VacateRunway,
+): Pair<SimState, List<SimEvent>> {
+    val vehicle = state.vehicles[instruction.vehicle]
+        ?: error("Vehicle vacate instruction for unknown vehicle ${instruction.vehicle.value}")
+    check(vehicle.runwayState == VehicleRunwayState.OnRunway(instruction.runway)) {
+        "Vehicle ${instruction.vehicle.value} cannot be instructed to vacate runway ${instruction.runway.value} " +
+            "while runwayState=${vehicle.runwayState}"
+    }
+    val permissionId = VehiclePermissionId(state.nextVehiclePermissionId)
+    val updated = vehicle.copy(
+        phase = VehicleMovementPhase.MovingToLimit,
+        runwayState = VehicleRunwayState.Crossing(instruction.runway),
+        activeRunwayVacate = ActiveRunwayVacate(
+            id = permissionId,
+            runway = instruction.runway,
+            issuedAt = state.now,
+        ),
+    )
+    val clear = SimEvent.VehicleClearBeyondHoldingPoint(
+        time = state.now + SimDuration.ofSeconds(5),
+        vehicleId = instruction.vehicle,
+        runway = instruction.runway,
+        permissionId = permissionId,
+    )
+    return state.copy(
+        vehicles = state.vehicles + (instruction.vehicle to updated),
+        nextVehiclePermissionId = state.nextVehiclePermissionId + 1L,
+    ).emit(listOf(clear))
 }
 
 private fun handleVehicleArriveAtLimit(
@@ -1386,6 +1495,25 @@ private fun handleVehicleArriveAtLimit(
         position = permission.clearanceLimit,
         phase = if (atDestination) VehicleMovementPhase.Complete else VehicleMovementPhase.StoppedAtLimit,
         activePermission = null,
+    )
+    return state.copy(vehicles = state.vehicles + (event.vehicleId to updated)) to emptyList()
+}
+
+private fun handleVehicleClearBeyondHoldingPoint(
+    state: SimState,
+    event: SimEvent.VehicleClearBeyondHoldingPoint,
+): Pair<SimState, List<SimEvent>> {
+    val vehicle = state.vehicles[event.vehicleId]
+        ?: error("Vehicle clear-beyond-holding-point for unknown vehicle ${event.vehicleId.value}")
+    val activeVacate = vehicle.activeRunwayVacate
+    if (vehicle.runwayState != VehicleRunwayState.Crossing(event.runway) || activeVacate?.id != event.permissionId) {
+        return state to emptyList()
+    }
+    val updated = vehicle.copy(
+        runwayState = VehicleRunwayState.ClearBeyondHoldingPoint(event.runway),
+        activePermission = null,
+        activeRunwayCrossing = null,
+        activeRunwayVacate = null,
     )
     return state.copy(vehicles = state.vehicles + (event.vehicleId to updated)) to emptyList()
 }

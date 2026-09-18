@@ -9,7 +9,7 @@
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-65-icao-9432-vehicle-1b-vehicle-runway.md",
-  "status": "open",
+  "status": "done",
   "title": "ICAO 9432 VEHICLE-1B vehicle runway crossing and occupancy",
-  "updated_at": "2026-09-18T10:25:00.468053Z"
+  "updated_at": "2026-09-18T12:52:32.497013Z"
 }

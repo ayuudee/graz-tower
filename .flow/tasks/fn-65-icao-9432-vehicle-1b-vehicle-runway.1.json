@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T12:34:26.008179Z",
+  "depends_on": [],
+  "epic": "fn-65-icao-9432-vehicle-1b-vehicle-runway",
+  "id": "fn-65-icao-9432-vehicle-1b-vehicle-runway.1",
+  "priority": 1,
+  "spec_path": ".flow/tasks/fn-65-icao-9432-vehicle-1b-vehicle-runway.1.md",
+  "status": "todo",
+  "title": "Build vehicle runway manifest and reviewed implementation plan",
+  "updated_at": "2026-09-18T12:34:26.008307Z"
+}
