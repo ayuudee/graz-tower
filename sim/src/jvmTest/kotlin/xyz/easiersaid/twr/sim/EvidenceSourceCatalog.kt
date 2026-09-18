@@ -137,6 +137,17 @@ object ICAO9432 {
             setOf(ClearancePacingAdvisory)
     }
 
+    object ReadbackContinuation {
+        val ReadbackTerminatesWithCallsign: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71",
+            title = "ICAO Doc 9432 Fourth Edition 2007 §2.8.3.7 readback terminates with call sign",
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
+        )
+
+        val PhraseologyItems: Set<EvidenceSourceRef> =
+            setOf(ReadbackTerminatesWithCallsign)
+    }
+
     object Taxi {
         val DepartingClearanceLimitNormallyHoldingPoint: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::taxi_4_4_en::417f64324f7495bf",
@@ -786,6 +797,7 @@ object EvidenceSourceCatalog {
         ICAO9432.Communications.RequiredProcedures +
             ICAO9432.Readback.RequiredItems +
             ICAO9432.Readback.AdvisoryItems +
+            ICAO9432.ReadbackContinuation.PhraseologyItems +
             ICAO9432.Taxi.HoldingPointLimit +
             ICAO9432.Taxi.Chunk03AuditItems +
             ICAO9432.TakeoffProcedures.Chunk04ScenarioItems +

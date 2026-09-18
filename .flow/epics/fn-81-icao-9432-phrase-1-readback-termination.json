@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-81-icao-9432-readback-termination-phraseology",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-18T21:48:31.043182Z",
+  "created_at": "2026-09-18T21:36:54.133059Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-81-icao-9432-phrase-1-readback-termination",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-18T21:39:24.800803Z",
+  "spec_path": ".flow/specs/fn-81-icao-9432-phrase-1-readback-termination.md",
+  "status": "done",
+  "title": "ICAO 9432 PHRASE-1 readback termination phraseology evidence",
+  "updated_at": "2026-09-18T21:49:00.783185Z"
+}

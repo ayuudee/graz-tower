@@ -1,0 +1,12 @@
+{
+  "type": "plan_review",
+  "id": "fn-81-icao-9432-phrase-1-readback-termination",
+  "mode": "codex",
+  "verdict": "SHIP",
+  "session_id": "01a0b674-3f40-7682-b893-10e5786598de",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T21:39:21.427919Z",
+  "review": "No blocking findings in the updated plan. The epic and task align on independently checking both templates, failing when either is absent, preserving existing assertions, and retaining PHRASE-1 for unsupported readbacks.\n\nSource metadata, documentation paths, and validation recording locations are now explicit. The scope remains confined to evidence and documentation.\n\nReview is limited to the supplied specs; implementation compatibility was not independently verified because repository code was not provided.\n\n<verdict>SHIP</verdict>\n"
+}

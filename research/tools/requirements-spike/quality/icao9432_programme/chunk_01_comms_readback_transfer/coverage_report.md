@@ -10,8 +10,9 @@ Chunk: ICAO 9432 communications, transfer, and readback.
 | `covered-red` | 0 |
 | `expected-gap` | 0 |
 | `not-applicable` | 1 |
-| `phraseology-later` | 6 |
+| `phraseology-later` | 5 |
 | `policy-blocked` | 2 |
+| `split: supported rendered readbacks covered; remaining templates phraseology-later` | 1 |
 
 Closed initially at `fn-48-icao-9432-chunk-01-drive-expected-gap`
 (2026-05-26), then updated by `fn-49-sim-emits-pilot-notified-frequency`
@@ -19,6 +20,9 @@ and `fn-50-sim-models-reception-quality-comms-1`. Frequency-transfer
 coverage is green for both the controller-advised and pilot-notified
 branches. COMMS-1 is now covered-green via a real radio-overlap scenario
 that produces reception-doubt evidence resolved by pilot `SayAgain`.
+fn-81 partially closes the readback-termination phraseology row for the
+currently supported rendered pilot readback templates (`LineUpReadback` and
+`FrequencyReadback`); other readback templates remain PHRASE-1.
 
 Focused verification run:
 
@@ -64,7 +68,7 @@ test-environment concern, not as a chunk closure blocker.
 | `icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649` | `phraseology-later` | `PHRASE-1` | The words 'TAKE OFF' are used only when an aircraft is cleared for take-off, or when canceling a take-off clearance; ... |
 | `icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9` | `phraseology-later` | `PHRASE-1` | An ATC route clearance is not an instruction to take off or enter an active runway. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::17e1dfdf4ce57253` | `covered-green` | `controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/requirements/Icao9432ReadbackConformanceSpec.kt` | The controller shall listen to the read-back to ascertain that the clearance or instruction has been correctly acknow... |
-| `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71` | `phraseology-later` | `PHRASE-1` | An aircraft should terminate the read-back by its call sign. |
+| `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71` | `split: supported rendered readbacks covered; remaining templates phraseology-later` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432PhraseologyEvidenceTest.kt` (`LineUpReadback`, `FrequencyReadback`); `PHRASE-1` for unsupported templates | An aircraft should terminate the read-back by its call sign. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ace4ab7ff5d53a66` | `covered-green` | `controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/requirements/Icao9432ReadbackConformanceSpec.kt` | The controller shall take immediate action to correct any discrepancies revealed by the read-back. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ce25c18f1b44a6a8` | `not-applicable` | `none` | See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES |
 | `icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01FrequencyTransferEvidenceTest.kt` (controller-advised path via existing `ContactFrequency` emission) | An aircraft shall be advised by the appropriate aeronautical station to change from one radio frequency to another in... |
@@ -84,11 +88,12 @@ test-environment concern, not as a chunk closure blocker.
   (`readback_2_8_3_en::36e6ad16cffe8726`). Tracked in `.plan`.
 - `PHRASE-1`: PARTIALLY CLOSED by fn-78 for the
   `transfer_communications_2_8_2_en::96720e821bf926cc` CONTACT
-  frequency-change phraseology row. Still cross-chunk infrastructure; covers
-  ALL STATIONS, full callsign, TAKE OFF word-use
-  (`readback_2_8_3_en::f06dfa1cefd2d649`), readback callsign
-  termination, unit-only CONTACT variants, MONITOR, WHEN PASSING
-  conditionals, and other phraseology units. Tracked in `.plan`.
+  frequency-change phraseology row and by fn-81 for the supported rendered
+  readback-termination templates (`LineUpReadback`, `FrequencyReadback`).
+  Still cross-chunk infrastructure; covers ALL STATIONS, full callsign, TAKE
+  OFF word-use (`readback_2_8_3_en::f06dfa1cefd2d649`), unsupported readback
+  templates, unit-only CONTACT variants, MONITOR, WHEN PASSING conditionals,
+  and other phraseology units. Tracked in `.plan`.
 - `FN33-MODEL-1`: PARTIALLY CLOSED. The §2.8.3.2 advisory-pacing
   source unit (`readback_2_8_3_en::ac9111d240cfd2c2`) landed
   `covered-green` at fn-48 via the new
@@ -122,9 +127,10 @@ test-environment concern, not as a chunk closure blocker.
   hearback classification (pre-existing) PLUS frequency-transfer
   (FN44-GAP-1 covered-green, pilot-notified branch covered-green),
   reception-doubt (COMMS-1 covered-green), clearance pacing
-  (FN33-MODEL-1 covered-green Advisory), and rendered CONTACT
-  frequency-change phraseology (fn-78). Remaining phraseology, policy, and
-  the two remaining FN33-MODEL-1 source units stay blocked.
+  (FN33-MODEL-1 covered-green Advisory), rendered CONTACT frequency-change
+  phraseology (fn-78), and supported rendered readback-termination templates
+  (fn-81). Remaining phraseology, policy, and the two remaining FN33-MODEL-1
+  source units stay blocked.
 - Impact: fn-50 adds final reception-quality observations and a minimal
   non-cognitive pilot `SayAgain` recovery path for stepped-on controller
   transmissions. Full cognitive-mission recovery remains filed as

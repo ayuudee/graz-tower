@@ -18,6 +18,7 @@ class EvidenceSourceCatalogTest {
                 "icao9432-extracted::readback_2_8_3_en::58594a8ee6243296",
                 "icao9432-extracted::readback_2_8_3_en::4b6ece953649da07",
                 "icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2",
+                "icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71",
                 "icao9432-extracted::taxi_4_4_en::417f64324f7495bf",
                 "icao9432-extracted::taxi_4_4_en::b9e7fc3605fe616e",
                 "icao9432-extracted::taxi_4_4_en::1367907005a34ad1",
@@ -173,6 +174,7 @@ class EvidenceSourceCatalogTest {
                 "icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef",
                 "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
                 "icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4",
+                "icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71",
             ),
             EvidenceSourceCatalog.All
                 .filter { source -> source.record.claimScope == EvidenceSourceClaimScope.RenderedPhraseologyTrace }

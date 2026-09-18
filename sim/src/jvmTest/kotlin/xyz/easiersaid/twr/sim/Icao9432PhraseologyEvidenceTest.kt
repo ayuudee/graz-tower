@@ -52,6 +52,41 @@ class Icao9432PhraseologyEvidenceTest {
     }
 
     @Test
+    fun `LOWG rendered readbacks terminate with aircraft callsign`() {
+        val aircraft = AircraftId("OE-ABC")
+
+        val report = simEvidence("icao9432-rendered-readback-terminates-with-callsign") {
+            observe {
+                EvidenceFactAdapters.lowgCircuitTraining(
+                    scenarioId = "icao9432-rendered-readback-terminates-with-callsign",
+                    outcomes = listOf(CircuitOutcome.FullStop),
+                    untilMinutes = 45,
+                )
+            }
+            source("line-up readback terminates with callsign") {
+                cites(ICAO9432.ReadbackContinuation.ReadbackTerminatesWithCallsign)
+                sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §2.8.3.7")
+                sample("coverage-scope", "supported rendered readback templates only")
+                sample("template", "LineUpReadback")
+                expect {
+                    renderedPilotReadbackPhraseology(aircraft).lineUpReadbackTerminatesWithCallsign()
+                }
+            }
+            source("frequency readback terminates with callsign") {
+                cites(ICAO9432.ReadbackContinuation.ReadbackTerminatesWithCallsign)
+                sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §2.8.3.7")
+                sample("coverage-scope", "supported rendered readback templates only")
+                sample("template", "FrequencyReadback")
+                expect {
+                    renderedPilotReadbackPhraseology(aircraft).frequencyReadbackTerminatesWithCallsign()
+                }
+            }
+        }
+
+        report.assertNoFailures()
+    }
+
+    @Test
     fun `synthetic stop-immediately instruction renders repeated ICAO 9432 phraseology`() {
         val aircraft = AircraftId("FASTAIR 345")
         val output = ControllerOutput.Instruct.fromEmergencyPolicy(

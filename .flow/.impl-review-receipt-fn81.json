@@ -1,0 +1,16 @@
+{
+  "type": "impl_review",
+  "id": "fn-81-icao-9432-phrase-1-readback-termination.1",
+  "mode": "codex",
+  "base": "HEAD~1",
+  "verdict": "SHIP",
+  "session_id": "01a0b679-4b76-7251-83af-335033048f10",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T21:46:35.208923Z",
+  "review": "No blocking findings in the updated implementation.\n\nThe source is included in `EvidenceSourceCatalog.All`, with tests covering registry validation and `RenderedPhraseologyTrace` membership. The termination assertion checks every selected readback and fails for missing templates, empty token lists, wrong final callsigns, or mixed valid/invalid observations. Both templates are checked independently, and existing phraseology assertions remain intact.\n\nDocumentation consistently preserves PHRASE-1 for unsupported templates. No runtime behavior changes appear in the diff.\n\nResidual test gap: the supplied changes do not add negative regression cases for missing templates or mixed valid/invalid facts. The implementation handles these correctly by inspection.\n\nReview used only the supplied content; recorded test results were not independently rerun. Implementation/completion receipts are not included, so this verdict does not certify workflow completion.\n\nClassification counts: 0 introduced, 0 pre_existing.\n\n<verdict>SHIP</verdict>\n",
+  "focus": "Review fn-81 readback termination evidence after fixes. Pay special attention to overclaiming ICAO 9432 \u00a72.8.3.7 coverage, vacuous template checks, typed-token correctness, catalog validation inclusion, docs/manifest split honesty, and absence of runtime behavior changes.",
+  "introduced_count": 0,
+  "pre_existing_count": 0
+}

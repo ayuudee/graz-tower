@@ -1184,6 +1184,18 @@ class AuditRenderedPilotReadbackPhraseologySubject internal constructor(
         )
     }
 
+    fun lineUpReadbackTerminatesWithCallsign(): EvidenceAuditOutcome =
+        readbackTerminatesWithCallsign(
+            template = RenderedPhraseologyTemplate.LineUpReadback,
+            failReason = "Missing rendered line-up readback phraseology for ${aircraftId.value}",
+        )
+
+    fun frequencyReadbackTerminatesWithCallsign(): EvidenceAuditOutcome =
+        readbackTerminatesWithCallsign(
+            template = RenderedPhraseologyTemplate.FrequencyReadback,
+            failReason = "Missing rendered frequency readback phraseology for ${aircraftId.value}",
+        )
+
     private fun readbackPhraseologyOutcome(
         template: RenderedPhraseologyTemplate,
         expectedObligationKinds: Set<PhraseologyObligationKind>,
@@ -1218,6 +1230,44 @@ class AuditRenderedPilotReadbackPhraseologySubject internal constructor(
                 evidence = candidates.map { fact ->
                     val payload = fact.payload as EvidenceFactPayload.RenderedPilotReadbackPhraseology
                     "${payload.template}:${payload.obligationKinds}:${payload.tokens}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
+    }
+
+    private fun readbackTerminatesWithCallsign(
+        template: RenderedPhraseologyTemplate,
+        failReason: String,
+    ): EvidenceAuditOutcome {
+        val candidates = facts.filter { fact ->
+            val payload = fact.payload as? EvidenceFactPayload.RenderedPilotReadbackPhraseology ?: return@filter false
+            payload.aircraftId == aircraftId && payload.template == template
+        }
+        if (candidates.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = failReason,
+                evidence = emptyList(),
+            )
+        }
+        candidates.forEach { fact -> activate(fact.id) }
+        val expectedFinalToken = PhraseologyToken.AircraftCallsign(aircraftId)
+        val nonTerminating = candidates.filterNot { fact ->
+            val payload = fact.payload as EvidenceFactPayload.RenderedPilotReadbackPhraseology
+            payload.tokens.lastOrNull() == expectedFinalToken
+        }
+        return if (nonTerminating.isEmpty()) {
+            EvidenceAuditOutcome.Pass(
+                candidates.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedPilotReadbackPhraseology
+                    "${payload.template}:terminates-with-callsign:${payload.text.value}@${fact.provenance.sequence.value}"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Rendered pilot readback phraseology did not terminate with ${aircraftId.value}",
+                evidence = nonTerminating.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedPilotReadbackPhraseology
+                    "${payload.template}:${payload.tokens}@${fact.provenance.sequence.value}"
                 },
             )
         }

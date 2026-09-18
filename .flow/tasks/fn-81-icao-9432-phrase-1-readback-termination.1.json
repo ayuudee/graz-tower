@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T21:36:58.302381Z",
+  "depends_on": [],
+  "epic": "fn-81-icao-9432-phrase-1-readback-termination",
+  "id": "fn-81-icao-9432-phrase-1-readback-termination.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-81-icao-9432-phrase-1-readback-termination.1.md",
+  "status": "todo",
+  "title": "Implement source-mapped readback termination phraseology evidence",
+  "updated_at": "2026-09-18T21:38:58.094774Z"
+}
