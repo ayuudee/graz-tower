@@ -28,4 +28,8 @@ sealed interface AgentId : Comparable<AgentId> {
     data class Pilot(val id: AircraftId) : AgentId {
         override val sortKey: String get() = "2-pilot-${id.value}"
     }
+
+    data class VehicleDriver(val id: VehicleId) : AgentId {
+        override val sortKey: String get() = "3-vehicle-${id.value}"
+    }
 }

@@ -9,7 +9,7 @@
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-66-icao-9432-vehicle-1a-vehicle-movement.md",
-  "status": "open",
+  "status": "done",
   "title": "ICAO 9432 VEHICLE-1A vehicle movement and permission lifecycle",
-  "updated_at": "2026-09-18T10:25:00.566505Z"
+  "updated_at": "2026-09-18T12:33:37.576976Z"
 }

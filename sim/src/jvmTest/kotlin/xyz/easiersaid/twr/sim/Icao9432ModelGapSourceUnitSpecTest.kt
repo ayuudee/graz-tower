@@ -635,35 +635,30 @@ class Icao9432ModelGapSourceUnitSpecTest {
     }
 
     @Test
-    fun `vehicle movement permission source units report missing vehicle actor lifecycle`() {
-        sourceUnitSpec("icao9432-vehicle-movement-permission-model-gaps") {
-            title("Vehicle movement permission claims require vehicle actors, positions, and proceed lifecycle")
+    fun `vehicle movement policy source units report missing vigilance and apron traffic models`() {
+        sourceUnitSpec("icao9432-vehicle-movement-policy-model-gaps") {
+            title("Vehicle vigilance and apron-traffic claims require policy and traffic-interaction models")
             sourceUnits(
                 listOf(
                     ICAO9432.VehiclesAndTowing.DriverVigilanceAndCompliance.toSourceUnitRef(),
-                    ICAO9432.VehiclesAndTowing.HoldPositionRequiresCallbackPermission.toSourceUnitRef(),
                     ICAO9432.VehiclesAndTowing.ApronProceedMayIncludeTrafficInstructions.toSourceUnitRef(),
-                    ICAO9432.VehiclesAndTowing.StopAtLimitThenRequestFurtherPermission.toSourceUnitRef(),
-                    ICAO9432.VehiclesAndTowing.StandbyRequiresPermissionBeforeProceeding.toSourceUnitRef(),
                 ),
             )
-            domain("vehicle-state", setOf("standby", "hold-position", "proceeding", "stopped-at-limit"))
-            domain("permission", setOf("not-yet-given", "callback-given", "traffic-conditioned"))
-            domain("local-procedure", setOf("required", "not-modelled"))
+            domain("policy-surface", setOf("local-procedure-compliance", "apron-traffic-instruction"))
+            domain("traffic-relation", setOf("near-aircraft", "give-way-to-apron-traffic"))
 
             partition(
-                name = "hold position requires callback permission",
+                name = "vehicle vigilance and apron traffic policy",
                 parameters = mapOf(
-                    "vehicle-state" to "hold-position",
-                    "permission" to "not-yet-given",
-                    "local-procedure" to "not-modelled",
+                    "policy-surface" to "local-procedure-compliance",
+                    "traffic-relation" to "near-aircraft",
                 ),
             ) {
-                hit("vehicle-actor-lifecycle-required")
+                hit("vehicle-policy-model-required")
                 modelGap(
-                    "The sim has no vehicle actor, vehicle position/destination state, vehicle proceed/hold " +
-                        "lifecycle, driver acknowledgement, or local-procedure compliance model. Aircraft taxi " +
-                        "state cannot prove vehicle-driver obligations.",
+                    "The sim has a minimal vehicle permission lifecycle, but does not model driver vigilance, " +
+                        "proximity-to-aircraft compliance, local-procedure policy, or apron traffic-interaction " +
+                        "instructions. Aircraft taxi state cannot prove vehicle-driver obligations.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()
@@ -704,18 +699,17 @@ class Icao9432ModelGapSourceUnitSpecTest {
     }
 
     @Test
-    fun `vehicle towing and first-call source units report missing tow metadata and rendered vehicle phraseology`() {
+    fun `vehicle towing source units report missing tow metadata and rendered vehicle phraseology`() {
         sourceUnitSpec("icao9432-vehicle-towing-phraseology-model-gaps") {
-            title("Vehicle first-call and towing claims require vehicle transmissions, tow metadata, and rendered wording")
+            title("Vehicle towing claims require tow metadata and rendered wording")
             sourceUnits(
                 listOf(
-                    ICAO9432.VehiclesAndTowing.FirstCallIdentifiesVehicleRoute.toSourceUnitRef(),
                     ICAO9432.VehiclesAndTowing.TowDriverMustNotAssumeStationAware.toSourceUnitRef(),
                     ICAO9432.VehiclesAndTowing.TowRequestStatesAircraftTypeAndOperator.toSourceUnitRef(),
                 ),
             )
-            domain("transmission", setOf("vehicle-first-call", "tow-request"))
-            domain("metadata", setOf("call-sign-position-destination-route", "aircraft-type-operator"))
+            domain("transmission", setOf("tow-request"))
+            domain("metadata", setOf("aircraft-type-operator"))
             domain("phraseology-surface", setOf("rendered-vehicle-utterance", "not-rendered"))
 
             partition(
@@ -728,9 +722,8 @@ class Icao9432ModelGapSourceUnitSpecTest {
             ) {
                 hit("vehicle-transmission-and-tow-metadata-required")
                 modelGap(
-                    "The sim has no vehicle transmission actor, vehicle call sign, vehicle position/destination/" +
-                        "route fields, aircraft-under-tow metadata, receiving-station tow-awareness state, or " +
-                        "rendered vehicle/tow phraseology.",
+                    "The sim has a minimal vehicle transmission actor, but no aircraft-under-tow metadata, " +
+                        "receiving-station tow-awareness state, or rendered vehicle/tow phraseology.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()

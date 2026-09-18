@@ -62,6 +62,7 @@ data class SimState(
      */
     val rngByAircraft: Map<AircraftId, SimRandom>,
     val aircraft: LinkedHashMap<AircraftId, AircraftState>,
+    val vehicles: Map<VehicleId, VehicleState> = emptyMap(),
     val controllers: Map<ControllerId, ControllerSpec>,
     val beliefs: Map<ControllerId, BeliefState>,
     val world: AviationWorld,
@@ -132,6 +133,7 @@ data class SimState(
      */
     val pendingReceptionDoubtAircraft: Set<AircraftId> = emptySet(),
     val groundCrewPushbackComplete: Set<AircraftId> = emptySet(),
+    val nextVehiclePermissionId: Long = 0L,
     /**
      * fn-12 (R3b): per-controller snapshot of the obstructions visible to
      * that controller AS OF the prior controller cycle. Updated at the
@@ -330,6 +332,7 @@ data class SimState(
                 aircraft = LinkedHashMap<AircraftId, AircraftState>().apply {
                     aircraft.forEach { put(it.id, it) }
                 },
+                vehicles = emptyMap(),
                 controllers = controllers.associateBy { it.id },
                 beliefs = emptyMap(),
                 world = foldedWorld,

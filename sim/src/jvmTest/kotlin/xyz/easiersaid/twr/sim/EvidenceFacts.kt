@@ -743,10 +743,12 @@ object EvidenceFactAdapters {
                 )
 
                 is SpeakerRef.Pilot -> emptyList()
+                is SpeakerRef.VehicleDriver -> emptyList()
             }
 
             is Utterance.FromPilot -> when (val speaker = record.speaker) {
                 is SpeakerRef.Controller -> emptyList()
+                is SpeakerRef.VehicleDriver -> emptyList()
                 is SpeakerRef.Pilot -> pilotFacts(
                     scenarioId = scenarioId,
                     recordIndex = recordIndex,
@@ -768,7 +770,11 @@ object EvidenceFactAdapters {
                     ),
                 )
                 is SpeakerRef.Pilot -> emptyList()
+                is SpeakerRef.VehicleDriver -> emptyList()
             }
+
+            is Utterance.FromVehicleController,
+            is Utterance.FromVehicleDriver -> emptyList()
         }
 
     private fun controllerFacts(

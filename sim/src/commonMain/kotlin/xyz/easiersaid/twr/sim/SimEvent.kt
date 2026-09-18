@@ -137,6 +137,24 @@ sealed interface SimEvent {
         override val source: AgentId get() = AgentId.Pilot(aircraftId)
     }
 
+    data class VehicleDriverProcessingComplete(
+        override val time: SimTime,
+        val vehicleId: VehicleId,
+        val utterance: Utterance,
+        override val seq: Long = 0,
+    ) : SimEvent {
+        override val source: AgentId get() = AgentId.VehicleDriver(vehicleId)
+    }
+
+    data class VehicleArriveAtLimit(
+        override val time: SimTime,
+        val vehicleId: VehicleId,
+        val permissionId: VehiclePermissionId,
+        override val seq: Long = 0,
+    ) : SimEvent {
+        override val source: AgentId get() = AgentId.VehicleDriver(vehicleId)
+    }
+
     /**
      * Ground crew visual signal after pushback completion. This is the typed
      * simulator observation for ICAO Doc 9432 §4.3.3's "manoeuvre complete,
@@ -288,6 +306,7 @@ sealed interface SimEvent {
 private fun SpeakerRef.toAgentId(): AgentId = when (this) {
     is SpeakerRef.Pilot -> AgentId.Pilot(aircraftId)
     is SpeakerRef.Controller -> AgentId.Controller(id)
+    is SpeakerRef.VehicleDriver -> AgentId.VehicleDriver(vehicleId)
 }
 
 /**
@@ -303,6 +322,8 @@ internal fun SimEvent.withSeq(s: Long): SimEvent = when (this) {
     is SimEvent.TransmissionEnd -> copy(seq = s)
     is SimEvent.TransmissionReceptionObserved -> copy(seq = s)
     is SimEvent.PilotProcessingComplete -> copy(seq = s)
+    is SimEvent.VehicleDriverProcessingComplete -> copy(seq = s)
+    is SimEvent.VehicleArriveAtLimit -> copy(seq = s)
     is SimEvent.GroundCrewPushbackComplete -> copy(seq = s)
     is SimEvent.MissedHandoffDetected -> copy(seq = s)
     is SimEvent.FlightPlanFiled -> copy(seq = s)

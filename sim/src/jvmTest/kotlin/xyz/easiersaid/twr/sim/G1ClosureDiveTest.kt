@@ -609,12 +609,17 @@ class G1ClosureDiveTest {
                 is SimEvent.TransmissionStart -> {
                     val sp = e.transmission.speaker
                     val u = e.transmission.utterance
-                    val from = if (sp is SpeakerRef.Pilot) "P:${sp.aircraftId.value}"
-                        else if (sp is SpeakerRef.Controller) "C:${sp.id.value}" else "?"
+                    val from = when (sp) {
+                        is SpeakerRef.Pilot -> "P:${sp.aircraftId.value}"
+                        is SpeakerRef.Controller -> "C:${sp.id.value}"
+                        is SpeakerRef.VehicleDriver -> "V:${sp.vehicleId.value}"
+                    }
                     val payload = when (u) {
                         is Utterance.FromController -> (u.output as? ControllerOutput.Instruct)?.trace?.ruleId
                             ?: u::class.simpleName ?: "?"
                         is Utterance.FromPilot -> u.transmission::class.simpleName ?: "?"
+                        is Utterance.FromVehicleController -> u.transmission::class.simpleName ?: "?"
+                        is Utterance.FromVehicleDriver -> u.transmission::class.simpleName ?: "?"
                         is Utterance.GroundStationTestSignal -> "GroundStationTestSignal(${u.purpose})"
                     }
                     "$from $payload"
@@ -666,10 +671,12 @@ class G1ClosureDiveTest {
             val from = when (sp) {
                 is SpeakerRef.Pilot -> "P:${sp.aircraftId.value}"
                 is SpeakerRef.Controller -> "C:${sp.id.value}"
+                is SpeakerRef.VehicleDriver -> "V:${sp.vehicleId.value}"
             }
             val to = when (val r = tx.receiver) {
                 is ReceiverRef.Controller -> "C:${r.id.value}"
                 is ReceiverRef.Pilot -> "P:${r.aircraftId.value}"
+                is ReceiverRef.VehicleDriver -> "V:${r.vehicleId.value}"
             }
             val payload = when (val u = tx.utterance) {
                 is Utterance.FromController -> (u.output as? ControllerOutput.Instruct)?.trace?.ruleId
@@ -686,6 +693,8 @@ class G1ClosureDiveTest {
                         else -> pt::class.simpleName ?: "?"
                     }
                 }
+                is Utterance.FromVehicleController -> u.transmission::class.simpleName ?: "?"
+                is Utterance.FromVehicleDriver -> u.transmission::class.simpleName ?: "?"
                 is Utterance.GroundStationTestSignal -> "GroundStationTestSignal(${u.purpose})"
             }
             println(
@@ -706,8 +715,11 @@ class G1ClosureDiveTest {
                 is SimEvent.TransmissionStart -> {
                     val tx = e.transmission
                     val sp = tx.speaker
-                    val from = if (sp is SpeakerRef.Pilot) "P:${sp.aircraftId.value}"
-                        else if (sp is SpeakerRef.Controller) "C:${sp.id.value}" else "?"
+                    val from = when (sp) {
+                        is SpeakerRef.Pilot -> "P:${sp.aircraftId.value}"
+                        is SpeakerRef.Controller -> "C:${sp.id.value}"
+                        is SpeakerRef.VehicleDriver -> "V:${sp.vehicleId.value}"
+                    }
                     val payload = when (val u = tx.utterance) {
                         is Utterance.FromController -> (u.output as? ControllerOutput.Instruct)?.trace?.ruleId
                             ?: u::class.simpleName ?: "?"
@@ -719,6 +731,8 @@ class G1ClosureDiveTest {
                                 else -> pt::class.simpleName ?: "?"
                             }
                         }
+                        is Utterance.FromVehicleController -> u.transmission::class.simpleName ?: "?"
+                        is Utterance.FromVehicleDriver -> u.transmission::class.simpleName ?: "?"
                         is Utterance.GroundStationTestSignal -> "GroundStationTestSignal(${u.purpose})"
                     }
                     "id=${tx.id.value} tx[${tx.startedAt.millis}..${tx.endsAt.millis}] $from $payload steppedOn=${tx.steppedOn}"

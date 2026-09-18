@@ -49,12 +49,14 @@ value class TransmissionId(val value: Long)
 sealed interface SpeakerRef {
     data class Pilot(val aircraftId: AircraftId) : SpeakerRef
     data class Controller(val id: ControllerId) : SpeakerRef
+    data class VehicleDriver(val vehicleId: VehicleId) : SpeakerRef
 }
 
 /** Who the speaker is addressing. "Party-line" secondary listeners are a later slice. */
 sealed interface ReceiverRef {
     data class Pilot(val aircraftId: AircraftId) : ReceiverRef
     data class Controller(val id: ControllerId) : ReceiverRef
+    data class VehicleDriver(val vehicleId: VehicleId) : ReceiverRef
 }
 
 /**
@@ -67,6 +69,8 @@ sealed interface ReceiverRef {
 sealed interface Utterance {
     data class FromPilot(val transmission: PilotTransmission) : Utterance
     data class FromController(val output: ControllerOutput) : Utterance
+    data class FromVehicleDriver(val transmission: VehicleDriverTransmission) : Utterance
+    data class FromVehicleController(val transmission: VehicleControllerTransmission) : Utterance
     data class GroundStationTestSignal(val purpose: TestSignalPurpose) : Utterance
 }
 
@@ -166,6 +170,8 @@ object CommsConstants {
 fun utteranceDuration(utterance: Utterance): SimDuration = when (utterance) {
     is Utterance.FromController -> controllerUtteranceDuration(utterance.output)
     is Utterance.FromPilot -> pilotUtteranceDuration(utterance.transmission)
+    is Utterance.FromVehicleController -> vehicleControllerUtteranceDuration(utterance.transmission)
+    is Utterance.FromVehicleDriver -> vehicleDriverUtteranceDuration(utterance.transmission)
     is Utterance.GroundStationTestSignal -> SimDuration.ofSeconds(10)
 }
 
@@ -205,6 +211,22 @@ private fun pilotUtteranceDuration(transmission: PilotTransmission): SimDuration
     is Readback -> SimDuration.ofMillis(2500)
     else -> SimDuration.ofMillis(2000)
 }
+
+@Suppress("MagicNumber")
+private fun vehicleControllerUtteranceDuration(transmission: VehicleControllerTransmission): SimDuration =
+    when (transmission) {
+        is VehicleControllerTransmission.HoldPosition -> SimDuration.ofMillis(1500)
+        is VehicleControllerTransmission.Standby -> SimDuration.ofMillis(1200)
+        is VehicleControllerTransmission.ProceedTo -> SimDuration.ofMillis(3000)
+    }
+
+@Suppress("MagicNumber")
+private fun vehicleDriverUtteranceDuration(transmission: VehicleDriverTransmission): SimDuration =
+    when (transmission) {
+        is VehicleDriverTransmission.InitialCall -> SimDuration.ofMillis(3500)
+        is VehicleDriverTransmission.RequestFurtherPermission -> SimDuration.ofMillis(2200)
+        is VehicleDriverTransmission.Acknowledge -> SimDuration.ofMillis(1800)
+    }
 
 /**
  * Resolve the controller that currently owns [aircraftId] — used to route

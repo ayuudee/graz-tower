@@ -213,6 +213,8 @@ fun step(state: SimState, event: SimEvent): Pair<SimState, List<SimEvent>> {
         is SimEvent.TransmissionEnd -> handleTransmissionEnd(atTime, event)
         is SimEvent.TransmissionReceptionObserved -> atTime to emptyList()
         is SimEvent.PilotProcessingComplete -> handlePilotProcessingComplete(atTime, event)
+        is SimEvent.VehicleDriverProcessingComplete -> handleVehicleDriverProcessingComplete(atTime, event)
+        is SimEvent.VehicleArriveAtLimit -> handleVehicleArriveAtLimit(atTime, event)
         is SimEvent.GroundCrewPushbackComplete -> handleGroundCrewPushbackComplete(atTime, event)
         // Pass 9 (D-AUDIT.2 / Phase 9.B): MissedHandoffDetected has no
         // handler-state-change effect — it is a system-emitted operational
@@ -1100,6 +1102,15 @@ private fun handleTransmissionEnd(
             )
             clearPendingReceptionDoubt(withoutTx, tx) to listOf(completion)
         }
+        is ReceiverRef.VehicleDriver -> {
+            val processingAt = tx.endsAt + CommsConstants.PILOT_COGNITIVE_DELAY
+            val completion = SimEvent.VehicleDriverProcessingComplete(
+                time = processingAt,
+                vehicleId = receiver.vehicleId,
+                utterance = tx.utterance,
+            )
+            withoutTx to listOf(completion)
+        }
         is ReceiverRef.Controller -> handleControllerTransmissionEnd(withoutTx, tx)
     }
     return deliveredState.emit(listOf(receptionObserved) + deliveredEvents)
@@ -1173,10 +1184,50 @@ private fun handleControllerTransmissionEnd(
     state: SimState,
     tx: InFlightTransmission,
 ): Pair<SimState, List<SimEvent>> {
+    val vehicleDriver = tx.utterance as? Utterance.FromVehicleDriver
+    if (vehicleDriver != null) return applyVehicleDriverTransmission(state, tx, vehicleDriver.transmission) to emptyList()
     val msg = receivedMessageFrom(tx) ?: return state to emptyList()
     val nextInbox = controllerInboxAfterBroadcast(state, tx.frequency, msg)
     val withMissionAcked = applyInitialContactLanding(state, tx.frequency, msg)
     return withMissionAcked.copy(controllerInbox = nextInbox) to emptyList()
+}
+
+private fun applyVehicleDriverTransmission(
+    state: SimState,
+    tx: InFlightTransmission,
+    transmission: VehicleDriverTransmission,
+): SimState {
+    val speaker = tx.speaker as? SpeakerRef.VehicleDriver
+        ?: error("Vehicle driver utterance was not spoken by a vehicle driver: ${tx.speaker}")
+    check(speaker.vehicleId == transmission.vehicle) {
+        "Vehicle driver utterance actor mismatch: speaker=${speaker.vehicleId.value}, " +
+            "payload=${transmission.vehicle.value}"
+    }
+    val vehicle = state.vehicles[transmission.vehicle]
+        ?: error("Vehicle driver transmission from unknown vehicle ${transmission.vehicle.value}")
+    val updated = when (transmission) {
+        is VehicleDriverTransmission.InitialCall -> vehicle.copy(
+            callsign = transmission.callsign,
+            position = transmission.position,
+            destination = transmission.destination,
+            route = transmission.route,
+            phase = VehicleMovementPhase.AwaitingPermission,
+            activePermission = null,
+        )
+        is VehicleDriverTransmission.RequestFurtherPermission -> {
+            check(vehicle.position == transmission.from) {
+                "Vehicle ${transmission.vehicle.value} requested further permission from " +
+                    "${transmission.from.value}, but current position is ${vehicle.position.value}"
+            }
+            vehicle.copy(
+                destination = transmission.destination,
+                phase = VehicleMovementPhase.AwaitingPermission,
+                activePermission = null,
+            )
+        }
+        is VehicleDriverTransmission.Acknowledge -> vehicle
+    }
+    return state.copy(vehicles = state.vehicles + (transmission.vehicle to updated))
 }
 
 private fun controllerInboxAfterBroadcast(
@@ -1256,6 +1307,87 @@ private fun receivedMessageFrom(tx: InFlightTransmission): ReceivedMessage? {
         aircraft = speaker.aircraftId,
         transmission = utterance.transmission,
     )
+}
+
+private fun handleVehicleDriverProcessingComplete(
+    state: SimState,
+    event: SimEvent.VehicleDriverProcessingComplete,
+): Pair<SimState, List<SimEvent>> {
+    val fromController = event.utterance as? Utterance.FromVehicleController ?: return state to emptyList()
+    check(fromController.transmission.vehicle == event.vehicleId) {
+        "Vehicle controller utterance actor mismatch: receiver=${event.vehicleId.value}, " +
+            "payload=${fromController.transmission.vehicle.value}"
+    }
+    return when (val instruction = fromController.transmission) {
+        is VehicleControllerTransmission.HoldPosition -> setVehicleBlockedPhase(
+            state = state,
+            vehicleId = instruction.vehicle,
+            phase = VehicleMovementPhase.HoldingPosition,
+        )
+        is VehicleControllerTransmission.Standby -> setVehicleBlockedPhase(
+            state = state,
+            vehicleId = instruction.vehicle,
+            phase = VehicleMovementPhase.Standby,
+        )
+        is VehicleControllerTransmission.ProceedTo -> applyVehicleProceedPermission(state, instruction, event.time)
+    }
+}
+
+private fun setVehicleBlockedPhase(
+    state: SimState,
+    vehicleId: VehicleId,
+    phase: VehicleMovementPhase,
+): Pair<SimState, List<SimEvent>> {
+    val vehicle = state.vehicles[vehicleId]
+        ?: error("Vehicle instruction for unknown vehicle ${vehicleId.value}")
+    val updated = vehicle.copy(phase = phase, activePermission = null)
+    return state.copy(vehicles = state.vehicles + (vehicleId to updated)) to emptyList()
+}
+
+private fun applyVehicleProceedPermission(
+    state: SimState,
+    instruction: VehicleControllerTransmission.ProceedTo,
+    eventTime: SimTime,
+): Pair<SimState, List<SimEvent>> {
+    val vehicle = state.vehicles[instruction.vehicle]
+        ?: error("Vehicle proceed instruction for unknown vehicle ${instruction.vehicle.value}")
+    val permissionId = VehiclePermissionId(state.nextVehiclePermissionId)
+    val permission = ActiveVehiclePermission(
+        id = permissionId,
+        clearanceLimit = instruction.clearanceLimit,
+        route = instruction.route,
+        issuedAt = eventTime,
+    )
+    val updated = vehicle.copy(
+        phase = VehicleMovementPhase.MovingToLimit,
+        activePermission = permission,
+    )
+    val arrive = SimEvent.VehicleArriveAtLimit(
+        time = eventTime + SimDuration.ofSeconds(5),
+        vehicleId = instruction.vehicle,
+        permissionId = permissionId,
+    )
+    return state.copy(
+        vehicles = state.vehicles + (instruction.vehicle to updated),
+        nextVehiclePermissionId = state.nextVehiclePermissionId + 1L,
+    ).emit(listOf(arrive))
+}
+
+private fun handleVehicleArriveAtLimit(
+    state: SimState,
+    event: SimEvent.VehicleArriveAtLimit,
+): Pair<SimState, List<SimEvent>> {
+    val vehicle = state.vehicles[event.vehicleId]
+        ?: error("Vehicle arrival for unknown vehicle ${event.vehicleId.value}")
+    val permission = vehicle.activePermission
+    if (permission?.id != event.permissionId) return state to emptyList()
+    val atDestination = permission.clearanceLimit == vehicle.destination
+    val updated = vehicle.copy(
+        position = permission.clearanceLimit,
+        phase = if (atDestination) VehicleMovementPhase.Complete else VehicleMovementPhase.StoppedAtLimit,
+        activePermission = null,
+    )
+    return state.copy(vehicles = state.vehicles + (event.vehicleId to updated)) to emptyList()
 }
 
 /**

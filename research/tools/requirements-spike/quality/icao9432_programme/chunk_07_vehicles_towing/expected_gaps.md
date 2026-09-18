@@ -9,21 +9,22 @@ marked covered-green with the current model/evidence surface.
 
 | Source-unit state | Units |
 |---|---:|
-| `model-gap` | 6 |
+| `covered-green` / split structured branch | 4 |
+| `model-gap` | 3 |
 | `model-gap` + `policy-blocked` | 4 |
-| `model-gap` + `phraseology-later` | 2 |
+| `model-gap` + `phraseology-later` | 1 |
 | `phraseology-later` | 0 |
 
-No chunk 07 source unit is covered-green in this pass. `VEHICLE-1` remains the
-dominant blocker.
+fn-66 moved the §5.2 movement-permission lifecycle rows to source-backed
+coverage and split the first-call row: structured call sign/position/
+destination/route content is covered, rendered wording remains `PHRASE-1`.
+Runway, towing, apron traffic, and vigilance/local-procedure rows remain the
+dominant blockers.
 
 ## Model Gaps
 
 | Source unit | Blocker | Reason |
 |---|---|---|
-| `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::6061311019d039c7` | `VEHICLE-1` | No vehicle actor, movement lifecycle, hold-position state, or controller-callback permission model. |
-| `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::84c61b2ef1f12ad5` | `VEHICLE-1` | No vehicle clearance-limit stop point or onward-permission request workflow. |
-| `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::ed59ee805ff7fe77` | `VEHICLE-1` | No vehicle standby/proceed lifecycle. |
 | `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::24f7b6a86407ef6f` | `VEHICLE-1` | No vehicle runway-crossing permission and acknowledgement model. |
 | `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::331c1cfc98ead868` | `VEHICLE-1` | No vehicle runway occupancy or aircraft-operation conflict rule. |
 | `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::735b3e9ada06105b` | `VEHICLE-1` | No vehicle/tow extent or designated-runway-area clearance geometry. |
@@ -41,5 +42,13 @@ dominant blocker.
 
 | Source unit | Blocker | Reason |
 |---|---|---|
-| `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::7759017903acf140` | `VEHICLE-1`; `PHRASE-1` | Requires vehicle call sign, vehicle position/destination/route fields, a vehicle transmission actor, and rendered first-call content. |
 | `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::4b103081585bfb71` | `VEHICLE-1`; `PHRASE-1` | No towing metadata in vehicle transmissions and no rendered tow-request wording. |
+
+## Covered Or Split Rows
+
+| Source unit | State | Evidence |
+|---|---|---|
+| `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::6061311019d039c7` | `covered-green` | `Icao9432VehicleMovementSourceBackedScenarioTest`; vehicle remains stationary after `HoldPosition` and only proceeds after callback permission. |
+| `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::7759017903acf140` | `split: structured first-call content covered-green; rendered wording phraseology-later` | `Icao9432VehicleMovementSourceBackedScenarioTest`; typed vehicle first call carries call sign, position, destination, and route. Rendered wording remains `PHRASE-1`. |
+| `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::84c61b2ef1f12ad5` | `covered-green` | `Icao9432VehicleMovementSourceBackedScenarioTest`; vehicle stops at an intermediate clearance limit and requests onward permission before continuing. |
+| `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::ed59ee805ff7fe77` | `covered-green` | `Icao9432VehicleMovementSourceBackedScenarioTest`; vehicle remains stationary after standby and only proceeds after later permission. |
