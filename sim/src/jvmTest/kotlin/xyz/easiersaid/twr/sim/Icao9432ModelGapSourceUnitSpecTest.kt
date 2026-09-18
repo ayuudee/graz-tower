@@ -697,31 +697,28 @@ class Icao9432ModelGapSourceUnitSpecTest {
     }
 
     @Test
-    fun `vehicle towing source units report missing tow metadata and rendered vehicle phraseology`() {
+    fun `vehicle towing source units report missing rendered vehicle phraseology`() {
         sourceUnitSpec("icao9432-vehicle-towing-phraseology-model-gaps") {
-            title("Vehicle towing claims require tow metadata and rendered wording")
-            sourceUnits(
-                listOf(
-                    ICAO9432.VehiclesAndTowing.TowDriverMustNotAssumeStationAware.toSourceUnitRef(),
-                    ICAO9432.VehiclesAndTowing.TowRequestStatesAircraftTypeAndOperator.toSourceUnitRef(),
-                ),
+            title("Vehicle towing rendered wording remains outside the structured metadata branch")
+            sourceUnit(
+                ICAO9432.VehiclesAndTowing.TowRequestStatesAircraftTypeAndOperator.toSourceUnitRef(),
             )
             domain("transmission", setOf("tow-request"))
-            domain("metadata", setOf("aircraft-type-operator"))
+            domain("structured-metadata", setOf("aircraft-type-operator-present"))
             domain("phraseology-surface", setOf("rendered-vehicle-utterance", "not-rendered"))
 
             partition(
-                name = "tow request states aircraft type and operator",
+                name = "tow request rendered wording",
                 parameters = mapOf(
                     "transmission" to "tow-request",
-                    "metadata" to "aircraft-type-operator",
+                    "structured-metadata" to "aircraft-type-operator-present",
                     "phraseology-surface" to "rendered-vehicle-utterance",
                 ),
             ) {
-                hit("vehicle-transmission-and-tow-metadata-required")
+                hit("rendered-vehicle-tow-phraseology-required")
                 modelGap(
-                    "The sim has a minimal vehicle transmission actor, but no aircraft-under-tow metadata, " +
-                        "receiving-station tow-awareness state, or rendered vehicle/tow phraseology.",
+                    "The sim has structured vehicle/tow metadata and receiving-station addressing, but no " +
+                        "rendered vehicle/tow phraseology surface for asserting the spoken wording.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()

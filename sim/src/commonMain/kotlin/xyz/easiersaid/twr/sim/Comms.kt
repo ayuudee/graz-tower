@@ -227,6 +227,7 @@ private fun vehicleControllerUtteranceDuration(transmission: VehicleControllerTr
 private fun vehicleDriverUtteranceDuration(transmission: VehicleDriverTransmission): SimDuration =
     when (transmission) {
         is VehicleDriverTransmission.InitialCall -> SimDuration.ofMillis(3500)
+        is VehicleDriverTransmission.RequestTow -> SimDuration.ofMillis(4000)
         is VehicleDriverTransmission.RequestFurtherPermission -> SimDuration.ofMillis(2200)
         is VehicleDriverTransmission.AcknowledgeRunwayCrossing -> SimDuration.ofMillis(1800)
         is VehicleDriverTransmission.RunwayVacated -> SimDuration.ofMillis(1800)

@@ -1,6 +1,9 @@
 package xyz.easiersaid.twr.sim
 
 import xyz.easiersaid.twr.protocol.Callsign
+import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AircraftType
+import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimTime
@@ -10,6 +13,13 @@ value class VehicleId(val value: String)
 
 @JvmInline
 value class VehiclePermissionId(val value: Long)
+
+@JvmInline
+value class AircraftOperator(val value: String) {
+    init {
+        require(value.isNotBlank()) { "aircraft operator must not be blank" }
+    }
+}
 
 data class VehicleState(
     val id: VehicleId,
@@ -21,6 +31,7 @@ data class VehicleState(
     val activePermission: ActiveVehiclePermission? = null,
     val activeRunwayCrossing: ActiveRunwayCrossingPermission? = null,
     val activeRunwayVacate: ActiveRunwayVacate? = null,
+    val activeTow: ActiveTow? = null,
     val runwayState: VehicleRunwayState = VehicleRunwayState.OffRunway,
 )
 
@@ -61,6 +72,24 @@ data class ActiveRunwayVacate(
     val issuedAt: SimTime,
 )
 
+data class TowMetadata(
+    val aircraft: AircraftId,
+    val aircraftType: AircraftType,
+    val operator: AircraftOperator?,
+)
+
+data class TowClearBeyondHoldingPoint(
+    val runway: RunwayId,
+    val permissionId: VehiclePermissionId,
+)
+
+data class ActiveTow(
+    val metadata: TowMetadata,
+    val receivingStation: ControllerId,
+    val startedAt: SimTime,
+    val clearBeyondHoldingPoint: TowClearBeyondHoldingPoint? = null,
+)
+
 sealed interface VehicleDriverTransmission {
     val vehicle: VehicleId
 
@@ -80,6 +109,12 @@ sealed interface VehicleDriverTransmission {
         override val vehicle: VehicleId,
         val from: PointId,
         val destination: PointId,
+    ) : VehicleDriverTransmission
+
+    data class RequestTow(
+        override val vehicle: VehicleId,
+        val receivingStation: ControllerId,
+        val tow: TowMetadata,
     ) : VehicleDriverTransmission
 
     data class AcknowledgeRunwayCrossing(

@@ -165,6 +165,16 @@ sealed interface SimEvent {
         override val source: AgentId get() = AgentId.VehicleDriver(vehicleId)
     }
 
+    data class TowClearBeyondHoldingPoint(
+        override val time: SimTime,
+        val vehicleId: VehicleId,
+        val runway: xyz.easiersaid.twr.protocol.RunwayId,
+        val permissionId: VehiclePermissionId,
+        override val seq: Long = 0,
+    ) : SimEvent {
+        override val source: AgentId get() = AgentId.VehicleDriver(vehicleId)
+    }
+
     /**
      * Ground crew visual signal after pushback completion. This is the typed
      * simulator observation for ICAO Doc 9432 §4.3.3's "manoeuvre complete,
@@ -335,6 +345,7 @@ internal fun SimEvent.withSeq(s: Long): SimEvent = when (this) {
     is SimEvent.VehicleDriverProcessingComplete -> copy(seq = s)
     is SimEvent.VehicleArriveAtLimit -> copy(seq = s)
     is SimEvent.VehicleClearBeyondHoldingPoint -> copy(seq = s)
+    is SimEvent.TowClearBeyondHoldingPoint -> copy(seq = s)
     is SimEvent.GroundCrewPushbackComplete -> copy(seq = s)
     is SimEvent.MissedHandoffDetected -> copy(seq = s)
     is SimEvent.FlightPlanFiled -> copy(seq = s)

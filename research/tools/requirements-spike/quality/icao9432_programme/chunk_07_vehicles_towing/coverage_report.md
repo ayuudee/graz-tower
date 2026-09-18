@@ -6,20 +6,27 @@ Chunk: ICAO 9432 vehicles, runway crossing, and aircraft towing.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` / split structured branch | 6 |
+| `covered-green` / split structured branch | 8 |
 | `covered-red` | 0 |
 | `model-gap` | 1 |
-| `model-gap` + `policy-blocked` | 4 |
-| `model-gap` + `phraseology-later` | 1 |
+| `model-gap` + `policy-blocked` | 3 |
+| `model-gap` + `phraseology-later` | 0 |
 
-Chunk 07 now has a minimal fn-66 vehicle movement lifecycle and a narrow fn-65
-vehicle-runway evidence surface: vehicle-specific radio utterances, vehicle
-state, standby/hold-position non-movement, intermediate clearance-limit
-stop/request/continue behaviour, positive runway-crossing permission with
-driver acknowledgement, and vehicle-only clear-beyond-holding-point reporting.
-It still has no expected-aircraft-operation conflict trigger, vehicle/tow
-extent geometry, towing metadata, apron traffic policy, or rendered vehicle
-phraseology. Aircraft taxi/runway traces are not vehicle compliance evidence.
+Split rows with a remaining `PHRASE-1` branch are counted in
+`covered-green` / split structured branch, not in `model-gap` +
+`phraseology-later`.
+
+Chunk 07 now has a minimal fn-66 vehicle movement lifecycle, a narrow fn-65
+vehicle-runway evidence surface, and fn-67 structured towing evidence:
+vehicle-specific radio utterances, vehicle state, standby/hold-position
+non-movement, intermediate clearance-limit stop/request/continue behaviour,
+positive runway-crossing permission with driver acknowledgement, vehicle-only
+clear-beyond-holding-point reporting, tow request metadata, receiving-station
+tow addressing, and explicit vehicle-plus-tow clear-beyond-holding-point
+reporting. It still has no expected-aircraft-operation conflict trigger,
+geometry-derived tow extent, apron traffic policy, dangerous-situation
+intervention policy, or rendered vehicle phraseology. Aircraft taxi/runway
+traces are not vehicle compliance evidence.
 
 ## Coverage Table
 
@@ -33,10 +40,10 @@ phraseology. Aircraft taxi/runway traces are not vehicle compliance evidence.
 | `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::ed59ee805ff7fe77` | `covered-green` | `Icao9432VehicleMovementSourceBackedScenarioTest` | After standby, driver shall not proceed until permission is given. |
 | `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::0b45b4a4dc2acc0c` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `VEHICLE-1`; `ControllerInterventionPolicy` | Vehicle on movement area may need dangerous-situation information and stop instruction. |
 | `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::24f7b6a86407ef6f` | `covered-green` | `Icao9432VehicleRunwaySourceBackedScenarioTest` | Driver shall not cross runway unless positive permission has been given and acknowledged. |
-| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::29be4b26bb851605` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `VEHICLE-1`; `OperationalGuidancePolicy` | Tow drivers should not assume receiving station knows an aircraft is to be towed. |
+| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::29be4b26bb851605` | `covered-green structured tow-awareness branch` | `Icao9432VehicleTowingSourceBackedScenarioTest` | Tow drivers should not assume receiving station knows an aircraft is to be towed. |
 | `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::331c1cfc98ead868` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest`; `ExpectedAircraftOperationTrigger` | Vehicle on runway shall be instructed to leave when aircraft landing/takeoff is expected. |
-| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::4b103081585bfb71` | `model-gap` + `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `VEHICLE-1`; `PHRASE-1` | Tow drivers should state aircraft type and operator where applicable. |
-| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::735b3e9ada06105b` | `split: vehicle-only clear-beyond-holding-point covered-green; tow/combined extent geometry blocked` | `Icao9432VehicleRunwaySourceBackedScenarioTest`; `TowExtentGeometry` | Vehicle/tow runway-vacated report shall wait until clear beyond holding point. |
+| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::4b103081585bfb71` | `split: structured type/operator metadata covered-green; rendered wording phraseology-later` | `Icao9432VehicleTowingSourceBackedScenarioTest`; `PHRASE-1` | Tow drivers should state aircraft type and operator where applicable. |
+| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::735b3e9ada06105b` | `covered-green for explicit vehicle+tow clear-beyond-holding-point evidence` | `Icao9432VehicleTowingSourceBackedScenarioTest` | Vehicle/tow runway-vacated report shall wait until clear beyond holding point. |
 
 ## Verification
 
@@ -44,7 +51,7 @@ phraseology. Aircraft taxi/runway traces are not vehicle compliance evidence.
   the registry with `lifecycle.state = accepted`. Source text was checked
   against `research/txt/icao9432-extracted.txt` in §5.1-§5.4.
 - Focused verification:
-  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432VehicleMovementSourceBackedScenarioTest' --tests '*.Icao9432VehicleRunwaySourceBackedScenarioTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
+  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432VehicleMovementSourceBackedScenarioTest' --tests '*.Icao9432VehicleRunwaySourceBackedScenarioTest' --tests '*.Icao9432VehicleTowingSourceBackedScenarioTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
 - Full verification:
   `./gradlew-nix :sim:jvmTest`;
   `./gradlew-nix detekt`;
@@ -57,10 +64,12 @@ phraseology. Aircraft taxi/runway traces are not vehicle compliance evidence.
   records. Vehicle actors use `VehicleId`/`VehicleState` and vehicle-specific
   utterances rather than aircraft identifiers or aircraft protocol leaves.
 - Test architecture: source-backed vehicle scenarios prove the movement
-  lifecycle rows plus the narrow vehicle-runway rows. Expected-gap specs still
-  decompose remaining blockers into expected-aircraft-operation conflict
-  triggers, hazard policy, tow metadata, tow geometry, and rendered phraseology.
-- Impact: vehicle movement/runway state and radio utterances were added to the
-  sim. Current aircraft controller/pilot behaviour is intentionally unchanged.
+  lifecycle rows, the narrow vehicle-runway rows, and structured towing rows.
+  Expected-gap specs still decompose remaining blockers into
+  expected-aircraft-operation conflict triggers, hazard policy, apron traffic
+  policy, and rendered phraseology.
+- Impact: vehicle movement/runway/tow state and radio utterances were added to
+  the sim. Current aircraft controller/pilot behaviour is intentionally
+  unchanged.
 - Operational correctness: ICAO 9432 §5.1-§5.4 vehicle-driver and towing
   obligations remain distinct from aircraft pilot taxi/runway obligations.

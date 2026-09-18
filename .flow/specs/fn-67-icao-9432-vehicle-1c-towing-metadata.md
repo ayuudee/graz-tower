@@ -2,18 +2,21 @@
 
 ## Overview
 Cover towing-specific ICAO 9432 source units that require tow metadata and
-vacated-state geometry.
+vehicle+tow clear-beyond-holding-point evidence. Geometry-derived extent checks
+remain out of scope unless deliberately implemented.
 
 ## Scope
 - Aircraft type/operator metadata where tow phraseology or request content
   requires it.
-- Towed-aircraft geometry/extent and vacated-state evidence.
+- Towed-aircraft clear-beyond-holding-point evidence and vacated-state timing.
 - Rendered towing wording remains phraseology work unless the exact unit is
   targeted with phraseology evidence.
 
 ## Approach
 Build on vehicle movement and runway occupancy work. Select exact towing units,
-then add the minimal metadata and geometry evidence required by those claims.
+then add the minimal metadata and explicit tow-clear evidence required by those
+claims. Do not describe explicit state evidence as physical geometry unless the
+implementation actually derives it from geometry.
 
 ## Quick commands
 <!-- Required: at least one smoke command for the repo -->
@@ -23,7 +26,8 @@ then add the minimal metadata and geometry evidence required by those claims.
 
 ## Acceptance
 - [ ] Exact source-unit movement manifest exists.
-- [ ] Tow metadata and vacated-state geometry are explicit in trace evidence.
+- [ ] Tow metadata and vehicle+tow clear-beyond-holding-point evidence are
+  explicit in trace evidence.
 - [ ] Phraseology-only towing units remain blocked unless rendered wording is
   proven under the phraseology contract.
 - [ ] Review considerations cover FP/type safety, test architecture, impact,

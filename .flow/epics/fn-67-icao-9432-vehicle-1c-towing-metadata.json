@@ -9,7 +9,7 @@
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-67-icao-9432-vehicle-1c-towing-metadata.md",
-  "status": "open",
+  "status": "done",
   "title": "ICAO 9432 VEHICLE-1C towing metadata and vacated geometry",
-  "updated_at": "2026-09-18T10:25:00.665746Z"
+  "updated_at": "2026-09-18T13:09:53.278515Z"
 }

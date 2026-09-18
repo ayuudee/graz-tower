@@ -216,6 +216,7 @@ fun step(state: SimState, event: SimEvent): Pair<SimState, List<SimEvent>> {
         is SimEvent.VehicleDriverProcessingComplete -> handleVehicleDriverProcessingComplete(atTime, event)
         is SimEvent.VehicleArriveAtLimit -> handleVehicleArriveAtLimit(atTime, event)
         is SimEvent.VehicleClearBeyondHoldingPoint -> handleVehicleClearBeyondHoldingPoint(atTime, event)
+        is SimEvent.TowClearBeyondHoldingPoint -> handleTowClearBeyondHoldingPoint(atTime, event)
         is SimEvent.GroundCrewPushbackComplete -> handleGroundCrewPushbackComplete(atTime, event)
         // Pass 9 (D-AUDIT.2 / Phase 9.B): MissedHandoffDetected has no
         // handler-state-change effect — it is a system-emitted operational
@@ -1216,6 +1217,7 @@ private fun applyVehicleDriverTransmission(
             activePermission = null,
             activeRunwayCrossing = null,
             activeRunwayVacate = null,
+            activeTow = null,
             runwayState = VehicleRunwayState.OffRunway,
         )
         is VehicleDriverTransmission.RequestFurtherPermission -> {
@@ -1229,6 +1231,25 @@ private fun applyVehicleDriverTransmission(
                 activePermission = null,
                 activeRunwayCrossing = null,
                 activeRunwayVacate = null,
+            )
+        }
+        is VehicleDriverTransmission.RequestTow -> {
+            val receiver = tx.receiver as? ReceiverRef.Controller
+                ?: error("Tow request was not addressed to a receiving station: ${tx.receiver}")
+            check(receiver.id == transmission.receivingStation) {
+                "Tow request receiving-station mismatch: receiver=${receiver.id.value}, " +
+                    "payload=${transmission.receivingStation.value}"
+            }
+            vehicle.copy(
+                phase = VehicleMovementPhase.AwaitingPermission,
+                activePermission = null,
+                activeRunwayCrossing = null,
+                activeRunwayVacate = null,
+                activeTow = ActiveTow(
+                    metadata = transmission.tow,
+                    receivingStation = transmission.receivingStation,
+                    startedAt = state.now,
+                ),
             )
         }
         is VehicleDriverTransmission.AcknowledgeRunwayCrossing -> {
@@ -1248,6 +1269,13 @@ private fun applyVehicleDriverTransmission(
             check(vehicle.runwayState == VehicleRunwayState.ClearBeyondHoldingPoint(transmission.runway)) {
                 "Vehicle ${transmission.vehicle.value} reported runway ${transmission.runway.value} vacated " +
                     "before clear-beyond-holding-point evidence: ${vehicle.runwayState}"
+            }
+            val activeTow = vehicle.activeTow
+            if (activeTow != null) {
+                check(activeTow.clearBeyondHoldingPoint?.runway == transmission.runway) {
+                    "Vehicle ${transmission.vehicle.value} reported runway ${transmission.runway.value} vacated " +
+                        "before tow clear-beyond-holding-point evidence: ${activeTow.clearBeyondHoldingPoint}"
+                }
             }
             vehicle.copy(
                 runwayState = VehicleRunwayState.OffRunway,
@@ -1461,6 +1489,7 @@ private fun applyVehicleVacateInstruction(
             "while runwayState=${vehicle.runwayState}"
     }
     val permissionId = VehiclePermissionId(state.nextVehiclePermissionId)
+    val activeTow = vehicle.activeTow
     val updated = vehicle.copy(
         phase = VehicleMovementPhase.MovingToLimit,
         runwayState = VehicleRunwayState.Crossing(instruction.runway),
@@ -1469,6 +1498,7 @@ private fun applyVehicleVacateInstruction(
             runway = instruction.runway,
             issuedAt = state.now,
         ),
+        activeTow = activeTow?.copy(clearBeyondHoldingPoint = null),
     )
     val clear = SimEvent.VehicleClearBeyondHoldingPoint(
         time = state.now + SimDuration.ofSeconds(5),
@@ -1476,10 +1506,18 @@ private fun applyVehicleVacateInstruction(
         runway = instruction.runway,
         permissionId = permissionId,
     )
+    val towClear = activeTow?.let {
+        SimEvent.TowClearBeyondHoldingPoint(
+            time = state.now + SimDuration.ofSeconds(7),
+            vehicleId = instruction.vehicle,
+            runway = instruction.runway,
+            permissionId = permissionId,
+        )
+    }
     return state.copy(
         vehicles = state.vehicles + (instruction.vehicle to updated),
         nextVehiclePermissionId = state.nextVehiclePermissionId + 1L,
-    ).emit(listOf(clear))
+    ).emit(listOfNotNull(clear, towClear))
 }
 
 private fun handleVehicleArriveAtLimit(
@@ -1513,9 +1551,38 @@ private fun handleVehicleClearBeyondHoldingPoint(
         runwayState = VehicleRunwayState.ClearBeyondHoldingPoint(event.runway),
         activePermission = null,
         activeRunwayCrossing = null,
-        activeRunwayVacate = null,
+        activeRunwayVacate = if (vehicle.activeTow == null) null else activeVacate,
     )
     return state.copy(vehicles = state.vehicles + (event.vehicleId to updated)) to emptyList()
+}
+
+private fun handleTowClearBeyondHoldingPoint(
+    state: SimState,
+    event: SimEvent.TowClearBeyondHoldingPoint,
+): Pair<SimState, List<SimEvent>> {
+    val vehicle = state.vehicles[event.vehicleId]
+        ?: error("Tow clear-beyond-holding-point for unknown vehicle ${event.vehicleId.value}")
+    val activeTow = vehicle.activeTow ?: return state to emptyList()
+    val activeVacate = vehicle.activeRunwayVacate
+    if (
+        vehicle.runwayState != VehicleRunwayState.ClearBeyondHoldingPoint(event.runway) ||
+        activeVacate?.id != event.permissionId
+    ) {
+        return state to emptyList()
+    }
+    val updatedTow = activeTow.copy(
+        clearBeyondHoldingPoint = TowClearBeyondHoldingPoint(
+            runway = event.runway,
+            permissionId = event.permissionId,
+        ),
+    )
+    val updated = vehicle.copy(
+        activeTow = updatedTow,
+        activeRunwayVacate = null,
+    )
+    return state.copy(
+        vehicles = state.vehicles + (event.vehicleId to updated),
+    ) to emptyList()
 }
 
 /**
