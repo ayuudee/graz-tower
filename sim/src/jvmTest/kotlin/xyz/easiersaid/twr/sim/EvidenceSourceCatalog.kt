@@ -21,6 +21,7 @@ data class EvidenceSourceRecord(
 
 enum class EvidenceSourceClaimScope {
     StructuralProtocol,
+    StructuralEvidenceVocabulary,
     ScenarioBehavior,
     TypedInstructionTraceOnly,
     RenderedPhraseologyTrace,
@@ -278,7 +279,7 @@ object ICAO9432 {
         val WaterOnMovementArea: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::01c0a4bc62b1e926",
             title = "Essential aerodrome information includes water on movement areas",
-            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+            claimScope = EvidenceSourceClaimScope.StructuralEvidenceVocabulary,
         )
 
         val OmitWhenKnownFromOtherSources: EvidenceSourceRef = source(
@@ -290,43 +291,43 @@ object ICAO9432 {
         val Definition: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::18288908932d5ee8",
             title = "Essential aerodrome information concerns movement area and associated facilities",
-            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+            claimScope = EvidenceSourceClaimScope.StructuralEvidenceVocabulary,
         )
 
         val RoughOrBrokenSurfaces: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::502221a46fcc2879",
             title = "Essential aerodrome information includes rough or broken surfaces",
-            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+            claimScope = EvidenceSourceClaimScope.StructuralEvidenceVocabulary,
         )
 
         val ConstructionOrMaintenance: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::66196c8442372a96",
             title = "Essential aerodrome information includes construction or maintenance work",
-            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+            claimScope = EvidenceSourceClaimScope.StructuralEvidenceVocabulary,
         )
 
         val SnowBanksOrDrifts: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::736cc42a00337fee",
             title = "Essential aerodrome information includes adjacent snow banks or drifts",
-            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+            claimScope = EvidenceSourceClaimScope.StructuralEvidenceVocabulary,
         )
 
         val OtherTemporaryHazards: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::9b6c9dbc2af2b5b0",
             title = "Essential aerodrome information includes other temporary hazards",
-            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+            claimScope = EvidenceSourceClaimScope.StructuralEvidenceVocabulary,
         )
 
         val LightingSystemFailure: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::a531dea421075380",
             title = "Essential aerodrome information includes lighting system failure or irregular operation",
-            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+            claimScope = EvidenceSourceClaimScope.StructuralEvidenceVocabulary,
         )
 
         val SnowSlushOrIce: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::c874e24413f4cdee",
             title = "Essential aerodrome information includes snow slush or ice on movement areas",
-            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+            claimScope = EvidenceSourceClaimScope.StructuralEvidenceVocabulary,
         )
 
         val OtherPertinentInformation: EvidenceSourceRef = source(

@@ -196,6 +196,7 @@ private fun EvidenceAuditOutcome.expectedGapMetadata(): EvidenceGapMetadata? =
 private fun EvidenceAuditResult.applicability(): String =
     when (claimKind) {
         EvidenceClaimKind.StructuralProtocolRequirement -> "structural-protocol"
+        EvidenceClaimKind.StructuralEvidenceVocabulary -> "structural-evidence-vocabulary"
         EvidenceClaimKind.SimObservedSourceBehaviour -> "sim-observed-source"
         EvidenceClaimKind.GoldenProjectBehaviour -> "project-golden"
         EvidenceClaimKind.Regression -> "project-regression"
@@ -220,5 +221,6 @@ private fun EvidenceAuditResult.adequacy(): String =
         outcome is EvidenceAuditOutcome.Advisory -> "advisory-observed"
         activationFactIds.isNotEmpty() -> "activated-facts-present"
         claimKind == EvidenceClaimKind.StructuralProtocolRequirement -> "structural-only"
+        claimKind == EvidenceClaimKind.StructuralEvidenceVocabulary -> "structural-vocabulary"
         else -> "not-source-backed"
     }

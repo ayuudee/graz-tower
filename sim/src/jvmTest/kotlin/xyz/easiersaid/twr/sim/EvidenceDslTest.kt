@@ -242,6 +242,58 @@ class EvidenceDslTest {
         assertTrue(report.results.single().outcome is EvidenceAuditOutcome.Fail)
     }
 
+    @Test
+    fun `essentialAerodromeInformation selector requires activated category facts`() {
+        val facts = EvidenceFactAdapters.fromProjectedPayloads(
+            scenarioId = "essential-category-selector",
+            payloads = listOf(
+                essentialInformationPayload(
+                    category = EssentialAerodromeInformationCategory.WaterOnMovementArea,
+                    domain = EssentialAerodromeInformationDomain.MovementArea,
+                    facets = setOf(EssentialAerodromeInformationFacet.Runway),
+                    detail = "water on RWY 16C",
+                ),
+            ),
+        )
+
+        val report = simEvidence("essential-category-selector") {
+            observe { facts }
+            source("water category") {
+                cites(ICAO9432.AerodromeInformation.WaterOnMovementArea)
+                expect {
+                    essentialAerodromeInformation()
+                        .includes(EssentialAerodromeInformationCategory.WaterOnMovementArea)
+                }
+            }
+            source("lighting category missing") {
+                cites(ICAO9432.AerodromeInformation.LightingSystemFailure)
+                expect {
+                    essentialAerodromeInformation()
+                        .includes(EssentialAerodromeInformationCategory.LightingSystemFailureOrIrregularOperation)
+                }
+            }
+        }
+
+        assertTrue(report.results[0].outcome is EvidenceAuditOutcome.Pass)
+        assertTrue(report.results[0].activationFactIds.isNotEmpty())
+        assertTrue(report.results[1].outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(report.results[1].activationFactIds.isNotEmpty())
+    }
+
+    private fun essentialInformationPayload(
+        category: EssentialAerodromeInformationCategory,
+        domain: EssentialAerodromeInformationDomain,
+        facets: Set<EssentialAerodromeInformationFacet>,
+        detail: String,
+    ): EvidenceFactPayload.EssentialAerodromeInformation =
+        EvidenceFactPayload.EssentialAerodromeInformation(
+            domain = domain,
+            category = category,
+            facets = facets,
+            safetyRelevance = EssentialAerodromeInformationSafetyRelevance.NecessaryForSafeOperation,
+            detail = AerodromeInformationDetail(detail),
+        )
+
     private fun renderedPhraseologyPayload(
         aircraft: AircraftId,
         template: RenderedPhraseologyTemplate,

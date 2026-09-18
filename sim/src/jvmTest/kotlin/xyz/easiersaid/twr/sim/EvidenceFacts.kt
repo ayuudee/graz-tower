@@ -60,6 +60,10 @@ sealed interface EvidenceFactOrigin {
     data object SimRun : EvidenceFactOrigin {
         override val label: String = "sim-run"
     }
+
+    data object SyntheticProjection : EvidenceFactOrigin {
+        override val label: String = "synthetic-projection"
+    }
 }
 
 data class EvidenceExtractionPath(
@@ -133,6 +137,20 @@ sealed interface EvidenceFactPayload {
         val detail: AerodromeInformationDetail,
     ) : EvidenceFactPayload {
         override val kind: EvidenceFactKind = EvidenceFactKind.AerodromeInformation
+    }
+
+    data class EssentialAerodromeInformation(
+        val domain: EssentialAerodromeInformationDomain,
+        val category: EssentialAerodromeInformationCategory,
+        val facets: Set<EssentialAerodromeInformationFacet>,
+        val safetyRelevance: EssentialAerodromeInformationSafetyRelevance,
+        val detail: AerodromeInformationDetail,
+    ) : EvidenceFactPayload {
+        init {
+            require(facets.isNotEmpty()) { "essential aerodrome information must carry at least one facet" }
+        }
+
+        override val kind: EvidenceFactKind = EvidenceFactKind.EssentialAerodromeInformation
     }
 
     data class CriticalPhaseWindow(
@@ -291,6 +309,7 @@ enum class EvidenceFactKind {
     PilotTransmission,
     AircraftSummary,
     AerodromeInformation,
+    EssentialAerodromeInformation,
     CriticalPhaseWindow,
     CriticalPhaseTransmission,
     FrequencyTransfer,
@@ -336,6 +355,36 @@ enum class AerodromeInformationTimingContext {
 enum class AerodromeInformationStatus {
     PassedByController,
     KnownReceivedElsewhere,
+}
+
+enum class EssentialAerodromeInformationDomain {
+    MovementArea,
+    AssociatedFacility,
+}
+
+enum class EssentialAerodromeInformationCategory {
+    WaterOnMovementArea,
+    RoughOrBrokenSurface,
+    ConstructionOrMaintenance,
+    SnowBankOrDrift,
+    TemporaryHazard,
+    LightingSystemFailureOrIrregularOperation,
+    WinterContamination,
+}
+
+enum class EssentialAerodromeInformationFacet {
+    Runway,
+    Taxiway,
+    Apron,
+    OnMovementArea,
+    AdjacentToMovementArea,
+    ParkedAircraft,
+    BirdsOnGroundOrInAir,
+    LightingSystem,
+}
+
+enum class EssentialAerodromeInformationSafetyRelevance {
+    NecessaryForSafeOperation,
 }
 
 data class AerodromeInformationDetail(
@@ -637,11 +686,12 @@ object EvidenceFactAdapters {
         scenarioId: String,
         payloads: List<EvidenceFactPayload>,
         diagnostic: String = "Projected evidence facts",
+        origin: EvidenceFactOrigin = EvidenceFactOrigin.SimRun,
     ): EvidenceFactSet {
         val facts = payloads.mapIndexed { index, payload ->
             fact(
                 scenarioId = scenarioId,
-                origin = EvidenceFactOrigin.SimRun,
+                origin = origin,
                 sequence = EvidenceSequence(index),
                 simTime = null,
                 sourceTransmissionId = null,

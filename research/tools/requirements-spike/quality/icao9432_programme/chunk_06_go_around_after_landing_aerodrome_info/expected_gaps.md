@@ -9,27 +9,35 @@ honestly be marked covered-green with the current model/evidence surface.
 
 | Source-unit state | Units |
 |---|---:|
-| `model-gap` | 9 |
+| `covered-structural` essential-information vocabulary | 8 |
+| `model-gap` | 1 |
 | `model-gap` + `policy-blocked` | 3 |
 | `policy-blocked` | 3 |
 | `phraseology-later` | 4 |
 
-The remaining chunk unit, VFR traffic-circuit continuation after go-around, is
-planned as a covered-green candidate.
+The VFR traffic-circuit continuation row and the essential-information category
+rows now have structural evidence-vocabulary coverage. Timing, omission, open
+pertinence, phraseology, live sim projection, and IFR missed-approach rows
+remain gaps.
+
+## Covered-Structural Essential-Information Vocabulary
+
+| Source unit | Test | Reason |
+|---|---|---|
+| `icao9432-extracted::essential_aerodrome_information_4_10_en::01c0a4bc62b1e926` | `Icao9432EssentialAerodromeInformationEvidenceTest` | Structural vocabulary for `WaterOnMovementArea` plus runway/taxiway/apron facets. |
+| `icao9432-extracted::essential_aerodrome_information_4_10_en::18288908932d5ee8` | `Icao9432EssentialAerodromeInformationEvidenceTest` | Structural vocabulary for movement-area and associated-facility domains with safety relevance. |
+| `icao9432-extracted::essential_aerodrome_information_4_10_en::502221a46fcc2879` | `Icao9432EssentialAerodromeInformationEvidenceTest` | Structural vocabulary for `RoughOrBrokenSurface` plus runway/taxiway/apron facets. |
+| `icao9432-extracted::essential_aerodrome_information_4_10_en::66196c8442372a96` | `Icao9432EssentialAerodromeInformationEvidenceTest` | Structural vocabulary for construction/maintenance on or adjacent to movement area. |
+| `icao9432-extracted::essential_aerodrome_information_4_10_en::736cc42a00337fee` | `Icao9432EssentialAerodromeInformationEvidenceTest` | Structural vocabulary for snow banks/drifts adjacent to runway/taxiway/apron. |
+| `icao9432-extracted::essential_aerodrome_information_4_10_en::9b6c9dbc2af2b5b0` | `Icao9432EssentialAerodromeInformationEvidenceTest` | Structural vocabulary for temporary hazards including parked aircraft and birds. |
+| `icao9432-extracted::essential_aerodrome_information_4_10_en::a531dea421075380` | `Icao9432EssentialAerodromeInformationEvidenceTest` | Structural vocabulary for lighting-system failure or irregular operation. |
+| `icao9432-extracted::essential_aerodrome_information_4_10_en::c874e24413f4cdee` | `Icao9432EssentialAerodromeInformationEvidenceTest` | Structural vocabulary for winter contamination plus runway/taxiway/apron facets. |
 
 ## Model Gaps
 
 | Source unit | Blocker | Reason |
 |---|---|---|
 | `icao9432-extracted::go_around_4_8_en::43c33a8e74b02873` | source-mapped instrument missed-approach scenario | Current scenarios are VFR circuit operations; there is no source-mapped end-to-end instrument approach / published missed-approach procedure scenario proving this ICAO 9432 §4.8 default. |
-| `icao9432-extracted::essential_aerodrome_information_4_10_en::01c0a4bc62b1e926` | `FN43-GAP-1` | No typed water / surface-contamination information model for movement areas. |
-| `icao9432-extracted::essential_aerodrome_information_4_10_en::18288908932d5ee8` | `FN43-GAP-1` | No typed essential-aerodrome-information model for movement areas and associated facilities. |
-| `icao9432-extracted::essential_aerodrome_information_4_10_en::502221a46fcc2879` | `FN43-GAP-1` | No typed rough/broken surface model for runways, taxiways, or aprons. |
-| `icao9432-extracted::essential_aerodrome_information_4_10_en::66196c8442372a96` | `FN43-GAP-1` | No typed construction/maintenance hazard model on or adjacent to the movement area. |
-| `icao9432-extracted::essential_aerodrome_information_4_10_en::736cc42a00337fee` | `FN43-GAP-1` | No typed adjacent snow-bank/drift hazard model. |
-| `icao9432-extracted::essential_aerodrome_information_4_10_en::9b6c9dbc2af2b5b0` | `FN43-GAP-1` | No general temporary-hazard information model. |
-| `icao9432-extracted::essential_aerodrome_information_4_10_en::a531dea421075380` | `FN43-GAP-1` | No typed aerodrome-lighting serviceability model. |
-| `icao9432-extracted::essential_aerodrome_information_4_10_en::c874e24413f4cdee` | `FN43-GAP-1` | No typed winter-contamination model for runways, taxiways, or aprons. |
 
 ## Model Gaps With Policy
 

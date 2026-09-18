@@ -32,6 +32,7 @@ import xyz.easiersaid.twr.protocol.requiredReadbackAtoms
 
 enum class EvidenceClaimKind {
     StructuralProtocolRequirement,
+    StructuralEvidenceVocabulary,
     SimObservedSourceBehaviour,
     GoldenProjectBehaviour,
     Regression,
@@ -197,6 +198,15 @@ class SimEvidenceBuilder internal constructor(
         build: AuditEvidenceCaseBuilder.() -> Unit,
     ) {
         cases += AuditEvidenceCaseBuilder(id = id, claimKind = EvidenceClaimKind.SimObservedSourceBehaviour)
+            .apply(build)
+            .toCase(requireSources = true)
+    }
+
+    fun sourceVocabulary(
+        id: String,
+        build: AuditEvidenceCaseBuilder.() -> Unit,
+    ) {
+        cases += AuditEvidenceCaseBuilder(id = id, claimKind = EvidenceClaimKind.StructuralEvidenceVocabulary)
             .apply(build)
             .toCase(requireSources = true)
     }
@@ -438,6 +448,12 @@ class EvidenceExpectContext internal constructor(
             activate = { factId -> activated += factId },
         )
 
+    fun essentialAerodromeInformation(): AuditEssentialAerodromeInformationSubject =
+        AuditEssentialAerodromeInformationSubject(
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
+
     fun criticalPhase(aircraftId: AircraftId): AuditCriticalPhaseSubject =
         AuditCriticalPhaseSubject(
             aircraftId = aircraftId,
@@ -605,6 +621,82 @@ class AuditAerodromeInformationContext internal constructor(
                     val information = fact.payload as EvidenceFactPayload.AerodromeInformation
                     "${information.status}:${information.detail.value}@${fact.provenance.sequence.value}"
                 },
+            )
+        }
+    }
+}
+
+class AuditEssentialAerodromeInformationSubject internal constructor(
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun includes(
+        category: EssentialAerodromeInformationCategory,
+        facets: Set<EssentialAerodromeInformationFacet> = emptySet(),
+    ): EvidenceAuditOutcome {
+        val informationFacts = facts.filter { fact ->
+            fact.payload is EvidenceFactPayload.EssentialAerodromeInformation
+        }
+        if (informationFacts.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing essential-aerodrome-information category evidence",
+                evidence = emptyList(),
+            )
+        }
+        informationFacts.forEach { fact -> activate(fact.id) }
+        val matching = informationFacts.filter { fact ->
+            val information = fact.payload as EvidenceFactPayload.EssentialAerodromeInformation
+            information.category == category &&
+                information.facets.containsAll(facets) &&
+                information.safetyRelevance == EssentialAerodromeInformationSafetyRelevance.NecessaryForSafeOperation
+        }
+        return if (matching.isNotEmpty()) {
+            EvidenceAuditOutcome.Pass(
+                matching.map { fact ->
+                    val information = fact.payload as EvidenceFactPayload.EssentialAerodromeInformation
+                    "${information.category}:${information.domain}:${information.facets.sortedBy { facet -> facet.name }}:" +
+                        information.detail.value
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Missing essential-aerodrome-information category $category with facet(s) " +
+                    facets.sortedBy { facet -> facet.name },
+                evidence = informationFacts.map { fact ->
+                    val information = fact.payload as EvidenceFactPayload.EssentialAerodromeInformation
+                    "${information.category}:${information.domain}:${information.facets.sortedBy { facet -> facet.name }}:" +
+                        information.detail.value
+                },
+            )
+        }
+    }
+
+    fun domainsInclude(domains: Set<EssentialAerodromeInformationDomain>): EvidenceAuditOutcome {
+        require(domains.isNotEmpty()) { "expected essential-information domains must not be empty" }
+        val informationFacts = facts.filter { fact ->
+            fact.payload is EvidenceFactPayload.EssentialAerodromeInformation
+        }
+        if (informationFacts.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing essential-aerodrome-information domain evidence",
+                evidence = emptyList(),
+            )
+        }
+        informationFacts.forEach { fact -> activate(fact.id) }
+        val safetyRelevantFacts = informationFacts.filter { fact ->
+            val information = fact.payload as EvidenceFactPayload.EssentialAerodromeInformation
+            information.safetyRelevance == EssentialAerodromeInformationSafetyRelevance.NecessaryForSafeOperation
+        }
+        val observedDomains = safetyRelevantFacts
+            .map { fact -> (fact.payload as EvidenceFactPayload.EssentialAerodromeInformation).domain }
+            .toSet()
+        val missing = domains - observedDomains
+        return if (missing.isEmpty()) {
+            EvidenceAuditOutcome.Pass(observedDomains.map { domain -> domain.name }.sorted())
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Missing essential-aerodrome-information domain(s): ${missing.joinToString()}",
+                evidence = observedDomains.map { domain -> domain.name }.sorted(),
             )
         }
     }

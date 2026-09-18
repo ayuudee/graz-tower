@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T11:15:35.766276Z",
+  "depends_on": [],
+  "epic": "fn-62-icao-9432-fn43-gap-1-essential",
+  "id": "fn-62-icao-9432-fn43-gap-1-essential.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-62-icao-9432-fn43-gap-1-essential.2.md",
+  "status": "todo",
+  "title": "Implement minimal essential-information evidence",
+  "updated_at": "2026-09-18T11:15:53.509380Z"
+}

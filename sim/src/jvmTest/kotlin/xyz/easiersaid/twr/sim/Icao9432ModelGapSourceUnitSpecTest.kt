@@ -609,39 +609,30 @@ class Icao9432ModelGapSourceUnitSpecTest {
     }
 
     @Test
-    fun `essential aerodrome information categories report missing typed information model`() {
-        sourceUnitSpec("icao9432-essential-aerodrome-information-category-gaps") {
-            title("Essential aerodrome information category source units require typed hazard and facility models")
+    fun `essential aerodrome information policy rows remain blocked`() {
+        sourceUnitSpec("icao9432-essential-aerodrome-information-policy-gaps") {
+            title("Essential aerodrome information timing omission and open pertinence require policy evidence")
             sourceUnits(
                 listOf(
-                    ICAO9432.AerodromeInformation.WaterOnMovementArea.toSourceUnitRef(),
                     ICAO9432.AerodromeInformation.OmitWhenKnownFromOtherSources.toSourceUnitRef(),
-                    ICAO9432.AerodromeInformation.Definition.toSourceUnitRef(),
                     ICAO9432.AerodromeInformation.EssentialAerodromeInformationTiming.toSourceUnitRef(),
-                    ICAO9432.AerodromeInformation.RoughOrBrokenSurfaces.toSourceUnitRef(),
-                    ICAO9432.AerodromeInformation.ConstructionOrMaintenance.toSourceUnitRef(),
-                    ICAO9432.AerodromeInformation.SnowBanksOrDrifts.toSourceUnitRef(),
-                    ICAO9432.AerodromeInformation.OtherTemporaryHazards.toSourceUnitRef(),
-                    ICAO9432.AerodromeInformation.LightingSystemFailure.toSourceUnitRef(),
-                    ICAO9432.AerodromeInformation.SnowSlushOrIce.toSourceUnitRef(),
                     ICAO9432.AerodromeInformation.OtherPertinentInformation.toSourceUnitRef(),
                 ),
             )
-            domain("information-kind", setOf("surface-condition", "temporary-hazard", "facility-serviceability"))
+            domain("information-kind", setOf("already-known", "timing", "other-pertinent"))
             domain("aircraft-knowledge", setOf("known-from-other-source", "not-known"))
 
             partition(
-                name = "movement area condition information",
+                name = "policy-sensitive essential information decision",
                 parameters = mapOf(
-                    "information-kind" to "surface-condition",
+                    "information-kind" to "timing",
                     "aircraft-knowledge" to "not-known",
                 ),
             ) {
-                hit("typed-essential-information-required")
+                hit("essential-information-policy-required")
                 modelGap(
-                    "The sim does not yet expose typed movement-area condition, temporary-hazard, " +
-                        "facility-serviceability, aircraft-known-information, or pertinence policy evidence " +
-                        "for essential aerodrome information.",
+                    "The typed category evidence does not prove aircraft-known-information omission policy, " +
+                        "the 'whenever possible' timing policy, or open-category pertinence decisions.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()

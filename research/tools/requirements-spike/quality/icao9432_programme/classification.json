@@ -2156,10 +2156,10 @@
     "operational_area": "essential-aerodrome-information",
     "chunk_id": "chunk-06-go-around-after-landing-aerodrome-info",
     "normative_kind": "information",
-    "current_testability": "needs-observation-fact",
-    "likely_target": "simEvidence",
+    "current_testability": "structural-vocabulary",
+    "likely_target": "structuralEvidenceVocabulary",
     "policy_concept": "",
-    "blocking_item": "FN43-GAP-1"
+    "blocking_item": ""
   },
   {
     "source_unit_id": "icao9432-extracted::essential_aerodrome_information_4_10_en::1306eb5cc586df34",
@@ -2202,10 +2202,10 @@
     "operational_area": "essential-aerodrome-information",
     "chunk_id": "chunk-06-go-around-after-landing-aerodrome-info",
     "normative_kind": "information",
-    "current_testability": "needs-observation-fact",
-    "likely_target": "simEvidence",
+    "current_testability": "structural-vocabulary",
+    "likely_target": "structuralEvidenceVocabulary",
     "policy_concept": "",
-    "blocking_item": "FN43-GAP-1"
+    "blocking_item": ""
   },
   {
     "source_unit_id": "icao9432-extracted::essential_aerodrome_information_4_10_en::1aa5cb7e758055bc",
@@ -2248,10 +2248,10 @@
     "operational_area": "essential-aerodrome-information",
     "chunk_id": "chunk-06-go-around-after-landing-aerodrome-info",
     "normative_kind": "information",
-    "current_testability": "needs-observation-fact",
-    "likely_target": "simEvidence",
+    "current_testability": "structural-vocabulary",
+    "likely_target": "structuralEvidenceVocabulary",
     "policy_concept": "",
-    "blocking_item": "FN43-GAP-1"
+    "blocking_item": ""
   },
   {
     "source_unit_id": "icao9432-extracted::essential_aerodrome_information_4_10_en::66196c8442372a96",
@@ -2271,10 +2271,10 @@
     "operational_area": "essential-aerodrome-information",
     "chunk_id": "chunk-06-go-around-after-landing-aerodrome-info",
     "normative_kind": "information",
-    "current_testability": "needs-observation-fact",
-    "likely_target": "simEvidence",
+    "current_testability": "structural-vocabulary",
+    "likely_target": "structuralEvidenceVocabulary",
     "policy_concept": "",
-    "blocking_item": "FN43-GAP-1"
+    "blocking_item": ""
   },
   {
     "source_unit_id": "icao9432-extracted::essential_aerodrome_information_4_10_en::736cc42a00337fee",
@@ -2294,10 +2294,10 @@
     "operational_area": "essential-aerodrome-information",
     "chunk_id": "chunk-06-go-around-after-landing-aerodrome-info",
     "normative_kind": "information",
-    "current_testability": "needs-observation-fact",
-    "likely_target": "simEvidence",
+    "current_testability": "structural-vocabulary",
+    "likely_target": "structuralEvidenceVocabulary",
     "policy_concept": "",
-    "blocking_item": "FN43-GAP-1"
+    "blocking_item": ""
   },
   {
     "source_unit_id": "icao9432-extracted::essential_aerodrome_information_4_10_en::7b81f87f5c2b4d75",
@@ -2340,10 +2340,10 @@
     "operational_area": "essential-aerodrome-information",
     "chunk_id": "chunk-06-go-around-after-landing-aerodrome-info",
     "normative_kind": "information",
-    "current_testability": "needs-observation-fact",
-    "likely_target": "simEvidence",
+    "current_testability": "structural-vocabulary",
+    "likely_target": "structuralEvidenceVocabulary",
     "policy_concept": "",
-    "blocking_item": "FN43-GAP-1"
+    "blocking_item": ""
   },
   {
     "source_unit_id": "icao9432-extracted::essential_aerodrome_information_4_10_en::a531dea421075380",
@@ -2363,10 +2363,10 @@
     "operational_area": "essential-aerodrome-information",
     "chunk_id": "chunk-06-go-around-after-landing-aerodrome-info",
     "normative_kind": "information",
-    "current_testability": "needs-observation-fact",
-    "likely_target": "simEvidence",
+    "current_testability": "structural-vocabulary",
+    "likely_target": "structuralEvidenceVocabulary",
     "policy_concept": "",
-    "blocking_item": "FN43-GAP-1"
+    "blocking_item": ""
   },
   {
     "source_unit_id": "icao9432-extracted::essential_aerodrome_information_4_10_en::c874e24413f4cdee",
@@ -2386,10 +2386,10 @@
     "operational_area": "essential-aerodrome-information",
     "chunk_id": "chunk-06-go-around-after-landing-aerodrome-info",
     "normative_kind": "information",
-    "current_testability": "needs-observation-fact",
-    "likely_target": "simEvidence",
+    "current_testability": "structural-vocabulary",
+    "likely_target": "structuralEvidenceVocabulary",
     "policy_concept": "",
-    "blocking_item": "FN43-GAP-1"
+    "blocking_item": ""
   },
   {
     "source_unit_id": "icao9432-extracted::essential_aerodrome_information_4_10_en::c92651071a9c009e",
