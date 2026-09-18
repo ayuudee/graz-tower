@@ -9,7 +9,7 @@
   "plan_review_status": "unknown",
   "plan_reviewed_at": null,
   "spec_path": ".flow/specs/fn-70-icao-9432-emergency-1c-emergency.md",
-  "status": "open",
+  "status": "done",
   "title": "ICAO 9432 EMERGENCY-1C emergency descent safeguarding",
-  "updated_at": "2026-09-18T10:25:00.961920Z"
+  "updated_at": "2026-09-18T14:52:36.778465Z"
 }

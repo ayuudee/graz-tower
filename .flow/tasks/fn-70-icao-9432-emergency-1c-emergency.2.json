@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T14:43:32.736207Z",
+  "depends_on": [
+    "fn-70-icao-9432-emergency-1c-emergency.1"
+  ],
+  "epic": "fn-70-icao-9432-emergency-1c-emergency",
+  "id": "fn-70-icao-9432-emergency-1c-emergency.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-70-icao-9432-emergency-1c-emergency.2.md",
+  "status": "todo",
+  "title": "Implement emergency descent safeguarding evidence",
+  "updated_at": "2026-09-18T14:43:32.736338Z"
+}

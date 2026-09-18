@@ -7,20 +7,22 @@ failure.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` / split structured branch | 10 |
+| `covered-green` / split structured branch | 13 |
 | `covered-red` | 0 |
-| `model-gap` | 14 |
-| `model-gap` + `policy-blocked` | 15 |
+| `model-gap` | 12 |
+| `model-gap` + `policy-blocked` | 14 |
 | `model-gap` + `phraseology-later` | 7 |
 
 Chunk 08 now has narrow structured fn-68 emergency evidence for distress versus
-urgency classification and distress-message payload fields, plus fn-69
-structured projection evidence for emergency priority ordering and
-radio-silence discipline. It still has no emergency assistance/relay actors,
-emergency descent safeguarding workflow, communications-failure mode,
-blind-transmission scheduler, SSR emergency/code state, emergency interference
-suppression policy, or rendered emergency phraseology/order. Ordinary VFR,
-go-around, or routine radio traces are not emergency-compliance evidence.
+urgency classification and distress-message payload fields, fn-69 structured
+projection evidence for emergency priority ordering and radio-silence
+discipline, and fn-70 structured projection evidence for emergency descent
+safeguarding/warning/position-questioning branches. It still has no emergency
+assistance/relay actors, emergency-descent specific-instruction necessity
+policy, communications-failure mode, blind-transmission scheduler, SSR
+emergency/code state, emergency interference suppression policy, or rendered
+emergency phraseology/order. Ordinary VFR, go-around, or routine radio traces
+are not emergency-compliance evidence.
 
 ## Coverage Table
 
@@ -55,9 +57,9 @@ go-around, or routine radio traces are not emergency-compliance evidence.
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::b95d7bb1cb409bca` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1` |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1` |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c` | `covered-green structured emergency-descent safeguarding projection branch` | `Icao9432EmergencyDescentSourceBackedTest` |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e` | `split: structured emergency-descent warning projection branch covered-green; specific-instruction necessity policy remains model-gap + policy-blocked` | `Icao9432EmergencyDescentSourceBackedTest`; `OperationalGuidancePolicy` |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13` | `covered-green structured emergency-descent position-question branch` | `Icao9432EmergencyDescentSourceBackedTest` |
 | `icao9432-extracted::communications_failure_9_5_en::f05016444e2b8808` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1` |
 | `icao9432-extracted::communications_failure_9_5_en::fcb3a49672165b4f` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1` |
 | `icao9432-extracted::communications_failure_9_5_en::bc9bb12804033b07` | `model-gap` + `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `PHRASE-1` |
@@ -97,8 +99,9 @@ go-around, or routine radio traces are not emergency-compliance evidence.
   expected-gap specs still decompose residual `EMERGENCY-1` into missing
   surfaces and include an exact-union guard for all 46 refs.
 - Impact: no controller, pilot, sim scheduler, phraseology rendering, SSR, or
-  policy behaviour was changed. fn-69 is structured projection evidence, not
-  production radio queue preemption.
+  policy behaviour was changed. fn-69 and fn-70 are structured projection
+  evidence, not production radio queue preemption or production emergency
+  descent conflict-resolution behavior.
 - Operational correctness: ICAO 9432 Chapter 9 emergency and communications-
   failure obligations remain distinct from ordinary radio, VFR, and go-around
   traces.

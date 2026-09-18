@@ -9,18 +9,20 @@ marked covered-green with the current model/evidence surface.
 
 | Source-unit state | Units |
 |---|---:|
-| `covered-green` / split structured branch | 10 |
-| `model-gap` | 14 |
-| `model-gap` + `policy-blocked` | 15 |
+| `covered-green` / split structured branch | 13 |
+| `model-gap` | 12 |
+| `model-gap` + `policy-blocked` | 14 |
 | `model-gap` + `phraseology-later` | 7 |
 | `phraseology-later` | 0 |
 
 fn-68 moved the narrow structured emergency-classification and distress-message
 payload branches to source-backed coverage. fn-69 moved the narrow structured
 emergency-priority and radio-silence projection branches to source-backed
-coverage. `EMERGENCY-1` remains the dominant blocker for assistance, relay,
-emergency descent, communications failure, SSR, emergency interference policy,
-and emergency phraseology/order work.
+coverage. fn-70 moved the narrow emergency-descent safeguarding, warning, and
+position-question projection branches to source-backed coverage. `EMERGENCY-1`
+remains the dominant blocker for assistance, relay, emergency-descent
+specific-instruction necessity policy, communications failure, SSR, emergency
+interference policy, and emergency phraseology/order work.
 
 ## Model Gaps
 
@@ -30,8 +32,6 @@ and emergency phraseology/order work.
 | `icao9432-extracted::distress_urgency_intro_9_1_en::2fee92c222323e6a` | `EMERGENCY-1` | No alternate emergency frequency selection model. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::c30159856a1a5e7a` | `EMERGENCY-1` | No Annex 10 emergency-procedure conformance model. |
 | `icao9432-extracted::distress_messages_9_2_en::4b37e039e7eb8afa` | `EMERGENCY-1` | No distress assistance model or SSR 7700 emergency state. |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c` | `EMERGENCY-1` | No emergency descent event, affected traffic set, or safeguard action model. |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13` | `EMERGENCY-1` | No emergency position-uncertainty or position-questioning model. |
 | `icao9432-extracted::communications_failure_9_5_en::f05016444e2b8808` | `EMERGENCY-1` | No communications-failure frequency-search model. |
 | `icao9432-extracted::communications_failure_9_5_en::fcb3a49672165b4f` | `EMERGENCY-1` | No route-based alternate station/aircraft contact model. |
 | `icao9432-extracted::communications_failure_9_5_en::975a63151706f68f` | `EMERGENCY-1` | No blind-message repetition scheduler. |
@@ -56,7 +56,6 @@ and emergency phraseology/order work.
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No urgency-message payload policy. |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::b95d7bb1cb409bca` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No urgency addressing/frequency policy. |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No urgency-interference suppression policy. |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No emergency descent broadcast-plus-specific-instructions policy. |
 | `icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2` | `EMERGENCY-1`; `ControllerInterventionPolicy` | No lost-contact aircraft-assistance and relay workflow. |
 | `icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e` | `EMERGENCY-1`; `ControllerInterventionPolicy` | No lost-contact inter-station assistance and relay workflow. |
 | `icao9432-extracted::communications_failure_9_5_en::75055714e70d4560` | `EMERGENCY-1`; `ClearanceTimingPolicy` | No controller blind-transmission policy or clearance exclusion. |
@@ -87,3 +86,6 @@ and emergency phraseology/order work.
 | `icao9432-extracted::distress_messages_9_2_en::e2902de496f43a95` | `covered-green structured silence-imposition branch` | `Icao9432EmergencyPrioritySilenceSourceBackedTest`; distress aircraft and controlling station can impose all-aircraft or named-aircraft silence, while non-authorities are rejected. |
 | `icao9432-extracted::distress_messages_9_2_en::ed898005cd1a4da5` | `covered-green structured silence-obligation branch` | `Icao9432EmergencyPrioritySilenceSourceBackedTest`; named aircraft remains silenced until controlling-station advice that distress traffic has ended. |
 | `icao9432-extracted::distress_messages_9_2_en::c20024dad1b7144e` | `covered-green structured silence-termination branch` | `Icao9432EmergencyPrioritySilenceSourceBackedTest`; controlling-station termination advice clears emergency traffic state and silence obligations. |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c` | `covered-green structured emergency-descent safeguarding projection branch` | `Icao9432EmergencyDescentSourceBackedTest`; typed emergency descent announcement activates safeguarding for affected traffic and resets all derived state after resolution. Production conflict resolution remains out of scope. |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e` | `split: structured emergency-descent warning projection branch covered-green; specific-instruction necessity policy remains model-gap + policy-blocked` | `Icao9432EmergencyDescentSourceBackedTest`; emergency descent announcement emits general warning action for affected traffic. Necessity policy for follow-up specific instructions remains `OperationalGuidancePolicy`. |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13` | `covered-green structured emergency-descent position-question branch` | `Icao9432EmergencyDescentSourceBackedTest`; uncertain emergency descent position supports a controller position-question branch, while known position does not. |

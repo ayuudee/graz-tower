@@ -24,11 +24,11 @@ The generated classifier is directionally correct that this chunk is blocked by
 pilots, controllers, radio transmissions, go-arounds, and traffic sequencing.
 They now include structured projection evidence for distress/urgency
 classification, emergency priority, and emergency radio-silence discipline.
-They still do not model assistance/relay actors, emergency descent conflict
-safeguarding, communications-failure mode, blind transmissions, scheduled blind
-reports, SSR emergency/failure code selection, rendered emergency phraseology,
-or production radio queue preemption. Ordinary radio or VFR scenario traces
-must not be reused as emergency-compliance evidence.
+They still do not model assistance/relay actors, production emergency-descent
+conflict resolution, communications-failure mode, blind transmissions,
+scheduled blind reports, SSR emergency/failure code selection, rendered
+emergency phraseology, or production radio queue preemption. Ordinary radio or
+VFR scenario traces must not be reused as emergency-compliance evidence.
 
 ## Planned Coverage
 
@@ -63,9 +63,9 @@ must not be reused as emergency-compliance evidence.
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8` | Urgency message should contain required 9.2.1.1 elements as circumstances require. | `needs-sim-model` | `model-gap` + `policy-blocked` | `EMERGENCY-1`; `OperationalGuidancePolicy`; no urgency-message payload policy. |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::b95d7bb1cb409bca` | Urgency call normally uses current frequency and current/responsible station. | `needs-sim-model` | `model-gap` + `policy-blocked` | `EMERGENCY-1`; `OperationalGuidancePolicy`; no urgency addressing/frequency policy. |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d` | Other stations should avoid interfering with urgency traffic. | `needs-sim-model` | `model-gap` + `policy-blocked` | `EMERGENCY-1`; `OperationalGuidancePolicy`; no urgency-interference suppression policy. |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c` | On emergency descent announcement, controller takes all possible action to safeguard other aircraft. | `needs-sim-model` | `model-gap` | `EMERGENCY-1`; no emergency descent event, affected traffic set, or safeguard action model. |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e` | Emergency descent broadcast should be followed by specific instructions as necessary. | `needs-sim-model` | `model-gap` + `policy-blocked` | `EMERGENCY-1`; `OperationalGuidancePolicy`; no broadcast-plus-specific-instructions workflow. |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13` | Further questions may be asked to help ascertain aircraft position. | `needs-sim-model` | `model-gap` | `EMERGENCY-1`; no emergency position-uncertainty/questioning model. |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c` | On emergency descent announcement, controller takes all possible action to safeguard other aircraft. | `needs-sim-model` | `covered-green structured emergency-descent safeguarding projection branch` | `Icao9432EmergencyDescentSourceBackedTest`; typed emergency descent announcement activates safeguarding for affected traffic and clears derived state on resolution. Production conflict resolution remains out of scope. |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e` | Emergency descent broadcast should be followed by specific instructions as necessary. | `needs-sim-model` | `split: structured emergency-descent warning projection branch covered-green; specific-instruction necessity policy remains model-gap + policy-blocked` | `Icao9432EmergencyDescentSourceBackedTest`; general warning action is covered. Necessity policy for follow-up specific instructions remains `OperationalGuidancePolicy`. |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13` | Further questions may be asked to help ascertain aircraft position. | `needs-sim-model` | `covered-green structured emergency-descent position-question branch` | `Icao9432EmergencyDescentSourceBackedTest`; uncertain emergency descent position supports a position-question branch, while known position does not. |
 | `icao9432-extracted::communications_failure_9_5_en::f05016444e2b8808` | If contact fails on designated frequency, try another route-appropriate frequency. | `needs-sim-model` | `model-gap` | `EMERGENCY-1`; no communications-failure frequency-search model. |
 | `icao9432-extracted::communications_failure_9_5_en::fcb3a49672165b4f` | If that fails, try other aircraft or stations on route-appropriate frequencies. | `needs-sim-model` | `model-gap` | `EMERGENCY-1`; no route-based alternate station/aircraft contact model. |
 | `icao9432-extracted::communications_failure_9_5_en::bc9bb12804033b07` | If attempts fail, transmit message twice, preceded by TRANSMITTING BLIND. | `phraseology-later` | `model-gap` + `phraseology-later` | `EMERGENCY-1`; `PHRASE-1`; no blind-transmission mode or rendered prefix. |
@@ -89,16 +89,17 @@ must not be reused as emergency-compliance evidence.
    - fn-69 covers emergency priority and emergency-frequency/radio-silence
      discipline as structured projection evidence;
    - expected-gap specs keep emergency message addressing/rendering,
-     assistance, relay, emergency descent safeguarding, urgency interference,
-     communications-failure frequency search, route-based contact routing,
-     blind transmission, repetition, scheduled reports, receiver-failure
-     phraseology, blind addressee handling, SSR 7600/7700, and
+     assistance, relay, emergency-descent specific-instruction necessity,
+     urgency interference, communications-failure frequency search, route-based
+     contact routing, blind transmission, repetition, scheduled reports,
+     receiver-failure phraseology, blind addressee handling, SSR 7600/7700, and
      blind-clearance prohibition/exception behaviour visibly blocked.
 2. A chunk-level exact-union guard proves that source refs cited by chunk 08
    source specs exactly equal
    `ICAO9432.DistressUrgencyCommsFailure.Chunk08Items`.
-3. Production radio queue preemption remains out of scope for fn-69; the moved
-   priority/silence rows are structured projection branches.
+3. Production radio queue preemption remains out of scope for fn-69, and
+   production emergency-descent conflict resolution remains out of scope for
+   fn-70; the moved rows are structured projection branches.
 
 ## Review Considerations
 

@@ -35,11 +35,7 @@ class Icao9432ModelGapSourceUnitSpecTest {
         "icao9432-extracted::distress_messages_9_2_en::4b37e039e7eb8afa",
     )
 
-    private val chunk08EmergencyDescentRefs: List<SourceUnitRef> = chunk08Refs(
-        "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c",
-        "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e",
-        "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13",
-    )
+    private val chunk08EmergencyDescentRefs: List<SourceUnitRef> = emptyList()
 
     private val chunk08CommsFailureRoutingRefs: List<SourceUnitRef> = chunk08Refs(
         "icao9432-extracted::communications_failure_9_5_en::f05016444e2b8808",
@@ -75,6 +71,9 @@ class Icao9432ModelGapSourceUnitSpecTest {
         "icao9432-extracted::distress_messages_9_2_en::e2902de496f43a95",
         "icao9432-extracted::distress_messages_9_2_en::ed898005cd1a4da5",
         "icao9432-extracted::distress_messages_9_2_en::c20024dad1b7144e",
+        "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c",
+        "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e",
+        "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13",
     )
 
     private val chunk08GapSpecRefGroups: List<List<SourceUnitRef>> =
@@ -848,33 +847,6 @@ class Icao9432ModelGapSourceUnitSpecTest {
                     "The sim has no non-addressed emergency assistance actor, intercepted-distress relay " +
                         "state, emergency frequency-continuity or alternate-frequency decision, SSR 7700 " +
                         "distress assistance model, or emergency relay workflow.",
-                )
-            }
-        }.assertSatisfied().assertHasModelGap()
-    }
-
-    @Test
-    fun `emergency descent source units report missing safeguarding workflow`() {
-        sourceUnitSpec("icao9432-emergency-descent-safeguarding-model-gaps") {
-            title("Emergency descent claims require affected-traffic safeguarding and follow-up instructions")
-            sourceUnits(chunk08EmergencyDescentRefs)
-            domain("descent-state", setOf("announced", "position-uncertain"))
-            domain("affected-traffic", setOf("known-conflict-set", "not-modelled"))
-            domain("controller-action", setOf("general-broadcast", "specific-instructions", "position-question"))
-
-            partition(
-                name = "announced emergency descent safeguards other aircraft",
-                parameters = mapOf(
-                    "descent-state" to "announced",
-                    "affected-traffic" to "known-conflict-set",
-                    "controller-action" to "general-broadcast",
-                ),
-            ) {
-                hit("emergency-descent-safeguarding-required")
-                modelGap(
-                    "The sim has no emergency descent event, affected-traffic set, emergency broadcast " +
-                        "workflow, specific follow-up instruction policy, or position-uncertainty question " +
-                        "model.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()
