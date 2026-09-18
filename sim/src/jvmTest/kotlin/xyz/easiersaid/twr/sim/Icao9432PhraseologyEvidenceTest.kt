@@ -7,6 +7,40 @@ import xyz.easiersaid.twr.protocol.RunwayId
 
 class Icao9432PhraseologyEvidenceTest {
     @Test
+    fun `LOWG line-up exchange renders ICAO 9432 line-up instruction and acknowledgement`() {
+        val aircraft = AircraftId("OE-ABC")
+        val runway = RunwayId("16C")
+
+        val report = simEvidence("icao9432-rendered-line-up-and-wait") {
+            observe {
+                EvidenceFactAdapters.lowgCircuitTraining(
+                    scenarioId = "icao9432-rendered-line-up-and-wait",
+                    outcomes = listOf(CircuitOutcome.FullStop),
+                    untilMinutes = 45,
+                )
+            }
+            source("line-up-and-wait exchange rendered phraseology") {
+                cites(ICAO9432.TakeoffProcedures.LineUpAndWaitPhrase)
+                sample("aerodrome", "LOWG")
+                sample("active-runway", runway.value)
+                expect {
+                    renderedPhraseology(aircraft).lineUpAndWait(runway)
+                }
+            }
+            source("line-up acknowledgement rendered phraseology") {
+                cites(ICAO9432.TakeoffProcedures.LineUpAndWaitPhrase)
+                sample("aerodrome", "LOWG")
+                sample("active-runway", "16C")
+                expect {
+                    renderedPilotReadbackPhraseology(aircraft).lineUpReadback()
+                }
+            }
+        }
+
+        report.assertNoFailures()
+    }
+
+    @Test
     fun `LOWG takeoff clearance renders runway number for declared confusion-risk branch`() {
         val aircraft = AircraftId("OE-ABC")
         val runway = RunwayId("16C")

@@ -34,7 +34,7 @@ icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::152f0ffb84869af5,chunk
 icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587,chunk_04_runway_departure,covered-green,,Icao9432Chunk04RunwayDepartureEvidenceTest; configured LOWG separate GROUND/TOWER transfer policy
 icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751,chunk_04_runway_departure,phraseology-later,PHRASE-1,PHRASE-1
 icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::4e0bacdd1c2c06e0,chunk_04_runway_departure,policy-blocked,POLICY-1,Icao9432ModelGapSourceUnitSpecTest; POLICY-1
-icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03,chunk_04_runway_departure,phraseology-later,PHRASE-1,PHRASE-1
+icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03,chunk_04_runway_departure,covered-green rendered phraseology,,Icao9432PhraseologyEvidenceTest; RenderedPhraseologyTrace
 icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::db8a2c3dcd586b0e,chunk_04_runway_departure,phraseology-later,PHRASE-1,PHRASE-1
 icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::2660849403bff7de,chunk_04_runway_departure,policy-blocked,POLICY-1,Icao9432ModelGapSourceUnitSpecTest; POLICY-1
 icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::9b30810984e06a35,chunk_04_runway_departure,phraseology-later,PHRASE-1,PHRASE-1

@@ -5,7 +5,11 @@ import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedTouchAndGo
+import xyz.easiersaid.twr.protocol.LineUpAndWait
+import xyz.easiersaid.twr.protocol.LineUpReadback
+import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SimpleElement
 
 enum class PhraseologyObligationKind {
     MandatoryWords,
@@ -20,6 +24,8 @@ enum class PhraseologyObligationKind {
 enum class RenderedPhraseologyTemplate {
     TakeoffClearance,
     TouchAndGoClearance,
+    LineUpAndWaitInstruction,
+    LineUpReadback,
 }
 
 @JvmInline
@@ -36,6 +42,10 @@ sealed interface PhraseologyToken {
     data object Cleared : PhraseologyToken
     data object For : PhraseologyToken
     data object TakeOff : PhraseologyToken
+    data object Line : PhraseologyToken
+    data object Up : PhraseologyToken
+    data object Lining : PhraseologyToken
+    data object Wait : PhraseologyToken
     data object Touch : PhraseologyToken
     data object And : PhraseologyToken
     data object Go : PhraseologyToken
@@ -58,13 +68,69 @@ sealed interface ControllerPhraseologyRenderResult {
     data class UnsupportedInstruction(val instruction: AtcInstruction) : ControllerPhraseologyRenderResult
 }
 
+data class RenderedPilotReadbackPhraseology(
+    val template: RenderedPhraseologyTemplate,
+    val obligationKinds: Set<PhraseologyObligationKind>,
+    val tokens: List<PhraseologyToken>,
+    val text: RenderedPhraseText,
+) {
+    init {
+        require(obligationKinds.isNotEmpty()) { "rendered pilot readback phraseology must name obligation kinds" }
+        require(tokens.isNotEmpty()) { "rendered pilot readback phraseology must carry tokens" }
+    }
+}
+
+sealed interface PilotReadbackPhraseologyRenderResult {
+    data class Rendered(val phraseology: RenderedPilotReadbackPhraseology) : PilotReadbackPhraseologyRenderResult
+    data class UnsupportedReadback(val readback: Readback) : PilotReadbackPhraseologyRenderResult
+}
+
 fun renderControllerPhraseology(output: ControllerOutput.Instruct): ControllerPhraseologyRenderResult {
     val phraseology = when (val instruction = output.instruction) {
+        is LineUpAndWait -> lineUpAndWaitPhraseology(output.target, instruction.runway)
         is ClearedForTakeoff -> takeoffClearancePhraseology(output.target, instruction.runway)
         is ClearedTouchAndGo -> touchAndGoClearancePhraseology(output.target)
         else -> return ControllerPhraseologyRenderResult.UnsupportedInstruction(instruction)
     }
     return ControllerPhraseologyRenderResult.Rendered(phraseology)
+}
+
+fun renderPilotReadbackPhraseology(
+    aircraftId: AircraftId,
+    readback: Readback,
+): PilotReadbackPhraseologyRenderResult {
+    val atoms = readback.elements.mapNotNull { element ->
+        (element as? SimpleElement)?.value
+    }
+    if (atoms.size != readback.elements.size) {
+        return PilotReadbackPhraseologyRenderResult.UnsupportedReadback(readback)
+    }
+    val phraseology = when (atoms.singleOrNull()) {
+        is LineUpReadback -> lineUpReadbackPhraseology(aircraftId = aircraftId)
+        else -> return PilotReadbackPhraseologyRenderResult.UnsupportedReadback(readback)
+    }
+    return PilotReadbackPhraseologyRenderResult.Rendered(phraseology)
+}
+
+private fun lineUpAndWaitPhraseology(
+    aircraftId: AircraftId,
+    runway: RunwayId,
+): RenderedControllerPhraseology {
+    val tokens = listOf(
+        PhraseologyToken.AircraftCallsign(aircraftId),
+        PhraseologyToken.Runway,
+        PhraseologyToken.RunwayDesignator(runway),
+        PhraseologyToken.Line,
+        PhraseologyToken.Up,
+        PhraseologyToken.And,
+        PhraseologyToken.Wait,
+    )
+    return RenderedControllerPhraseology(
+        template = RenderedPhraseologyTemplate.LineUpAndWaitInstruction,
+        obligationKinds = renderedClearanceObligations,
+        tokens = tokens,
+        text = RenderedPhraseText("${aircraftId.value} RUNWAY ${runway.value} LINE UP AND WAIT"),
+    )
 }
 
 private fun takeoffClearancePhraseology(
@@ -102,6 +168,26 @@ private fun touchAndGoClearancePhraseology(
         obligationKinds = renderedClearanceObligations,
         tokens = tokens,
         text = RenderedPhraseText("${aircraftId.value} CLEARED TOUCH AND GO"),
+    )
+}
+
+private fun lineUpReadbackPhraseology(
+    aircraftId: AircraftId,
+): RenderedPilotReadbackPhraseology {
+    val tokens = listOf(
+        PhraseologyToken.Lining,
+        PhraseologyToken.Up,
+        PhraseologyToken.AircraftCallsign(aircraftId),
+    )
+    return RenderedPilotReadbackPhraseology(
+        template = RenderedPhraseologyTemplate.LineUpReadback,
+        obligationKinds = setOf(
+            PhraseologyObligationKind.OrderedPhrase,
+            PhraseologyObligationKind.Readback,
+            PhraseologyObligationKind.SemanticSlot,
+        ),
+        tokens = tokens,
+        text = RenderedPhraseText("LINING UP ${aircraftId.value}"),
     )
 }
 

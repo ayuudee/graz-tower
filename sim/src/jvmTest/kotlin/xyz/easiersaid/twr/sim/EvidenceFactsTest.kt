@@ -72,7 +72,7 @@ class EvidenceFactsTest {
         ).orderedFacts()
 
         val reportFacts = facts.filter { fact -> fact.payload is EvidenceFactPayload.PilotReport }
-        assertEquals(listOf(EvidenceSequence(1), EvidenceSequence(11)), reportFacts.map { fact -> fact.provenance.sequence })
+        assertEquals(listOf(EvidenceSequence(1), EvidenceSequence(12)), reportFacts.map { fact -> fact.provenance.sequence })
         assertEquals(listOf(TransmissionId(100), TransmissionId(101)), reportFacts.map { fact -> fact.provenance.sourceTransmissionId })
         assertTrue(reportFacts.all { fact -> fact.provenance.simTime == SimTime.ZERO })
     }
@@ -156,7 +156,7 @@ class EvidenceFactsTest {
         )
         assertEquals(RenderedPhraseText("OE-ABC RUNWAY 16C CLEARED FOR TAKE-OFF"), payload.text)
         assertEquals(payload.transmissionRef, fact.provenance.sourceTransmissionId)
-        assertEquals(9, fact.provenance.sequence.value % 10)
+        assertEquals(9, fact.provenance.sequence.value % 11)
         assertEquals(
             fact.provenance.sequence.value - 9,
             facts.orderedFacts()
@@ -960,7 +960,7 @@ class EvidenceFactsTest {
             .first { (it.payload as EvidenceFactPayload.FrequencyTransfer).mode == FrequencyTransferMode.PilotNotifiedAbsentAdvice }
             .provenance.sequence.value
         assertEquals(3, controllerAdvisedSeq)
-        assertEquals(2 * 10 + 4, pilotNotifiedSeq)
+        assertEquals(2 * 11 + 4, pilotNotifiedSeq)
     }
 
     // Selector primitive-level coverage (R5 hook + selector unit test).

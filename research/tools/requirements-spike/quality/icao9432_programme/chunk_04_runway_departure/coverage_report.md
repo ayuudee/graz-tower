@@ -6,11 +6,11 @@ Chunk: ICAO 9432 runway entry, line-up, and take-off.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 2 |
+| `covered-green` | 3 |
 | `covered-red` | 0 |
 | `model-gap` | 1 |
 | `policy-blocked` | 9 |
-| `phraseology-later` | 7 |
+| `phraseology-later` | 6 |
 
 Chunk 04 now has one configured-policy green row: the LOWG separate
 GROUND/TOWER departure branch is explicitly bound to transfer at the holding
@@ -26,6 +26,11 @@ rendered take-off clearance evidence contains `RUNWAY` plus the active runway
 designator. This does not add a typed operational activation model for detecting
 runway-confusion risk; the branch is declared in the source-backed test samples.
 
+fn-77 adds rendered phraseology evidence for the basic ICAO 9432 §4.5.3 line-up
+exchange: controller `RUNWAY [designator] LINE UP AND WAIT` and pilot `LINING UP [callsign]`. The
+closure is limited to that exchange and does not move immediate-departure,
+conditional-clearance, taxi-ambiguity, or stop-immediately phraseology rows.
+
 ## Coverage Table
 
 | Source unit | Final state | Test / blocker | Claim |
@@ -35,7 +40,7 @@ runway-confusion risk; the branch is declared in the source-backed test samples.
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587` | `covered-green` configured policy | `Icao9432Chunk04RunwayDepartureEvidenceTest`; `TowerTransferPolicy.SeparateGroundTowerTransferAtHoldingPoint` | Aircraft are usually transferred to TOWER at/approaching runway-holding position for the configured LOWG separate-function branch. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751` | `phraseology-later` | `PHRASE-1` | Immediate-departure readiness query phraseology. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::4e0bacdd1c2c06e0` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `POLICY-1` | Except emergency, controllers should not transmit during take-off / early climb. |
-| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03` | `phraseology-later` | `PHRASE-1` | `LINE UP AND WAIT` phraseology. |
+| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03` | `covered-green` rendered phraseology | `Icao9432PhraseologyEvidenceTest`; `RenderedPhraseologyTrace` | `RUNWAY [designator] LINE UP AND WAIT` phraseology and `LINING UP [callsign]` acknowledgement. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::db8a2c3dcd586b0e` | `phraseology-later` | `PHRASE-1` | Taxi phraseology must not imply runway entry / take-off clearance. |
 | `icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::2660849403bff7de` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `POLICY-1` | Departing aircraft must identify arriving aircraft in conditional clearance. |
 | `icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::2e598ad0323e9e2a` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest` | Conditional runway clearance requires controller and pilot sighting. |

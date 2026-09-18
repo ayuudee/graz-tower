@@ -19,6 +19,7 @@ import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.InitialContact
 import xyz.easiersaid.twr.protocol.PilotTransmission
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.Request
@@ -283,6 +284,30 @@ sealed interface EvidenceFactPayload {
         override val kind: EvidenceFactKind = EvidenceFactKind.UnsupportedRenderedPhraseology
     }
 
+    data class RenderedPilotReadbackPhraseology(
+        val aircraftId: AircraftId,
+        val transmissionRef: TransmissionId,
+        val template: RenderedPhraseologyTemplate,
+        val obligationKinds: Set<PhraseologyObligationKind>,
+        val tokens: List<PhraseologyToken>,
+        val text: RenderedPhraseText,
+    ) : EvidenceFactPayload {
+        init {
+            require(obligationKinds.isNotEmpty()) { "rendered pilot readback phraseology must name obligation kinds" }
+            require(tokens.isNotEmpty()) { "rendered pilot readback phraseology must carry tokens" }
+        }
+
+        override val kind: EvidenceFactKind = EvidenceFactKind.RenderedPilotReadbackPhraseology
+    }
+
+    data class UnsupportedRenderedPilotReadbackPhraseology(
+        val aircraftId: AircraftId,
+        val transmissionRef: TransmissionId,
+        val readback: Readback,
+    ) : EvidenceFactPayload {
+        override val kind: EvidenceFactKind = EvidenceFactKind.UnsupportedRenderedPilotReadbackPhraseology
+    }
+
     data class ConfiguredPolicy(
         val policy: ConfiguredPolicyBinding,
     ) : EvidenceFactPayload {
@@ -318,6 +343,8 @@ enum class EvidenceFactKind {
     GroundStationTestSignal,
     RenderedPhraseology,
     UnsupportedRenderedPhraseology,
+    RenderedPilotReadbackPhraseology,
+    UnsupportedRenderedPilotReadbackPhraseology,
     ConfiguredPolicy,
     Sample,
 }
@@ -965,11 +992,19 @@ object EvidenceFactAdapters {
             aircraftId = pilot.aircraftId,
             extractionSlot = "pilot",
         )
+        val phraseologyFact = renderedPilotReadbackPhraseologyFact(
+            scenarioId = scenarioId,
+            recordIndex = recordIndex,
+            record = record,
+            pilot = pilot,
+            transmission = transmission,
+        )
         return listOf(transmissionFact) +
             reportFacts +
             listOfNotNull(aerodromeInformationFact) +
             listOfNotNull(frequencyChangeFact) +
-            listOfNotNull(receptionDoubtFact)
+            listOfNotNull(receptionDoubtFact) +
+            listOfNotNull(phraseologyFact)
     }
 
     /**
@@ -1226,6 +1261,55 @@ object EvidenceFactAdapters {
             sourceTransmissionId = record.transmissionId,
             extractionPath = EvidenceExtractionPath(
                 "sim.records[$recordIndex].controller.renderedPhraseology",
+            ),
+            payload = payload,
+        )
+    }
+
+    /**
+     * Project the narrow PHRASE-1 rendered pilot-readback proof set. The
+     * current scope is intentionally limited to the ICAO 9432 §4.5.3
+     * `LINING UP [callsign]` acknowledgement for a single `LineUpReadback`
+     * atom. Unsupported readbacks remain explicit typed evidence.
+     *
+     * Sequence offset `+10` is reserved for rendered pilot readback
+     * phraseology. [FACTS_PER_RECORD] must stay greater than this offset.
+     */
+    private fun renderedPilotReadbackPhraseologyFact(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        pilot: SpeakerRef.Pilot,
+        transmission: PilotTransmission,
+    ): EvidenceFact? {
+        if (record.receptionQuality !is ReceptionQuality.Clear) return null
+        val readback = transmission as? Readback ?: return null
+        val renderResult = renderPilotReadbackPhraseology(pilot.aircraftId, readback)
+        val payload = when (renderResult) {
+            is PilotReadbackPhraseologyRenderResult.Rendered ->
+                EvidenceFactPayload.RenderedPilotReadbackPhraseology(
+                    aircraftId = pilot.aircraftId,
+                    transmissionRef = record.transmissionId,
+                    template = renderResult.phraseology.template,
+                    obligationKinds = renderResult.phraseology.obligationKinds,
+                    tokens = renderResult.phraseology.tokens,
+                    text = renderResult.phraseology.text,
+                )
+            is PilotReadbackPhraseologyRenderResult.UnsupportedReadback ->
+                EvidenceFactPayload.UnsupportedRenderedPilotReadbackPhraseology(
+                    aircraftId = pilot.aircraftId,
+                    transmissionRef = record.transmissionId,
+                    readback = renderResult.readback,
+                )
+        }
+        return fact(
+            scenarioId = scenarioId,
+            origin = EvidenceFactOrigin.SimRun,
+            sequence = EvidenceSequence(recordIndex * FACTS_PER_RECORD + 10),
+            simTime = record.time,
+            sourceTransmissionId = record.transmissionId,
+            extractionPath = EvidenceExtractionPath(
+                "sim.records[$recordIndex].pilot.renderedReadbackPhraseology",
             ),
             payload = payload,
         )
@@ -1615,7 +1699,7 @@ object EvidenceFactAdapters {
         )
     }
 
-    private const val FACTS_PER_RECORD: Int = 10
+    private const val FACTS_PER_RECORD: Int = 11
     private const val COMMS_1_TOWER_END_MS: Long = 2500L
     private const val COMMS_1_BLOCKING_END_MS: Long = 2000L
     private const val COMMS_1_UNTIL_SECONDS: Long = 10L

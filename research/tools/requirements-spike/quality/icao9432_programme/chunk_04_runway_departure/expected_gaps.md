@@ -9,16 +9,17 @@ covered-green with the current model/evidence surface.
 
 | Source-unit state | Units |
 |---|---:|
-| `covered-green` | 2 |
+| `covered-green` | 3 |
 | `policy-blocked` | 9 |
 | `model-gap` | 1 |
-| `phraseology-later` | 7 |
+| `phraseology-later` | 6 |
 
 ## Covered-Green Configured Policy
 
 | Source unit | Test | Reason |
 |---|---|---|
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587` | `Icao9432Chunk04RunwayDepartureEvidenceTest` | LOWG separate GROUND/TOWER operations are explicitly bound to `TowerTransferPolicy.SeparateGroundTowerTransferAtHoldingPoint`, and the live trace proves GROUND transfers the aircraft to TOWER while it is holding short at the RWY 16C holding point before runway use. This does not claim a universal transfer point for every aerodrome/service shape. |
+| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03` | `Icao9432PhraseologyEvidenceTest` | The LOWG trace proves rendered controller `RUNWAY [designator] LINE UP AND WAIT` phraseology and rendered pilot `LINING UP [callsign]` acknowledgement. This does not close immediate-departure or conditional-clearance phraseology. |
 | `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef` | `Icao9432PhraseologyEvidenceTest` | In an explicitly declared several-runways / confusion-risk branch, the rendered take-off clearance contains `RUNWAY` plus the active runway designator token. This is rendered phraseology evidence, not typed activation evidence for detecting confusion risk. |
 
 ## Policy-Blocked
@@ -48,7 +49,6 @@ covered-green with the current model/evidence surface.
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3` | `PHRASE-1`; support-only / review-only | Requires rendered take-off clearance phraseology and is classified as a support-only example, not standalone sim-executable coverage. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::152f0ffb84869af5` | `PHRASE-1` | Requires rendered immediate-departure line-up phraseology. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751` | `PHRASE-1` | Requires rendered immediate-departure readiness query. |
-| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03` | `PHRASE-1` | Requires rendered `LINE UP AND WAIT` phraseology and acknowledgement. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::db8a2c3dcd586b0e` | `PHRASE-1` | Requires rendered taxi phraseology ambiguity checking. |
 | `icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::9b30810984e06a35` | `PHRASE-1` | Requires rendered conditional-clearance element ordering. |
 | `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6b5a0d8b27525cbd` | `PHRASE-1` | Requires rendered repeated stop-immediately instruction and callsign. |

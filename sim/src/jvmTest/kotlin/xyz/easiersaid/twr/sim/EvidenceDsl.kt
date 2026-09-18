@@ -495,6 +495,13 @@ class EvidenceExpectContext internal constructor(
             activate = { factId -> activated += factId },
         )
 
+    fun renderedPilotReadbackPhraseology(aircraftId: AircraftId): AuditRenderedPilotReadbackPhraseologySubject =
+        AuditRenderedPilotReadbackPhraseologySubject(
+            aircraftId = aircraftId,
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
+
     fun operationalPolicy(): AuditOperationalPolicySubject =
         AuditOperationalPolicySubject(
             facts = facts.orderedFacts(),
@@ -1046,6 +1053,22 @@ class AuditRenderedPhraseologySubject internal constructor(
             failReason = "Missing rendered touch-and-go clearance phraseology for ${aircraftId.value}",
         )
 
+    fun lineUpAndWait(runway: RunwayId): EvidenceAuditOutcome =
+        phraseologyOutcome(
+            template = RenderedPhraseologyTemplate.LineUpAndWaitInstruction,
+            expectedObligationKinds = renderedClearanceObligations,
+            expectedTokens = listOf(
+                PhraseologyToken.AircraftCallsign(aircraftId),
+                PhraseologyToken.Runway,
+                PhraseologyToken.RunwayDesignator(runway),
+                PhraseologyToken.Line,
+                PhraseologyToken.Up,
+                PhraseologyToken.And,
+                PhraseologyToken.Wait,
+            ),
+            failReason = "Missing rendered line-up-and-wait phraseology for ${aircraftId.value} runway ${runway.value}",
+        )
+
     private fun phraseologyOutcome(
         template: RenderedPhraseologyTemplate,
         expectedObligationKinds: Set<PhraseologyObligationKind>,
@@ -1089,6 +1112,56 @@ class AuditRenderedPhraseologySubject internal constructor(
                 PhraseologyObligationKind.SemanticSlot,
                 PhraseologyObligationKind.ForbiddenMeaning,
             )
+    }
+}
+
+class AuditRenderedPilotReadbackPhraseologySubject internal constructor(
+    private val aircraftId: AircraftId,
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun lineUpReadback(): EvidenceAuditOutcome {
+        val expectedObligationKinds = setOf(
+            PhraseologyObligationKind.OrderedPhrase,
+            PhraseologyObligationKind.Readback,
+            PhraseologyObligationKind.SemanticSlot,
+        )
+        val expectedTokens = listOf(
+            PhraseologyToken.Lining,
+            PhraseologyToken.Up,
+            PhraseologyToken.AircraftCallsign(aircraftId),
+        )
+        val candidates = facts.filter { fact ->
+            val payload = fact.payload as? EvidenceFactPayload.RenderedPilotReadbackPhraseology ?: return@filter false
+            payload.aircraftId == aircraftId && payload.template == RenderedPhraseologyTemplate.LineUpReadback
+        }
+        if (candidates.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing rendered line-up readback phraseology for ${aircraftId.value}",
+                evidence = emptyList(),
+            )
+        }
+        candidates.forEach { fact -> activate(fact.id) }
+        val matching = candidates.filter { fact ->
+            val payload = fact.payload as EvidenceFactPayload.RenderedPilotReadbackPhraseology
+            payload.tokens == expectedTokens && payload.obligationKinds.containsAll(expectedObligationKinds)
+        }
+        return if (matching.isNotEmpty()) {
+            EvidenceAuditOutcome.Pass(
+                matching.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedPilotReadbackPhraseology
+                    "${payload.template}:${payload.text.value}@${fact.provenance.sequence.value}"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Rendered line-up readback phraseology did not match expected tokens",
+                evidence = candidates.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedPilotReadbackPhraseology
+                    "${payload.template}:${payload.obligationKinds}:${payload.tokens}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
     }
 }
 

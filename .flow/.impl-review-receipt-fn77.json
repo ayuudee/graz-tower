@@ -1,0 +1,14 @@
+{
+  "type": "impl_review",
+  "id": "fn-77-icao-9432-phrase-1-line-up-readback.1",
+  "mode": "codex",
+  "base": "HEAD~1",
+  "verdict": "SHIP",
+  "session_id": "01a0b652-c7c4-7952-8bda-e8c416c9c1eb",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T21:01:31.066596Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b652-c7c4-7952-8bda-e8c416c9c1eb\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"No blocking issues found.\\n\\nThe implementation matches the narrow fn-77 scope: typed controller rendering for `LineUpAndWait`, narrow pilot readback rendering for single-atom `LineUpReadback`, evidence projection and selectors, catalog/source coverage, and the LOWG source-backed test are all wired coherently. Unsupported readback shapes remain explicit typed unsupported evidence rather than silently passing.\\n\\nOne non-blocking watchpoint: the pilot readback renderer intentionally renders no runway token, so the proof is of the `LINING UP [callsign]` acknowledgement text and `LineUpReadback` atom shape, not of a spoken runway designator. That matches the cited ICAO example and the task wording.\\n\\nSuppressed findings: none.  \\nClassification counts: 0 introduced, 0 pre_existing.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":116473,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":691,\"reasoning_output_tokens\":516}}\n",
+  "focus": "source-mapped-evidence,phraseology,pilot-readback,no-overclaim"
+}

@@ -193,8 +193,14 @@ object ICAO9432 {
             claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
         )
 
+        val LineUpAndWaitPhrase: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03",
+            title = "Line-up instruction uses LINE UP AND WAIT and pilot acknowledges LINING UP",
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
+        )
+
         val Chunk04ScenarioItems: Set<EvidenceSourceRef> =
-            setOf(TowerTransferAtHoldingPosition, RunwayNumberInTakeoffClearance)
+            setOf(TowerTransferAtHoldingPosition, LineUpAndWaitPhrase, RunwayNumberInTakeoffClearance)
     }
 
     object FinalApproachLanding {
