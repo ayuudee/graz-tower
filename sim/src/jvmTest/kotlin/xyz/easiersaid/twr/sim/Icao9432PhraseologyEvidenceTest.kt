@@ -5,14 +5,19 @@ import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.DecisionTrace
 import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.Frequency
+import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
+import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimTime
+import xyz.easiersaid.twr.protocol.SimpleElement
 import xyz.easiersaid.twr.protocol.StopImmediately
+import xyz.easiersaid.twr.protocol.FrequencyReadback
 import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.sim.testing.TransmissionRecord
 
@@ -308,6 +313,80 @@ class Icao9432PhraseologyEvidenceTest {
         report.assertNoFailures()
     }
 
+    @Test
+    fun `LOWG after-landing exchange renders ICAO 9432 runway-vacated taxi-to-stand wording`() {
+        val aircraft = AircraftId("OE-ABC")
+
+        val report = simEvidence("icao9432-rendered-after-landing-taxi-to-stand") {
+            observe {
+                EvidenceFactAdapters.lowgCircuitTraining(
+                    scenarioId = "icao9432-rendered-after-landing-taxi-to-stand",
+                    outcomes = listOf(CircuitOutcome.FullStop),
+                    untilMinutes = 45,
+                )
+            }
+            source("after-landing runway-vacated and taxi-to-stand rendered phraseology") {
+                cites(ICAO9432.AfterLanding.RunwayVacatedTaxiToStandWording)
+                sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §4.9")
+                sample("coverage-scope", "rendered wording over observed LOWG after-landing taxi-to-stand exchange")
+                sample("example-values", "LOWG local stand/route values rather than Doc 9432 FASTAIR example literals")
+                expect {
+                    afterLandingPhraseology(aircraft).runwayVacatedTaxiToStandExchange()
+                }
+            }
+        }
+
+        report.assertNoFailures()
+    }
+
+    @Test
+    fun `synthetic after-landing contact-ground branch renders ICAO 9432 wording with residual first-right branch`() {
+        val aircraft = AircraftId("FASTAIR 345")
+        val groundFrequency = Frequency.unsafe("118.350")
+
+        val report = simEvidence("icao9432-rendered-after-landing-contact-ground-split") {
+            observe {
+                EvidenceFactAdapters.fromTransmissionRecords(
+                    scenarioId = "icao9432-rendered-after-landing-contact-ground-split",
+                    records = listOf(
+                        contactGroundRecord(
+                            aircraft = aircraft,
+                            frequency = groundFrequency,
+                        ),
+                        frequencyReadbackRecord(
+                            aircraft = aircraft,
+                            frequency = groundFrequency,
+                        ),
+                    ),
+                )
+            }
+            source("after-landing CONTACT GROUND rendered branch only") {
+                cites(ICAO9432.AfterLanding.ContactGroundWordingOnly)
+                sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §4.9")
+                sample("synthetic-branch", "CONTACT GROUND 118.350")
+                sample("why-synthetic", "LOWG production trace uses local handoff frequencies, not the Doc 9432 example frequency")
+                sample("production-renderer-path", "ContactFrequency plus FrequencyReadback rendered through EvidenceFactAdapters.fromTransmissionRecords")
+                sample("residual", "TAKE FIRST RIGHT WHEN VACATED and FIRST RIGHT readback remain blocked")
+                expect {
+                    renderedPhraseology(aircraft).contactFrequency("GROUND", groundFrequency)
+                }
+            }
+            source("after-landing contact-ground frequency readback rendered branch only") {
+                cites(ICAO9432.AfterLanding.ContactGroundWordingOnly)
+                sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §4.9")
+                sample("synthetic-branch", "118.350 FASTAIR 345")
+                sample("why-synthetic", "LOWG production trace uses local handoff frequencies, not the Doc 9432 example frequency")
+                sample("production-renderer-path", "FrequencyReadback rendered through EvidenceFactAdapters.fromTransmissionRecords")
+                sample("residual", "FIRST RIGHT element remains blocked because vacating-runway readback rendering is not modelled")
+                expect {
+                    renderedPilotReadbackPhraseology(aircraft).frequencyReadback(groundFrequency)
+                }
+            }
+        }
+
+        report.assertNoFailures()
+    }
+
     private fun stopImmediatelyRecord(
         aircraft: AircraftId,
     ): TransmissionRecord {
@@ -339,6 +418,38 @@ class Icao9432PhraseologyEvidenceTest {
             speaker = SpeakerRef.Pilot(aircraft),
             receiver = ReceiverRef.Controller(ControllerId("LOWG_TWR")),
             utterance = Utterance.FromPilot(Report(events = listOf(event))),
+        )
+
+    private fun contactGroundRecord(
+        aircraft: AircraftId,
+        frequency: Frequency,
+    ): TransmissionRecord {
+        val output = ControllerOutput.Instruct.fromMissedHandoffReissue(
+            instruction = ContactFrequency(target = aircraft, role = RoleName.GROUND, frequency = frequency),
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("TEST-CONTACT-GROUND", "test contact-ground phraseology", emptyList()),
+        )
+        return TransmissionRecord(
+            transmissionId = TransmissionId(92),
+            time = SimTime.ZERO,
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(2),
+            speaker = SpeakerRef.Controller(ControllerId("GEORGETOWN_TWR")),
+            receiver = ReceiverRef.Pilot(aircraft),
+            utterance = Utterance.FromController(output),
+        )
+    }
+
+    private fun frequencyReadbackRecord(
+        aircraft: AircraftId,
+        frequency: Frequency,
+    ): TransmissionRecord =
+        TransmissionRecord(
+            transmissionId = TransmissionId(93),
+            time = SimTime.ZERO + SimDuration.ofSeconds(3),
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(5),
+            speaker = SpeakerRef.Pilot(aircraft),
+            receiver = ReceiverRef.Controller(ControllerId("GEORGETOWN_TWR")),
+            utterance = Utterance.FromPilot(Readback(listOf(SimpleElement(FrequencyReadback(frequency))))),
         )
 
     private fun combinedEvidenceFactSet(

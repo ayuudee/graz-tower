@@ -1,0 +1,12 @@
+{
+  "type": "plan_review",
+  "id": "fn-84-icao-9432-phrase-1-after-landing",
+  "mode": "codex",
+  "verdict": "SHIP",
+  "session_id": "01a0b6a2-e6e6-7713-a1f5-8e59b0f4c7de",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T22:29:04.510794Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b6a2-e6e6-7713-a1f5-8e59b0f4c7de\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"**Issues**\\n\\nSeverity: Minor  \\nLocation: Epic Quick Commands  \\nProblem: The flow validation command uses `scripts/ralph/flowctl`, while the existing chunk docs shown in context use `.flow/bin/flowctl`. If both exist this is harmless, but if only one is canonical the implementation agent may run the wrong validator path.  \\nSuggestion: Name the canonical command explicitly, or list both with the preferred one first.\\n\\nSeverity: Minor  \\nLocation: Epic Approach #6 / Task Acceptance  \\nProblem: The plan says synthetic records must explain why the LOWG trace cannot supply the branch, but it does not define where that explanation must live if the synthetic fixture is used. The task says \u201ctest samples or done summary,\u201d which is acceptable but a bit loose for review automation.  \\nSuggestion: Require the explanation in the test name/sample metadata and optionally repeat it in the done summary. That makes the evidence locally auditable.\\n\\nSeverity: Nitpick  \\nLocation: Epic Approach #3  \\nProblem: The correlation rule requires same aircraft, destination, and ordered `via` list, but does not explicitly say the `TaxiToStand` instruction and `TaxiRouteReadback` must both be rendered phraseology facts, not just underlying protocol records. The surrounding text implies it, but this is a load-bearing detail.  \\nSuggestion: Add \u201cmatching rendered facts\u201d to the correlation rule.\\n\\nNo blocking issues. The epic and task specs are consistent, scoped tightly, and review-aware. The residual handling for `df251...` is explicit, the no-`AirTaxiTo` boundary is clear, and the acceptance criteria line up with the chunk-doc state changes.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":31647,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":864,\"reasoning_output_tokens\":516}}\n"
+}

@@ -13,12 +13,15 @@ honestly be marked covered-green with the current model/evidence surface.
 | `model-gap` | 1 |
 | `model-gap` + `policy-blocked` | 3 |
 | `policy-blocked` | 3 |
-| `phraseology-later` | 4 |
+| split residual | 1 |
+| `phraseology-later` | 2 |
 
 The VFR traffic-circuit continuation row and the essential-information category
-rows now have structural evidence-vocabulary coverage. Timing, omission, open
-pertinence, phraseology, live sim projection, and IFR missed-approach rows
-remain gaps.
+rows now have structural evidence-vocabulary coverage. The after-landing
+runway-vacated / taxi-to-stand rendered wording branch is covered. Timing,
+omission, open pertinence, essential-aerodrome-information phraseology,
+helicopter air-taxi phraseology, residual first-right/vacating wording, live
+sim projection, and IFR missed-approach rows remain gaps.
 
 ## Covered-Structural Essential-Information Vocabulary
 
@@ -55,11 +58,15 @@ remain gaps.
 | `icao9432-extracted::after_landing_4_9_en::4a512226eec962cb` | `POLICY-1` | Needs proof that no alternate frequency advice was issued and a policy for tower-frequency retention until vacated. |
 | `icao9432-extracted::after_landing_4_9_en::5d742dc66caa1790` | `ClearanceTimingPolicy` | Needs landing-roll completion, taxi-instruction timing, and absolute-necessity classification. |
 
+## Split Residuals
+
+| Source unit | Covered branch | Residual |
+|---|---|---|
+| `icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3` | `Icao9432PhraseologyEvidenceTest` covers rendered `CONTACT GROUND 118.350` plus frequency readback wording through the production `ContactFrequency` / `FrequencyReadback` renderers. | `TAKE FIRST RIGHT WHEN VACATED` and the `FIRST RIGHT` readback remain blocked until rendered vacating-runway instruction/readback phraseology exists. |
+
 ## Phraseology-Later
 
 | Source unit | Blocker | Reason |
 |---|---|---|
 | `icao9432-extracted::after_landing_4_9_en::203b53733da22603` | `PHRASE-1` | Requires rendered helicopter air-taxi phraseology. |
-| `icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3` | `PHRASE-1` | Requires rendered vacating-runway / frequency-change example phraseology. |
-| `icao9432-extracted::after_landing_4_9_en::e30350fdecad45a1` | `PHRASE-1` | Requires rendered runway-vacated / taxi-to-stand example phraseology. |
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::7b81f87f5c2b4d75` | `PHRASE-1` | Requires rendered essential-aerodrome-information example phraseology. |

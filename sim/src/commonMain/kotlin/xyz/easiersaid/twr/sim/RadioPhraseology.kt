@@ -10,12 +10,15 @@ import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.FrequencyReadback
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.LineUpReadback
+import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimpleElement
 import xyz.easiersaid.twr.protocol.StopImmediately
+import xyz.easiersaid.twr.protocol.TaxiRouteReadback
+import xyz.easiersaid.twr.protocol.TaxiToStand
 
 enum class PhraseologyObligationKind {
     MandatoryWords,
@@ -37,6 +40,9 @@ enum class RenderedPhraseologyTemplate {
     StopImmediatelyInstruction,
     FinalReport,
     LongFinalReport,
+    TaxiToStandInstruction,
+    TaxiRouteReadback,
+    RunwayVacatedReport,
 }
 
 @JvmInline
@@ -67,6 +73,11 @@ sealed interface PhraseologyToken {
     data object Go : PhraseologyToken
     data object Final : PhraseologyToken
     data object Long : PhraseologyToken
+    data object Taxi : PhraseologyToken
+    data object To : PhraseologyToken
+    data object Via : PhraseologyToken
+    data object Vacated : PhraseologyToken
+    data class PointName(val point: PointId) : PhraseologyToken
 }
 
 data class RenderedControllerPhraseology(
@@ -135,6 +146,7 @@ fun renderControllerPhraseology(output: ControllerOutput.Instruct): ControllerPh
         is ClearedForTakeoff -> takeoffClearancePhraseology(output.target, instruction.runway)
         is ClearedTouchAndGo -> touchAndGoClearancePhraseology(output.target)
         is StopImmediately -> stopImmediatelyPhraseology(output.target)
+        is TaxiToStand -> taxiToStandPhraseology(output.target, instruction.destination, instruction.via)
         else -> return ControllerPhraseologyRenderResult.UnsupportedInstruction(instruction)
     }
     return ControllerPhraseologyRenderResult.Rendered(phraseology)
@@ -153,6 +165,11 @@ fun renderPilotReadbackPhraseology(
     val phraseology = when (val atom = atoms.singleOrNull()) {
         is LineUpReadback -> lineUpReadbackPhraseology(aircraftId = aircraftId)
         is FrequencyReadback -> frequencyReadbackPhraseology(aircraftId = aircraftId, frequency = atom.frequency)
+        is TaxiRouteReadback -> taxiRouteReadbackPhraseology(
+            aircraftId = aircraftId,
+            destination = atom.destination,
+            via = atom.via,
+        )
         else -> return PilotReadbackPhraseologyRenderResult.UnsupportedReadback(readback)
     }
     return PilotReadbackPhraseologyRenderResult.Rendered(phraseology)
@@ -162,6 +179,7 @@ fun renderPilotReportPhraseology(report: Report): PilotReportPhraseologyRenderRe
     val phraseology = when (report.events.singleOrNull()) {
         ReportEvent.Final -> finalReportPhraseology()
         ReportEvent.LongFinal -> longFinalReportPhraseology()
+        ReportEvent.RunwayVacated -> runwayVacatedReportPhraseology()
         null,
         is ReportEvent.Downwind,
         ReportEvent.Base,
@@ -169,7 +187,6 @@ fun renderPilotReportPhraseology(report: Report): PilotReportPhraseologyRenderRe
         ReportEvent.Established,
         ReportEvent.EstablishedLocaliser,
         ReportEvent.EstablishedGlidepath,
-        ReportEvent.RunwayVacated,
         ReportEvent.Ready,
         ReportEvent.GoingAround,
         ReportEvent.VisualWithField,
@@ -291,6 +308,31 @@ private fun stopImmediatelyPhraseology(
     )
 }
 
+private fun taxiToStandPhraseology(
+    aircraftId: AircraftId,
+    destination: PointId,
+    via: List<PointId>,
+): RenderedControllerPhraseology {
+    val routeTokens = routeTokens(destination = destination, via = via)
+    val tokens = listOf(
+        PhraseologyToken.AircraftCallsign(aircraftId),
+        PhraseologyToken.Taxi,
+        PhraseologyToken.To,
+    ) + routeTokens
+    return RenderedControllerPhraseology(
+        template = RenderedPhraseologyTemplate.TaxiToStandInstruction,
+        obligationKinds = setOf(
+            PhraseologyObligationKind.OrderedPhrase,
+            PhraseologyObligationKind.SemanticSlot,
+            PhraseologyObligationKind.Readback,
+        ),
+        tokens = tokens,
+        text = RenderedPhraseText(
+            "${aircraftId.value} TAXI TO ${routeText(destination = destination, via = via)}",
+        ),
+    )
+}
+
 private fun lineUpReadbackPhraseology(
     aircraftId: AircraftId,
 ): RenderedPilotReadbackPhraseology {
@@ -331,6 +373,21 @@ private fun frequencyReadbackPhraseology(
     )
 }
 
+private fun taxiRouteReadbackPhraseology(
+    aircraftId: AircraftId,
+    destination: PointId,
+    via: List<PointId>,
+): RenderedPilotReadbackPhraseology {
+    val tokens = routeTokens(destination = destination, via = via) +
+        PhraseologyToken.AircraftCallsign(aircraftId)
+    return RenderedPilotReadbackPhraseology(
+        template = RenderedPhraseologyTemplate.TaxiRouteReadback,
+        obligationKinds = readbackObligations,
+        tokens = tokens,
+        text = RenderedPhraseText("${routeText(destination = destination, via = via)} ${aircraftId.value}"),
+    )
+}
+
 private fun finalReportPhraseology(): RenderedPilotReportPhraseology =
     RenderedPilotReportPhraseology(
         template = RenderedPhraseologyTemplate.FinalReport,
@@ -347,6 +404,36 @@ private fun longFinalReportPhraseology(): RenderedPilotReportPhraseology =
         text = RenderedPhraseText("LONG FINAL"),
     )
 
+private fun runwayVacatedReportPhraseology(): RenderedPilotReportPhraseology =
+    RenderedPilotReportPhraseology(
+        template = RenderedPhraseologyTemplate.RunwayVacatedReport,
+        obligationKinds = reportObligations,
+        tokens = listOf(PhraseologyToken.Runway, PhraseologyToken.Vacated),
+        text = RenderedPhraseText("RUNWAY VACATED"),
+    )
+
+private fun routeTokens(
+    destination: PointId,
+    via: List<PointId>,
+): List<PhraseologyToken> {
+    val destinationToken = PhraseologyToken.PointName(destination)
+    return if (via.isEmpty()) {
+        listOf(destinationToken)
+    } else {
+        listOf(destinationToken, PhraseologyToken.Via) + via.map(PhraseologyToken::PointName)
+    }
+}
+
+private fun routeText(
+    destination: PointId,
+    via: List<PointId>,
+): String =
+    if (via.isEmpty()) {
+        destination.value
+    } else {
+        "${destination.value} VIA ${via.joinToString(separator = " ") { point -> point.value }}"
+    }
+
 private val renderedClearanceObligations: Set<PhraseologyObligationKind> =
     setOf(
         PhraseologyObligationKind.OrderedPhrase,
@@ -357,5 +444,12 @@ private val renderedClearanceObligations: Set<PhraseologyObligationKind> =
 private val reportObligations: Set<PhraseologyObligationKind> =
     setOf(
         PhraseologyObligationKind.OrderedPhrase,
+        PhraseologyObligationKind.SemanticSlot,
+    )
+
+private val readbackObligations: Set<PhraseologyObligationKind> =
+    setOf(
+        PhraseologyObligationKind.OrderedPhrase,
+        PhraseologyObligationKind.Readback,
         PhraseologyObligationKind.SemanticSlot,
     )

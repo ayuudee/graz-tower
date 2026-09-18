@@ -7,15 +7,17 @@ information.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 1 |
+| `covered-green` | 2 |
 | `covered-structural` | 8 |
 | `covered-red` | 0 |
 | `model-gap` | 1 |
 | `model-gap` + `policy-blocked` | 3 |
 | `policy-blocked` | 3 |
-| `phraseology-later` | 4 |
+| `split residual` | 1 |
+| `phraseology-later` | 2 |
 
-The covered-green source unit is the VFR go-around default. The
+The covered-green source units are the VFR go-around default and the rendered
+after-landing runway-vacated / taxi-to-stand wording branch. The
 essential-aerodrome-information category/definition rows are covered only as
 structural evidence vocabulary. They do not claim live sim projection, timing,
 receipt, omission policy, open pertinence, or rendered phraseology coverage.
@@ -30,8 +32,8 @@ receipt, omission policy, open pertinence, or rendered phraseology coverage.
 | `icao9432-extracted::after_landing_4_9_en::203b53733da22603` | `phraseology-later` | `PHRASE-1` | Air-taxi to helicopter stand example phraseology. |
 | `icao9432-extracted::after_landing_4_9_en::4a512226eec962cb` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `POLICY-1` | Pilot remains on tower frequency until runway vacated unless otherwise advised. |
 | `icao9432-extracted::after_landing_4_9_en::5d742dc66caa1790` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `ClearanceTimingPolicy` | Controller should not issue taxi instructions until landing roll completed unless absolutely necessary. |
-| `icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3` | `phraseology-later` | `PHRASE-1` | Vacating-runway and contact-ground example phraseology. |
-| `icao9432-extracted::after_landing_4_9_en::e30350fdecad45a1` | `phraseology-later` | `PHRASE-1` | Runway-vacated and taxi-to-stand example phraseology. |
+| `icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3` | `split: CONTACT GROUND wording covered; TAKE FIRST RIGHT WHEN VACATED remains blocked` | `Icao9432PhraseologyEvidenceTest`; residual `PHRASE-1` | Contact-ground rendered phraseology and frequency readback are covered; first-right/vacating wording remains blocked. |
+| `icao9432-extracted::after_landing_4_9_en::e30350fdecad45a1` | `covered-green` | `Icao9432PhraseologyEvidenceTest` | Runway-vacated and taxi-to-stand rendered phraseology. |
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::01c0a4bc62b1e926` | `covered-structural` | `Icao9432EssentialAerodromeInformationEvidenceTest`; structural evidence vocabulary | Essential aerodrome information includes water on runway, taxiway, or apron. |
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::1306eb5cc586df34` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `FN43-GAP-1`; `OperationalGuidancePolicy` | Essential aerodrome information may be omitted when already known from other sources. |
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::18288908932d5ee8` | `covered-structural` | `Icao9432EssentialAerodromeInformationEvidenceTest`; structural evidence vocabulary | Essential aerodrome information concerns the movement area and associated facilities needed for safe operation. |
@@ -53,21 +55,28 @@ receipt, omission policy, open pertinence, or rendered phraseology coverage.
   by line wrapping, list-item splitting, or multi-line phraseology examples in
   the extracted text.
 - Verification commands:
-  `./gradlew-nix :sim:jvmTest --tests '*.EvidenceDslTest' --tests '*.Icao9432EssentialAerodromeInformationEvidenceTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
+  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432PhraseologyEvidenceTest' --tests '*.EvidenceDslTest' --tests '*.EvidenceFactsTest' --tests '*.EvidenceSourceCatalogTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest'`.
   `./gradlew-nix detekt`.
-  `.flow/bin/flowctl validate --epic fn-62-icao-9432-fn43-gap-1-essential`.
+  `./gradlew-nix :protocol:allTests :core:allTests :sim:jvmTest`.
+  `scripts/ralph/flowctl validate --epic fn-84-icao-9432-phrase-1-after-landing --json`.
   `git diff --check`.
 
 ## Review Considerations
 
 - FP / type safety: permanent source refs use typed `EvidenceSourceRef`
   records. Essential aerodrome information categories use closed evidence
-  enums rather than strings.
+  enums rather than strings. Rendered after-landing phraseology adds typed
+  templates/tokens, with unsupported phraseology remaining explicit unsupported
+  evidence rather than implied compliance.
 - Test architecture: the covered-green VFR row is proven by a real LOWG VFR
   trace with `GoingAround -> post-GA Downwind -> ClearedToLand -> RunwayVacated`.
-  The test cites only the VFR source unit.
-- Impact: no controller, pilot, sim behaviour, phraseology rendering, or policy
-  behaviour was changed; §4.10 category coverage is structural
+  The after-landing runway-vacated / taxi-to-stand row is proven by rendered
+  phraseology facts in strict `RUNWAY VACATED -> TAXI TO STAND -> readback`
+  order. The contact-ground row is explicitly split: `CONTACT GROUND` wording
+  is covered, while first-right/vacating wording remains residual.
+- Impact: no controller, pilot, movement, clearance, or policy behaviour was
+  changed. The phraseology renderer/evidence surface was extended for supported
+  after-landing templates only; §4.10 category coverage remains structural
   evidence-vocabulary coverage.
 - Operational correctness: ICAO 9432 §4.8's IFR and VFR branches remain
   distinct; §4.9 `should` rows and §4.10 timing/omission/open-pertinence rows

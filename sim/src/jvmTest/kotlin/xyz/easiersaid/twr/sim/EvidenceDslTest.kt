@@ -12,6 +12,7 @@ import xyz.easiersaid.twr.protocol.ClearedForTakeoffReadback
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.LineUpAndWait
+import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
@@ -219,6 +220,269 @@ class EvidenceDslTest {
     }
 
     @Test
+    fun `after-landing rendered phraseology selectors require matching ordered taxi route`() {
+        val aircraft = AircraftId("OE-ABC")
+        val stand = PointId("STAND-27")
+        val via = listOf(PointId("ALPHA"))
+        val facts = EvidenceFactAdapters.fromProjectedPayloads(
+            scenarioId = "after-landing-rendered-selectors",
+            payloads = listOf(
+                renderedPilotReportPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.RunwayVacatedReport,
+                    tokens = listOf(PhraseologyToken.Runway, PhraseologyToken.Vacated),
+                    text = "RUNWAY VACATED",
+                ),
+                renderedPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.TaxiToStandInstruction,
+                    obligationKinds = setOf(
+                        PhraseologyObligationKind.OrderedPhrase,
+                        PhraseologyObligationKind.SemanticSlot,
+                        PhraseologyObligationKind.Readback,
+                    ),
+                    tokens = listOf(
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                        PhraseologyToken.Taxi,
+                        PhraseologyToken.To,
+                        PhraseologyToken.PointName(stand),
+                        PhraseologyToken.Via,
+                        PhraseologyToken.PointName(via.single()),
+                    ),
+                    text = "OE-ABC TAXI TO STAND-27 VIA ALPHA",
+                ),
+                renderedPilotReadbackPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.TaxiRouteReadback,
+                    tokens = listOf(
+                        PhraseologyToken.PointName(stand),
+                        PhraseologyToken.Via,
+                        PhraseologyToken.PointName(via.single()),
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                    ),
+                    text = "STAND-27 VIA ALPHA OE-ABC",
+                ),
+            ),
+        )
+
+        val report = simEvidence("after-landing-rendered-selectors") {
+            observe { facts }
+            invariant("runway vacated") {
+                expect { renderedPilotReportPhraseology(aircraft).runwayVacatedReport() }
+            }
+            invariant("taxi to stand") {
+                expect { renderedPhraseology(aircraft).taxiToStand(stand, via) }
+            }
+            invariant("taxi route readback") {
+                expect { renderedPilotReadbackPhraseology(aircraft).taxiRouteReadback(stand, via) }
+            }
+            invariant("correlated exchange") {
+                expect { afterLandingPhraseology(aircraft).runwayVacatedTaxiToStandExchange() }
+            }
+        }
+
+        report.assertNoFailures()
+
+        val wrongRouteFacts = EvidenceFactAdapters.fromProjectedPayloads(
+            scenarioId = "after-landing-rendered-wrong-route",
+            payloads = listOf(
+                renderedPilotReportPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.RunwayVacatedReport,
+                    tokens = listOf(PhraseologyToken.Runway, PhraseologyToken.Vacated),
+                    text = "RUNWAY VACATED",
+                ),
+                renderedPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.TaxiToStandInstruction,
+                    obligationKinds = setOf(
+                        PhraseologyObligationKind.OrderedPhrase,
+                        PhraseologyObligationKind.SemanticSlot,
+                        PhraseologyObligationKind.Readback,
+                    ),
+                    tokens = listOf(
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                        PhraseologyToken.Taxi,
+                        PhraseologyToken.To,
+                        PhraseologyToken.PointName(stand),
+                        PhraseologyToken.Via,
+                        PhraseologyToken.PointName(via.single()),
+                    ),
+                    text = "OE-ABC TAXI TO STAND-27 VIA ALPHA",
+                ),
+                renderedPilotReadbackPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.TaxiRouteReadback,
+                    tokens = listOf(
+                        PhraseologyToken.PointName(stand),
+                        PhraseologyToken.Via,
+                        PhraseologyToken.PointName(PointId("BRAVO")),
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                    ),
+                    text = "STAND-27 VIA BRAVO OE-ABC",
+                ),
+            ),
+        )
+        val wrongRouteReport = simEvidence("after-landing-rendered-wrong-route") {
+            observe { wrongRouteFacts }
+            invariant("wrong route does not correlate") {
+                expect { afterLandingPhraseology(aircraft).runwayVacatedTaxiToStandExchange() }
+            }
+        }
+
+        assertTrue(wrongRouteReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+
+        val malformedRouteReport = simEvidence("after-landing-rendered-malformed-route") {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = "after-landing-rendered-malformed-route",
+                    payloads = listOf(
+                        renderedPilotReportPhraseologyPayload(
+                            aircraft = aircraft,
+                            template = RenderedPhraseologyTemplate.RunwayVacatedReport,
+                            tokens = listOf(PhraseologyToken.Runway, PhraseologyToken.Vacated),
+                            text = "RUNWAY VACATED",
+                        ),
+                        renderedPhraseologyPayload(
+                            aircraft = aircraft,
+                            template = RenderedPhraseologyTemplate.TaxiToStandInstruction,
+                            obligationKinds = setOf(
+                                PhraseologyObligationKind.OrderedPhrase,
+                                PhraseologyObligationKind.SemanticSlot,
+                                PhraseologyObligationKind.Readback,
+                            ),
+                            tokens = listOf(
+                                PhraseologyToken.AircraftCallsign(aircraft),
+                                PhraseologyToken.Taxi,
+                                PhraseologyToken.To,
+                                PhraseologyToken.Via,
+                                PhraseologyToken.PointName(via.single()),
+                            ),
+                            text = "OE-ABC TAXI TO VIA ALPHA",
+                        ),
+                        renderedPilotReadbackPhraseologyPayload(
+                            aircraft = aircraft,
+                            template = RenderedPhraseologyTemplate.TaxiRouteReadback,
+                            tokens = listOf(
+                                PhraseologyToken.Via,
+                                PhraseologyToken.PointName(via.single()),
+                                PhraseologyToken.AircraftCallsign(aircraft),
+                            ),
+                            text = "VIA ALPHA OE-ABC",
+                        ),
+                    ),
+                )
+            }
+            invariant("malformed route without destination does not correlate") {
+                expect { afterLandingPhraseology(aircraft).runwayVacatedTaxiToStandExchange() }
+            }
+        }
+
+        assertTrue(malformedRouteReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(malformedRouteReport.results.single().activationFactIds.isNotEmpty())
+
+        val readbackBeforeTaxiReport = simEvidence("after-landing-rendered-readback-before-taxi") {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = "after-landing-rendered-readback-before-taxi",
+                    payloads = listOf(
+                        renderedPilotReportPhraseologyPayload(
+                            aircraft = aircraft,
+                            template = RenderedPhraseologyTemplate.RunwayVacatedReport,
+                            tokens = listOf(PhraseologyToken.Runway, PhraseologyToken.Vacated),
+                            text = "RUNWAY VACATED",
+                        ),
+                        renderedPilotReadbackPhraseologyPayload(
+                            aircraft = aircraft,
+                            template = RenderedPhraseologyTemplate.TaxiRouteReadback,
+                            tokens = listOf(
+                                PhraseologyToken.PointName(stand),
+                                PhraseologyToken.Via,
+                                PhraseologyToken.PointName(via.single()),
+                                PhraseologyToken.AircraftCallsign(aircraft),
+                            ),
+                            text = "STAND-27 VIA ALPHA OE-ABC",
+                        ),
+                        renderedPhraseologyPayload(
+                            aircraft = aircraft,
+                            template = RenderedPhraseologyTemplate.TaxiToStandInstruction,
+                            obligationKinds = setOf(
+                                PhraseologyObligationKind.OrderedPhrase,
+                                PhraseologyObligationKind.SemanticSlot,
+                                PhraseologyObligationKind.Readback,
+                            ),
+                            tokens = listOf(
+                                PhraseologyToken.AircraftCallsign(aircraft),
+                                PhraseologyToken.Taxi,
+                                PhraseologyToken.To,
+                                PhraseologyToken.PointName(stand),
+                                PhraseologyToken.Via,
+                                PhraseologyToken.PointName(via.single()),
+                            ),
+                            text = "OE-ABC TAXI TO STAND-27 VIA ALPHA",
+                        ),
+                    ),
+                )
+            }
+            invariant("readback before taxi does not correlate") {
+                expect { afterLandingPhraseology(aircraft).runwayVacatedTaxiToStandExchange() }
+            }
+        }
+
+        assertTrue(readbackBeforeTaxiReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+
+        val taxiBeforeVacatedReport = simEvidence("after-landing-rendered-taxi-before-vacated") {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = "after-landing-rendered-taxi-before-vacated",
+                    payloads = listOf(
+                        renderedPhraseologyPayload(
+                            aircraft = aircraft,
+                            template = RenderedPhraseologyTemplate.TaxiToStandInstruction,
+                            obligationKinds = setOf(
+                                PhraseologyObligationKind.OrderedPhrase,
+                                PhraseologyObligationKind.SemanticSlot,
+                                PhraseologyObligationKind.Readback,
+                            ),
+                            tokens = listOf(
+                                PhraseologyToken.AircraftCallsign(aircraft),
+                                PhraseologyToken.Taxi,
+                                PhraseologyToken.To,
+                                PhraseologyToken.PointName(stand),
+                                PhraseologyToken.Via,
+                                PhraseologyToken.PointName(via.single()),
+                            ),
+                            text = "OE-ABC TAXI TO STAND-27 VIA ALPHA",
+                        ),
+                        renderedPilotReportPhraseologyPayload(
+                            aircraft = aircraft,
+                            template = RenderedPhraseologyTemplate.RunwayVacatedReport,
+                            tokens = listOf(PhraseologyToken.Runway, PhraseologyToken.Vacated),
+                            text = "RUNWAY VACATED",
+                        ),
+                        renderedPilotReadbackPhraseologyPayload(
+                            aircraft = aircraft,
+                            template = RenderedPhraseologyTemplate.TaxiRouteReadback,
+                            tokens = listOf(
+                                PhraseologyToken.PointName(stand),
+                                PhraseologyToken.Via,
+                                PhraseologyToken.PointName(via.single()),
+                                PhraseologyToken.AircraftCallsign(aircraft),
+                            ),
+                            text = "STAND-27 VIA ALPHA OE-ABC",
+                        ),
+                    ),
+                )
+            }
+            invariant("taxi before runway-vacated does not correlate") {
+                expect { afterLandingPhraseology(aircraft).runwayVacatedTaxiToStandExchange() }
+            }
+        }
+
+        assertTrue(taxiBeforeVacatedReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+    }
+
+    @Test
     fun `renderedPilotReportPhraseology selectors require exact final and long-final tokens`() {
         val aircraft = AircraftId("OE-ABC")
         val facts = EvidenceFactAdapters.fromProjectedPayloads(
@@ -410,6 +674,11 @@ class EvidenceDslTest {
     private fun renderedPhraseologyPayload(
         aircraft: AircraftId,
         template: RenderedPhraseologyTemplate,
+        obligationKinds: Set<PhraseologyObligationKind> = setOf(
+            PhraseologyObligationKind.OrderedPhrase,
+            PhraseologyObligationKind.SemanticSlot,
+            PhraseologyObligationKind.ForbiddenMeaning,
+        ),
         tokens: List<PhraseologyToken>,
         text: String,
     ): EvidenceFactPayload.RenderedPhraseology =
@@ -418,11 +687,7 @@ class EvidenceDslTest {
             aircraftId = aircraft,
             transmissionRef = TransmissionId(1),
             template = template,
-            obligationKinds = setOf(
-                PhraseologyObligationKind.OrderedPhrase,
-                PhraseologyObligationKind.SemanticSlot,
-                PhraseologyObligationKind.ForbiddenMeaning,
-            ),
+            obligationKinds = obligationKinds,
             tokens = tokens,
             text = RenderedPhraseText(text),
         )
@@ -439,6 +704,25 @@ class EvidenceDslTest {
             template = template,
             obligationKinds = setOf(
                 PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.SemanticSlot,
+            ),
+            tokens = tokens,
+            text = RenderedPhraseText(text),
+        )
+
+    private fun renderedPilotReadbackPhraseologyPayload(
+        aircraft: AircraftId,
+        template: RenderedPhraseologyTemplate,
+        tokens: List<PhraseologyToken>,
+        text: String,
+    ): EvidenceFactPayload.RenderedPilotReadbackPhraseology =
+        EvidenceFactPayload.RenderedPilotReadbackPhraseology(
+            aircraftId = aircraft,
+            transmissionRef = TransmissionId(1),
+            template = template,
+            obligationKinds = setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.Readback,
                 PhraseologyObligationKind.SemanticSlot,
             ),
             tokens = tokens,
@@ -528,6 +812,22 @@ class EvidenceDslTest {
                     PhraseologyToken.Immediately,
                 ),
                 text = "OE-ABC STOP IMMEDIATELY OE-ABC STOP IMMEDIATELY",
+            ),
+            renderedPhraseologyPayload(
+                aircraft = aircraft,
+                template = RenderedPhraseologyTemplate.TaxiToStandInstruction,
+                obligationKinds = setOf(
+                    PhraseologyObligationKind.OrderedPhrase,
+                    PhraseologyObligationKind.SemanticSlot,
+                    PhraseologyObligationKind.Readback,
+                ),
+                tokens = listOf(
+                    PhraseologyToken.AircraftCallsign(aircraft),
+                    PhraseologyToken.Taxi,
+                    PhraseologyToken.To,
+                    PhraseologyToken.PointName(PointId("STAND-1")),
+                ),
+                text = "OE-ABC TAXI TO STAND-1",
             ),
         )
 }

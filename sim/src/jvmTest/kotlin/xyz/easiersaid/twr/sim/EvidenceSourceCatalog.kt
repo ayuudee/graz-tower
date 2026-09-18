@@ -307,6 +307,18 @@ object ICAO9432 {
     }
 
     object AfterLanding {
+        val ContactGroundWordingOnly: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3",
+            title = "CONTACT GROUND branch rendered; TAKE FIRST RIGHT WHEN VACATED remains blocked",
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
+        )
+
+        val RunwayVacatedTaxiToStandWording: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::after_landing_4_9_en::e30350fdecad45a1",
+            title = "RUNWAY VACATED and TAXI TO STAND VIA rendered phraseology",
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
+        )
+
         val RemainTowerFrequencyUntilRunwayVacated: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::after_landing_4_9_en::4a512226eec962cb",
             title = "Pilot remains on tower frequency until runway vacated unless otherwise advised",
@@ -321,6 +333,9 @@ object ICAO9432 {
 
         val Chunk06PolicyItems: Set<EvidenceSourceRef> =
             setOf(RemainTowerFrequencyUntilRunwayVacated, TaxiInstructionsAfterLandingRoll)
+
+        val PhraseologyItems: Set<EvidenceSourceRef> =
+            setOf(ContactGroundWordingOnly, RunwayVacatedTaxiToStandWording)
     }
 
     object TransferCommunications {
@@ -836,6 +851,7 @@ object EvidenceSourceCatalog {
             ICAO9432.FinalApproachLanding.ReportWording +
             ICAO9432.GoAroundProcedures.Chunk06GoAroundItems +
             ICAO9432.AfterLanding.Chunk06PolicyItems +
+            ICAO9432.AfterLanding.PhraseologyItems +
             ICAO9432.TransferCommunications.RequiredProcedures +
             ICAO9432.TransferCommunications.PhraseologyItems +
             ICAO9432.AerodromeInformation.Chunk06ModelItems +

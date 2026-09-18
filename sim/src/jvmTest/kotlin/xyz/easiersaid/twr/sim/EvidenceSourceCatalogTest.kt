@@ -42,6 +42,8 @@ class EvidenceSourceCatalogTest {
                 "icao9432-extracted::go_around_4_8_en::c3581d40a48406bb",
                 "icao9432-extracted::after_landing_4_9_en::4a512226eec962cb",
                 "icao9432-extracted::after_landing_4_9_en::5d742dc66caa1790",
+                "icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3",
+                "icao9432-extracted::after_landing_4_9_en::e30350fdecad45a1",
                 "icao9432-extracted::transfer_communications_2_8_2_en::40382df156ad071e",
                 "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
                 "icao9432-extracted::transfer_communications_2_8_2_en::b49ae03cbbb2d538",
@@ -183,6 +185,8 @@ class EvidenceSourceCatalogTest {
                 "icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044",
                 "icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4",
                 "icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075",
+                "icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3",
+                "icao9432-extracted::after_landing_4_9_en::e30350fdecad45a1",
                 "icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649",
                 "icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71",
             ),
@@ -227,6 +231,20 @@ class EvidenceSourceCatalogTest {
             assertTrue(manifest.contains(sourceId), "manifest missing $sourceId")
             assertTrue(manifest.contains(state), "manifest missing state $state")
         }
+    }
+
+    @Test
+    fun `after-landing contact-ground residual blocker remains represented in central manifest`() {
+        val manifest = Files.readString(
+            manifestPath(),
+        )
+
+        val sourceId = "icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3"
+        val state = "split: CONTACT GROUND wording covered; TAKE FIRST RIGHT WHEN VACATED remains blocked"
+        val residual = "first-right/vacating wording remains PHRASE-1"
+        assertTrue(manifest.contains(sourceId), "manifest missing $sourceId")
+        assertTrue(manifest.contains(state), "manifest missing state $state")
+        assertTrue(manifest.contains(residual), "manifest missing residual $residual")
     }
 
     private fun manifestPath() =
