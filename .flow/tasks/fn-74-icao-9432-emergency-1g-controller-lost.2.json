@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T20:20:41.254630Z",
+  "depends_on": [
+    "fn-74-icao-9432-emergency-1g-controller-lost.1"
+  ],
+  "epic": "fn-74-icao-9432-emergency-1g-controller-lost",
+  "id": "fn-74-icao-9432-emergency-1g-controller-lost.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-74-icao-9432-emergency-1g-controller-lost.2.md",
+  "status": "todo",
+  "title": "Implement controller lost-contact source-backed evidence",
+  "updated_at": "2026-09-18T20:20:41.254730Z"
+}

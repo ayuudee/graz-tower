@@ -7,10 +7,10 @@ failure.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` / split structured branch | 36 |
+| `covered-green` / split structured branch | 39 |
 | `covered-red` | 0 |
 | `model-gap` | 2 |
-| `model-gap` + `policy-blocked` | 4 |
+| `model-gap` + `policy-blocked` | 1 |
 | `model-gap` + `phraseology-later` | 4 |
 
 Chunk 08 now has narrow structured fn-68 emergency evidence for distress versus
@@ -25,10 +25,12 @@ evidence for emergency assistance actors, intercepted-distress relay, emergency
 frequency policy, and distress/urgency interference suppression. fn-73 adds
 structured projection evidence for emergency message addressing, relayed
 distress-message variation, urgency-message payload selection, and urgency
-addressing/frequency policy. It still has no emergency-descent specific-
-instruction necessity policy, controller-side lost-contact relay workflow,
-ATC-originated blind non-clearance workflow, Annex 10 conformance model,
-any-means distress communication model, or rendered emergency phraseology/order.
+addressing/frequency policy. fn-74 adds structured projection evidence for
+controller-side lost-contact route-aircraft relay, inter-station relay, and
+ATC-originated non-clearance blind transmission after failed relay attempts
+with believed-listening evidence. It still has no emergency-descent specific-
+instruction necessity policy, Annex 10 conformance model, any-means distress
+communication model, or rendered emergency phraseology/order.
 Ordinary VFR, go-around, or routine radio traces are not emergency-compliance
 evidence.
 
@@ -77,9 +79,9 @@ evidence.
 | `icao9432-extracted::communications_failure_9_5_en::7900c606e05e509b` | `covered-green structured communications-failure continuation-intention branch` | `Icao9432CommunicationsFailureSourceBackedTest` |
 | `icao9432-extracted::communications_failure_9_5_en::78c73a75fab644f4` | `split: structured receiver-failure blind-transmission branch covered-green; rendered receiver-failure prefix remains phraseology-later` | `Icao9432CommunicationsFailureSourceBackedTest`; `PHRASE-1` |
 | `icao9432-extracted::communications_failure_9_5_en::91e7d233bf3b64ff` | `covered-green structured radio-failure SSR 7600 branch` | `Icao9432CommunicationsFailureSourceBackedTest` |
-| `icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `ControllerInterventionPolicy` |
-| `icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `ControllerInterventionPolicy` |
-| `icao9432-extracted::communications_failure_9_5_en::75055714e70d4560` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `ClearanceTimingPolicy` |
+| `icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2` | `covered-green configured controller route-aircraft relay request branch` | `Icao9432ControllerLostContactSourceBackedTest`; `ControllerInterventionPolicy` |
+| `icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e` | `covered-green configured controller inter-station relay request branch` | `Icao9432ControllerLostContactSourceBackedTest`; `ControllerInterventionPolicy` |
+| `icao9432-extracted::communications_failure_9_5_en::75055714e70d4560` | `covered-green configured ATC non-clearance blind-transmission branch` | `Icao9432ControllerLostContactSourceBackedTest`; `ClearanceTimingPolicy` |
 | `icao9432-extracted::communications_failure_9_5_en::b73dda299970c2f3` | `covered-green structured blind-clearance prohibition/exception branch` | `Icao9432CommunicationsFailureSourceBackedTest` |
 | `icao9432-extracted::communications_failure_9_5_en::c1c14fab53a608c6` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1` |
 
@@ -89,7 +91,7 @@ evidence.
   the registry with `lifecycle.state = accepted`. Source text was checked
   against `research/txt/icao9432-extracted.txt` in Chapter 9.
 - Focused verification:
-  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432EmergencyClassificationPayloadSourceBackedTest' --tests '*.Icao9432EmergencyPrioritySilenceSourceBackedTest' --tests '*.Icao9432EmergencyDescentSourceBackedTest' --tests '*.Icao9432CommunicationsFailureSourceBackedTest' --tests '*.Icao9432EmergencyAssistanceRelaySourceBackedTest' --tests '*.Icao9432EmergencyMessagePolicySourceBackedTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
+  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432EmergencyClassificationPayloadSourceBackedTest' --tests '*.Icao9432EmergencyPrioritySilenceSourceBackedTest' --tests '*.Icao9432EmergencyDescentSourceBackedTest' --tests '*.Icao9432CommunicationsFailureSourceBackedTest' --tests '*.Icao9432EmergencyAssistanceRelaySourceBackedTest' --tests '*.Icao9432EmergencyMessagePolicySourceBackedTest' --tests '*.Icao9432ControllerLostContactSourceBackedTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
 - Full verification:
   `./gradlew-nix :sim:jvmTest`;
   `./gradlew-nix detekt`;
@@ -106,12 +108,14 @@ evidence.
   types for contact attempts, blind-transmission payloads, SSR code selection,
   and blind-clearance policy; fn-72 adds closed local assistance, relay,
   frequency-policy, and suppression projections; fn-73 adds closed local
-  emergency message addressing and payload-policy projections.
+  emergency message addressing and payload-policy projections; fn-74 adds
+  closed local controller lost-contact relay and non-clearance blind-
+  transmission projections.
 - Test architecture: source-backed tests cover the narrow structured branches;
   expected-gap specs still decompose residual `EMERGENCY-1` into missing
   surfaces and include an exact-union guard for all 46 refs.
 - Impact: no controller, pilot, sim scheduler, phraseology rendering, SSR, or
-  policy behaviour was changed. fn-69, fn-70, fn-71, fn-72, and fn-73 are
+  policy behaviour was changed. fn-69, fn-70, fn-71, fn-72, fn-73, and fn-74 are
   structured projection evidence, not production radio queue preemption,
   production emergency descent conflict-resolution behavior, production
   communications-failure workflow, global emergency assistance scheduling, or

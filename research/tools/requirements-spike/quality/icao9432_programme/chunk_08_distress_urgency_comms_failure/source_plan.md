@@ -27,12 +27,12 @@ classification, emergency priority, emergency radio-silence discipline,
 emergency-descent structured branches, and communications-failure structured
 branches, plus local structured evidence for assistance actors, intercepted
 distress relay, emergency frequency policy, and distress/urgency interference
-suppression, and emergency message addressing/payload policy. They still do not
-model any-means distress communication, production emergency-descent conflict
-resolution, controller-side lost-contact relay, ATC-originated blind non-
-clearance workflow, Annex 10 conformance, rendered emergency phraseology/order,
-or production radio queue preemption. Ordinary radio or VFR scenario traces
-must not be reused as emergency-compliance evidence.
+suppression, emergency message addressing/payload policy, and controller-side
+lost-contact relay / non-clearance blind-transmission workflow. They still do
+not model any-means distress communication, production emergency-descent
+conflict resolution, Annex 10 conformance, rendered emergency phraseology/order,
+or production radio queue preemption. Ordinary radio or VFR scenario traces must
+not be reused as emergency-compliance evidence.
 
 ## Planned Coverage
 
@@ -79,9 +79,9 @@ must not be reused as emergency-compliance evidence.
 | `icao9432-extracted::communications_failure_9_5_en::7900c606e05e509b` | ATC/advisory aircraft shall transmit PIC intentions for flight continuation. | `needs-sim-model` | `covered-green structured communications-failure continuation-intention branch` | `Icao9432CommunicationsFailureSourceBackedTest`; continuation intention is carried only under ATC/advisory service context. |
 | `icao9432-extracted::communications_failure_9_5_en::78c73a75fab644f4` | Receiver failure reports use TRANSMITTING BLIND DUE RECEIVER FAILURE. | `phraseology-later` | `split: structured receiver-failure blind-transmission branch covered-green; rendered receiver-failure prefix remains phraseology-later` | `Icao9432CommunicationsFailureSourceBackedTest`; receiver-failure mode is distinct from generic failed-contact blind-transmission mode. Rendered wording is not claimed. |
 | `icao9432-extracted::communications_failure_9_5_en::91e7d233bf3b64ff` | Airborne equipment failure should select SSR code 7600 when equipped. | `needs-sim-model` | `covered-green structured radio-failure SSR 7600 branch` | `Icao9432CommunicationsFailureSourceBackedTest`; radio/communications failure with SSR equipment selects code 7600 and is distinct from distress SSR 7700. |
-| `icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2` | Station unable to contact aircraft shall ask route aircraft to call/relay. | `needs-sim-model` | `model-gap` + `policy-blocked` | `EMERGENCY-1`; `ControllerInterventionPolicy`; no lost-contact assistance/relay workflow. |
-| `icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e` | Station unable to contact aircraft shall ask other stations to call/relay. | `needs-sim-model` | `model-gap` + `policy-blocked` | `EMERGENCY-1`; `ControllerInterventionPolicy`; no inter-station lost-contact relay workflow. |
-| `icao9432-extracted::communications_failure_9_5_en::75055714e70d4560` | If station attempts fail, non-clearance messages may be blind-transmitted. | `needs-sim-model` | `model-gap` + `policy-blocked` | `EMERGENCY-1`; `ClearanceTimingPolicy`; no ATC-originated blind non-clearance workflow after failed station attempts while the aircraft is believed listening. |
+| `icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2` | Station unable to contact aircraft shall ask route aircraft to call/relay. | `needs-sim-model` | `covered-green configured controller route-aircraft relay request branch` | `Icao9432ControllerLostContactSourceBackedTest`; `ControllerInterventionPolicy`; route-aircraft call/relay request requires failed calls on frequencies the aircraft is believed to be listening on. |
+| `icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e` | Station unable to contact aircraft shall ask other stations to call/relay. | `needs-sim-model` | `covered-green configured controller inter-station relay request branch` | `Icao9432ControllerLostContactSourceBackedTest`; `ControllerInterventionPolicy`; other-station call/relay request requires failed calls on frequencies the aircraft is believed to be listening on. |
+| `icao9432-extracted::communications_failure_9_5_en::75055714e70d4560` | If station attempts fail, non-clearance messages may be blind-transmitted. | `needs-sim-model` | `covered-green configured ATC non-clearance blind-transmission branch` | `Icao9432ControllerLostContactSourceBackedTest`; `ClearanceTimingPolicy`; non-clearance blind transmission requires failed relay attempts and believed-listening evidence. |
 | `icao9432-extracted::communications_failure_9_5_en::b73dda299970c2f3` | Blind ATC clearances shall not be made except at originator request. | `needs-sim-model` | `covered-green structured blind-clearance prohibition/exception branch` | `Icao9432CommunicationsFailureSourceBackedTest`; blind ATC clearances are rejected unless the clearance originator explicitly requests blind transmission. |
 | `icao9432-extracted::communications_failure_9_5_en::c1c14fab53a608c6` | General communications-failure rules are in Annex 10 Volume II. | `needs-sim-model` | `model-gap` | `EMERGENCY-1`; no Annex 10 communications-failure conformance model. |
 
@@ -104,10 +104,12 @@ must not be reused as emergency-compliance evidence.
    - fn-73 covers emergency message addressing, relayed distress-message
      variation, urgency-message payload selection, and urgency
      addressing/frequency policy as structured projection evidence;
+   - fn-74 covers controller lost-contact route-aircraft relay,
+     inter-station relay, and ATC-originated non-clearance blind transmission
+     as structured projection evidence;
    - expected-gap specs keep rendered emergency phraseology/order,
      any-means distress communication, emergency-descent specific-instruction
-     necessity, controller-side lost-contact relay, ATC-originated blind non-
-     clearance workflow, and Annex 10 conformance visibly blocked.
+     necessity, and Annex 10 conformance visibly blocked.
 2. A chunk-level exact-union guard proves that source refs cited by chunk 08
    source specs exactly equal
    `ICAO9432.DistressUrgencyCommsFailure.Chunk08Items`.
@@ -117,7 +119,7 @@ must not be reused as emergency-compliance evidence.
 
 ## Review Considerations
 
-- FP / type safety: fn-68, fn-69, fn-70, fn-71, fn-72, and fn-73 use closed local
+- FP / type safety: fn-68, fn-69, fn-70, fn-71, fn-72, fn-73, and fn-74 use closed local
   source-unit projections over existing production concepts where possible, not
   new global evidence payloads. Future emergency support should introduce typed
   emergency/radio-failure concepts rather than overloading ordinary radio

@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-74-icao-9432-emergency-1g-lost-contact-relay",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-18T20:32:02.840408Z",
+  "created_at": "2026-09-18T20:20:08.239276Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-74-icao-9432-emergency-1g-controller-lost",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-18T20:23:10.465799Z",
+  "spec_path": ".flow/specs/fn-74-icao-9432-emergency-1g-controller-lost.md",
+  "status": "done",
+  "title": "ICAO 9432 EMERGENCY-1G controller lost-contact relay workflow",
+  "updated_at": "2026-09-18T20:32:08.478725Z"
+}

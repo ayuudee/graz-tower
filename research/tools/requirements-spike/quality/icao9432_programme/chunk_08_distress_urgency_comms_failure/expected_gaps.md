@@ -9,9 +9,9 @@ marked covered-green with the current model/evidence surface.
 
 | Source-unit state | Units |
 |---|---:|
-| `covered-green` / split structured branch | 36 |
+| `covered-green` / split structured branch | 39 |
 | `model-gap` | 2 |
-| `model-gap` + `policy-blocked` | 4 |
+| `model-gap` + `policy-blocked` | 1 |
 | `model-gap` + `phraseology-later` | 4 |
 | `phraseology-later` | 0 |
 
@@ -26,10 +26,12 @@ fn-72 moved emergency assistance actor, intercepted-distress relay, emergency
 frequency-policy, and distress/urgency interference-suppression branches to
 source-backed coverage. fn-73 moved emergency message addressing, relayed
 distress-message variation, urgency-message payload selection, and urgency
-addressing/frequency policy branches to source-backed coverage. `EMERGENCY-1`
-remains the dominant blocker for emergency-descent specific-instruction
-necessity policy, controller-side lost-contact workflow, Annex 10 conformance,
-any-means distress communication, and emergency phraseology/order work.
+addressing/frequency policy branches to source-backed coverage. fn-74 moved
+controller-side lost-contact relay and non-clearance blind-
+transmission branches to source-backed coverage. `EMERGENCY-1` remains the
+dominant blocker for emergency-descent specific-instruction necessity policy,
+Annex 10 conformance, any-means distress communication, and emergency
+phraseology/order work.
 
 ## Model Gaps
 
@@ -43,9 +45,6 @@ any-means distress communication, and emergency phraseology/order work.
 | Source unit | Blocker | Reason |
 |---|---|---|
 | `icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No pilot safety-doubt trigger. |
-| `icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2` | `EMERGENCY-1`; `ControllerInterventionPolicy` | No controller-side lost-contact aircraft-assistance and relay workflow. |
-| `icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e` | `EMERGENCY-1`; `ControllerInterventionPolicy` | No controller-side lost-contact inter-station assistance and relay workflow. |
-| `icao9432-extracted::communications_failure_9_5_en::75055714e70d4560` | `EMERGENCY-1`; `ClearanceTimingPolicy` | No ATC-originated blind non-clearance workflow after failed station attempts while the aircraft is believed listening. |
 
 ## Model Gaps With Phraseology
 
@@ -96,3 +95,6 @@ any-means distress communication, and emergency phraseology/order work.
 | `icao9432-extracted::communications_failure_9_5_en::78c73a75fab644f4` | `split: structured receiver-failure blind-transmission branch covered-green; rendered receiver-failure prefix remains phraseology-later` | `Icao9432CommunicationsFailureSourceBackedTest`; receiver-failure blind mode is distinct from failed-contact blind mode. Rendered prefix wording remains `PHRASE-1`. |
 | `icao9432-extracted::communications_failure_9_5_en::91e7d233bf3b64ff` | `covered-green structured radio-failure SSR 7600 branch` | `Icao9432CommunicationsFailureSourceBackedTest`; communications failure with SSR equipment selects code 7600, distinct from distress SSR 7700. |
 | `icao9432-extracted::communications_failure_9_5_en::b73dda299970c2f3` | `covered-green structured blind-clearance prohibition/exception branch` | `Icao9432CommunicationsFailureSourceBackedTest`; blind ATC clearances are rejected unless the clearance originator explicitly requests blind transmission. |
+| `icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2` | `covered-green configured controller route-aircraft relay request branch` | `Icao9432ControllerLostContactSourceBackedTest`; after calls fail on frequencies the aircraft is believed to be listening on, a route-aircraft call/relay request is available under explicit policy. |
+| `icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e` | `covered-green configured controller inter-station relay request branch` | `Icao9432ControllerLostContactSourceBackedTest`; after calls fail on frequencies the aircraft is believed to be listening on, an other-station call/relay request is available under explicit policy. |
+| `icao9432-extracted::communications_failure_9_5_en::75055714e70d4560` | `covered-green configured ATC non-clearance blind-transmission branch` | `Icao9432ControllerLostContactSourceBackedTest`; non-clearance blind transmission requires failed relay attempts and believed-listening evidence. |

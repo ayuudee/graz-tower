@@ -26,11 +26,7 @@ class Icao9432ModelGapSourceUnitSpecTest {
         "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e",
     )
 
-    private val chunk08CommsFailureRoutingRefs: List<SourceUnitRef> = chunk08Refs(
-        "icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2",
-        "icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e",
-        "icao9432-extracted::communications_failure_9_5_en::75055714e70d4560",
-    )
+    private val chunk08CommsFailureRoutingRefs: List<SourceUnitRef> = emptyList()
 
     private val chunk08BlindTransmissionPhraseologyRefs: List<SourceUnitRef> = chunk08Refs(
         "icao9432-extracted::communications_failure_9_5_en::bc9bb12804033b07",
@@ -74,6 +70,9 @@ class Icao9432ModelGapSourceUnitSpecTest {
         "icao9432-extracted::communications_failure_9_5_en::7900c606e05e509b",
         "icao9432-extracted::communications_failure_9_5_en::91e7d233bf3b64ff",
         "icao9432-extracted::communications_failure_9_5_en::b73dda299970c2f3",
+        "icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2",
+        "icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e",
+        "icao9432-extracted::communications_failure_9_5_en::75055714e70d4560",
     )
 
     private val chunk08GapSpecRefGroups: List<List<SourceUnitRef>> =
@@ -845,33 +844,6 @@ class Icao9432ModelGapSourceUnitSpecTest {
                 modelGap(
                     "The sim has structured emergency-descent safeguarding and general-warning evidence, " +
                         "but no policy evidence deciding when follow-up specific instructions are necessary.",
-                )
-            }
-        }.assertSatisfied().assertHasModelGap()
-    }
-
-    @Test
-    fun `communications failure routing source units report missing lost contact workflow`() {
-        sourceUnitSpec("icao9432-comms-failure-routing-model-gaps") {
-            title("Communications-failure relay and controller blind-transmission claims require lost-contact workflow")
-            sourceUnits(chunk08CommsFailureRoutingRefs)
-            domain("actor", setOf("route-aircraft", "other-station", "ground-station"))
-            domain("contact-result", setOf("unable-contact-aircraft", "aircraft-believed-listening"))
-            domain("station-action", setOf("request-relay", "blind-transmit-non-clearance"))
-
-            partition(
-                name = "failed station contact escalates to relay request or non-clearance blind transmission",
-                parameters = mapOf(
-                    "actor" to "ground-station",
-                    "contact-result" to "unable-contact-aircraft",
-                    "station-action" to "request-relay",
-                ),
-            ) {
-                hit("lost-contact-routing-and-relay-required")
-                modelGap(
-                    "The sim has no controller-side lost-contact workflow for asking route aircraft or " +
-                        "other stations to call/relay, and no ATC-originated blind non-clearance workflow " +
-                        "after failed station attempts while the aircraft is believed listening.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()
