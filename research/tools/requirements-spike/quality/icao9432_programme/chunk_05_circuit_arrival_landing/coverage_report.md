@@ -10,7 +10,10 @@ Chunk: ICAO 9432 circuit, final approach, and landing.
 | `covered-red` | 0 |
 | `model-gap` | 2 |
 | `policy-blocked` | 6 |
-| `phraseology-later` | 13 |
+| `phraseology-later` | 10 |
+| `split: FINAL wording covered; distance/timing remains blocked` | 1 |
+| `split: LONG FINAL wording covered; final-turn distance remains blocked` | 1 |
+| `split: straight-in LONG FINAL wording covered; straight-in timing/policy remains blocked` | 1 |
 
 The covered-green source units in this chunk are the touch-and-go request
 capability and the rendered `CLEARED TOUCH AND GO` clearance phrase. They are
@@ -18,6 +21,9 @@ covered by real LOWG circuit-training traces that observe
 `ReportEvent.Downwind(circuitIntent = TOUCH_AND_GO)` before
 `ClearedTouchAndGo`, plus fn-61 rendered phraseology evidence for the clearance
 wording.
+fn-83 additionally covers only the rendered pilot-report wording branches for
+`FINAL` and `LONG FINAL`; the distance, timing, final-turn, straight-in, and
+local-procedure aspects remain blocked as split residuals.
 
 ## Coverage Table
 
@@ -32,14 +38,14 @@ wording.
 | `icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::7e3aec5e5fd60c41` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1` | Pilot should confirm ATIS when contacting tower. |
 | `icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::b64030acf6ef4bbd` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `LocalProcedurePolicy` | Straight-in approach may be possible depending on traffic / arrival direction. |
 | `icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::dcf776a1b9c8a303` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `LocalProcedurePolicy` | Pilot in circuit makes routine reports required by local procedures. |
-| `icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1`; distance evidence | `FINAL` report timing. |
+| `icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044` | `split: FINAL wording covered; distance/timing remains blocked` | `Icao9432PhraseologyEvidenceTest`; residual distance/timing evidence blocked | `FINAL` report wording covered; 7 km / 4 NM timing not covered. |
 | `icao9432-extracted::final_approach_landing_4_7_en::0ece166e11d7728e` | `covered-green` | `Icao9432TouchAndGoSourceBackedScenarioTest` | Pilot may request touch-and-go in circuit training. |
 | `icao9432-extracted::final_approach_landing_4_7_en::1327871f46c1d348` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1` | `WHEELS APPEAR UP` phrase. |
 | `icao9432-extracted::final_approach_landing_4_7_en::1960f59d8b9efecb` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1` | `LANDING GEAR APPEARS DOWN` phrase. |
 | `icao9432-extracted::final_approach_landing_4_7_en::1db805d02051bf47` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1` | Wheel does-not-appear-up/down phrase. |
-| `icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1`; distance evidence | `LONG FINAL` when final turn is greater than 7 km / 4 NM. |
+| `icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4` | `split: LONG FINAL wording covered; final-turn distance remains blocked` | `Icao9432PhraseologyEvidenceTest`; residual final-turn distance evidence blocked | `LONG FINAL` wording covered; greater-than-7 km / 4 NM turn condition not covered. |
 | `icao9432-extracted::final_approach_landing_4_7_en::63836b7aef62a6f6` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest` | Pilot may request fly-past for visual inspection from ground. |
-| `icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1`; policy/distance evidence | Straight-in `LONG FINAL` at about 15 km / 8 NM. |
+| `icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075` | `split: straight-in LONG FINAL wording covered; straight-in timing/policy remains blocked` | `Icao9432PhraseologyEvidenceTest`; residual straight-in timing/policy evidence blocked | `LONG FINAL` wording covered; straight-in / about-15 km branch not covered. |
 | `icao9432-extracted::final_approach_landing_4_7_en::7bbc96aa5ee36893` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1` | Wheel appears up/down phrase. |
 | `icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4` | `covered-green` | `Icao9432PhraseologyEvidenceTest`; `RenderedPhraseologyTrace` | ATC may clear touch-and-go using `CLEARED TOUCH AND GO`. |
 | `icao9432-extracted::final_approach_landing_4_7_en::aaf5262d8e7750b2` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1` | Low-pass example dialogue. |

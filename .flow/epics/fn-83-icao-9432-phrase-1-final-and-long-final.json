@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-83-icao-9432-phrase-1-final-and-long-final",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
+  "created_at": "2026-09-18T22:03:17.324385Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-83-icao-9432-phrase-1-final-and-long-final",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-18T22:08:25.163908Z",
+  "spec_path": ".flow/specs/fn-83-icao-9432-phrase-1-final-and-long-final.md",
+  "status": "open",
+  "title": "ICAO 9432 PHRASE-1 final and long-final report wording evidence",
+  "updated_at": "2026-09-18T22:08:25.164019Z"
+}

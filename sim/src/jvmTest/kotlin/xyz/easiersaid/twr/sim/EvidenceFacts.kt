@@ -308,6 +308,30 @@ sealed interface EvidenceFactPayload {
         override val kind: EvidenceFactKind = EvidenceFactKind.UnsupportedRenderedPilotReadbackPhraseology
     }
 
+    data class RenderedPilotReportPhraseology(
+        val aircraftId: AircraftId,
+        val transmissionRef: TransmissionId,
+        val template: RenderedPhraseologyTemplate,
+        val obligationKinds: Set<PhraseologyObligationKind>,
+        val tokens: List<PhraseologyToken>,
+        val text: RenderedPhraseText,
+    ) : EvidenceFactPayload {
+        init {
+            require(obligationKinds.isNotEmpty()) { "rendered pilot report phraseology must name obligation kinds" }
+            require(tokens.isNotEmpty()) { "rendered pilot report phraseology must carry tokens" }
+        }
+
+        override val kind: EvidenceFactKind = EvidenceFactKind.RenderedPilotReportPhraseology
+    }
+
+    data class UnsupportedRenderedPilotReportPhraseology(
+        val aircraftId: AircraftId,
+        val transmissionRef: TransmissionId,
+        val report: Report,
+    ) : EvidenceFactPayload {
+        override val kind: EvidenceFactKind = EvidenceFactKind.UnsupportedRenderedPilotReportPhraseology
+    }
+
     data class ConfiguredPolicy(
         val policy: ConfiguredPolicyBinding,
     ) : EvidenceFactPayload {
@@ -345,6 +369,8 @@ enum class EvidenceFactKind {
     UnsupportedRenderedPhraseology,
     RenderedPilotReadbackPhraseology,
     UnsupportedRenderedPilotReadbackPhraseology,
+    RenderedPilotReportPhraseology,
+    UnsupportedRenderedPilotReportPhraseology,
     ConfiguredPolicy,
     Sample,
 }
@@ -999,12 +1025,20 @@ object EvidenceFactAdapters {
             pilot = pilot,
             transmission = transmission,
         )
+        val reportPhraseologyFact = renderedPilotReportPhraseologyFact(
+            scenarioId = scenarioId,
+            recordIndex = recordIndex,
+            record = record,
+            pilot = pilot,
+            transmission = transmission,
+        )
         return listOf(transmissionFact) +
             reportFacts +
             listOfNotNull(aerodromeInformationFact) +
             listOfNotNull(frequencyChangeFact) +
             listOfNotNull(receptionDoubtFact) +
-            listOfNotNull(phraseologyFact)
+            listOfNotNull(phraseologyFact) +
+            listOfNotNull(reportPhraseologyFact)
     }
 
     /**
@@ -1310,6 +1344,56 @@ object EvidenceFactAdapters {
             sourceTransmissionId = record.transmissionId,
             extractionPath = EvidenceExtractionPath(
                 "sim.records[$recordIndex].pilot.renderedReadbackPhraseology",
+            ),
+            payload = payload,
+        )
+    }
+
+    /**
+     * Project the narrow PHRASE-1 rendered pilot-report proof set. The
+     * supported shapes are exact single-event `Report(Final)` and
+     * `Report(LongFinal)` pilot transmissions. Clear reports outside that
+     * shape remain explicit typed unsupported evidence; non-clear reports emit
+     * no rendered/unsupported phraseology evidence.
+     *
+     * Sequence offset `+11` is reserved for rendered pilot report
+     * phraseology. [FACTS_PER_RECORD] must stay greater than this offset.
+     */
+    private fun renderedPilotReportPhraseologyFact(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        pilot: SpeakerRef.Pilot,
+        transmission: PilotTransmission,
+    ): EvidenceFact? {
+        if (record.receptionQuality !is ReceptionQuality.Clear) return null
+        val report = transmission as? Report ?: return null
+        val renderResult = renderPilotReportPhraseology(report)
+        val payload = when (renderResult) {
+            is PilotReportPhraseologyRenderResult.Rendered ->
+                EvidenceFactPayload.RenderedPilotReportPhraseology(
+                    aircraftId = pilot.aircraftId,
+                    transmissionRef = record.transmissionId,
+                    template = renderResult.phraseology.template,
+                    obligationKinds = renderResult.phraseology.obligationKinds,
+                    tokens = renderResult.phraseology.tokens,
+                    text = renderResult.phraseology.text,
+                )
+            is PilotReportPhraseologyRenderResult.UnsupportedReport ->
+                EvidenceFactPayload.UnsupportedRenderedPilotReportPhraseology(
+                    aircraftId = pilot.aircraftId,
+                    transmissionRef = record.transmissionId,
+                    report = renderResult.report,
+                )
+        }
+        return fact(
+            scenarioId = scenarioId,
+            origin = EvidenceFactOrigin.SimRun,
+            sequence = EvidenceSequence(recordIndex * FACTS_PER_RECORD + 11),
+            simTime = record.time,
+            sourceTransmissionId = record.transmissionId,
+            extractionPath = EvidenceExtractionPath(
+                "sim.records[$recordIndex].pilot.renderedReportPhraseology",
             ),
             payload = payload,
         )
@@ -1699,7 +1783,7 @@ object EvidenceFactAdapters {
         )
     }
 
-    private const val FACTS_PER_RECORD: Int = 11
+    private const val FACTS_PER_RECORD: Int = 12
     private const val COMMS_1_TOWER_END_MS: Long = 2500L
     private const val COMMS_1_BLOCKING_END_MS: Long = 2000L
     private const val COMMS_1_UNTIL_SECONDS: Long = 10L

@@ -451,9 +451,9 @@ class Icao9432ModelGapSourceUnitSpecTest {
     }
 
     @Test
-    fun `final and long final report source units report missing distance and rendered phraseology evidence`() {
+    fun `final and long final report source units retain residual distance timing and policy blockers`() {
         sourceUnitSpec("icao9432-final-long-final-distance-phraseology-gap") {
-            title("FINAL and LONG FINAL source units require rendered reports and distance-at-report evidence")
+            title("FINAL and LONG FINAL split rows still require distance, timing, and straight-in policy evidence")
             sourceUnits(
                 listOf(
                     SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044"),
@@ -473,8 +473,9 @@ class Icao9432ModelGapSourceUnitSpecTest {
             ) {
                 hit("distance-at-report-required")
                 modelGap(
-                    "Current traces expose typed Final / LongFinal reports, but do not prove the rendered " +
-                        "report wording or the aircraft distance from touchdown at the report threshold.",
+                    "fn-83 covers rendered FINAL / LONG FINAL wording only. Current traces still do not " +
+                        "prove the aircraft distance from touchdown, the 7 km / 4 NM threshold, the " +
+                        "about-15 km / 8 NM straight-in threshold, or straight-in procedure policy.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()

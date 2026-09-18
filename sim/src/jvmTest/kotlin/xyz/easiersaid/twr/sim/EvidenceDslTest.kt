@@ -219,6 +219,69 @@ class EvidenceDslTest {
     }
 
     @Test
+    fun `renderedPilotReportPhraseology selectors require exact final and long-final tokens`() {
+        val aircraft = AircraftId("OE-ABC")
+        val facts = EvidenceFactAdapters.fromProjectedPayloads(
+            scenarioId = "rendered-pilot-report-selector",
+            payloads = listOf(
+                renderedPilotReportPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.FinalReport,
+                    tokens = listOf(PhraseologyToken.Final),
+                    text = "FINAL",
+                ),
+                renderedPilotReportPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.LongFinalReport,
+                    tokens = listOf(PhraseologyToken.Long, PhraseologyToken.Final),
+                    text = "LONG FINAL",
+                ),
+            ),
+        )
+        val wrongTokenFacts = EvidenceFactAdapters.fromProjectedPayloads(
+            scenarioId = "rendered-pilot-report-wrong-token",
+            payloads = listOf(
+                renderedPilotReportPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.LongFinalReport,
+                    tokens = listOf(PhraseologyToken.Final),
+                    text = "FINAL",
+                ),
+            ),
+        )
+
+        val report = simEvidence("rendered-pilot-report-selector") {
+            observe { facts }
+            invariant("final report") {
+                expect { renderedPilotReportPhraseology(aircraft).finalReport() }
+            }
+            invariant("long-final report") {
+                expect { renderedPilotReportPhraseology(aircraft).longFinalReport() }
+            }
+        }
+        val wrongTokenReport = simEvidence("rendered-pilot-report-wrong-token") {
+            observe { wrongTokenFacts }
+            invariant("wrong long-final token") {
+                expect { renderedPilotReportPhraseology(aircraft).longFinalReport() }
+            }
+        }
+        val missingReport = simEvidence("rendered-pilot-report-missing") {
+            observe {
+                EvidenceFactSet(scenarioId = "rendered-pilot-report-missing", facts = emptyList(), diagnostic = "empty")
+            }
+            invariant("missing final") {
+                expect { renderedPilotReportPhraseology(aircraft).finalReport() }
+            }
+        }
+
+        assertTrue(report.results.all { result -> result.outcome is EvidenceAuditOutcome.Pass })
+        assertTrue(report.results.all { result -> result.activationFactIds.isNotEmpty() })
+        assertTrue(wrongTokenReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(wrongTokenReport.results.single().activationFactIds.isNotEmpty())
+        assertTrue(missingReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+    }
+
+    @Test
     fun `operationalPolicy selector requires explicit configured branch and scope`() {
         val scope = OperationalPolicyScope.AerodromeRunway(
             aerodrome = AerodromeId("LOWG"),
@@ -359,6 +422,24 @@ class EvidenceDslTest {
                 PhraseologyObligationKind.OrderedPhrase,
                 PhraseologyObligationKind.SemanticSlot,
                 PhraseologyObligationKind.ForbiddenMeaning,
+            ),
+            tokens = tokens,
+            text = RenderedPhraseText(text),
+        )
+
+    private fun renderedPilotReportPhraseologyPayload(
+        aircraft: AircraftId,
+        template: RenderedPhraseologyTemplate,
+        tokens: List<PhraseologyToken>,
+        text: String,
+    ): EvidenceFactPayload.RenderedPilotReportPhraseology =
+        EvidenceFactPayload.RenderedPilotReportPhraseology(
+            aircraftId = aircraft,
+            transmissionRef = TransmissionId(1),
+            template = template,
+            obligationKinds = setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.SemanticSlot,
             ),
             tokens = tokens,
             text = RenderedPhraseText(text),

@@ -503,6 +503,13 @@ class EvidenceExpectContext internal constructor(
             activate = { factId -> activated += factId },
         )
 
+    fun renderedPilotReportPhraseology(aircraftId: AircraftId): AuditRenderedPilotReportPhraseologySubject =
+        AuditRenderedPilotReportPhraseologySubject(
+            aircraftId = aircraftId,
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
+
     fun operationalPolicy(): AuditOperationalPolicySubject =
         AuditOperationalPolicySubject(
             facts = facts.orderedFacts(),
@@ -1331,6 +1338,68 @@ class AuditRenderedPilotReadbackPhraseologySubject internal constructor(
                 PhraseologyObligationKind.Readback,
                 PhraseologyObligationKind.SemanticSlot,
             )
+    }
+}
+
+class AuditRenderedPilotReportPhraseologySubject internal constructor(
+    private val aircraftId: AircraftId,
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun finalReport(): EvidenceAuditOutcome =
+        reportPhraseologyOutcome(
+            template = RenderedPhraseologyTemplate.FinalReport,
+            expectedTokens = listOf(PhraseologyToken.Final),
+            failReason = "Missing rendered FINAL report phraseology for ${aircraftId.value}",
+        )
+
+    fun longFinalReport(): EvidenceAuditOutcome =
+        reportPhraseologyOutcome(
+            template = RenderedPhraseologyTemplate.LongFinalReport,
+            expectedTokens = listOf(PhraseologyToken.Long, PhraseologyToken.Final),
+            failReason = "Missing rendered LONG FINAL report phraseology for ${aircraftId.value}",
+        )
+
+    private fun reportPhraseologyOutcome(
+        template: RenderedPhraseologyTemplate,
+        expectedTokens: List<PhraseologyToken>,
+        failReason: String,
+    ): EvidenceAuditOutcome {
+        val candidates = facts.filter { fact ->
+            val payload = fact.payload as? EvidenceFactPayload.RenderedPilotReportPhraseology ?: return@filter false
+            payload.aircraftId == aircraftId && payload.template == template
+        }
+        if (candidates.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = failReason,
+                evidence = emptyList(),
+            )
+        }
+        candidates.forEach { fact -> activate(fact.id) }
+        val expectedObligationKinds = setOf(
+            PhraseologyObligationKind.OrderedPhrase,
+            PhraseologyObligationKind.SemanticSlot,
+        )
+        val matching = candidates.filter { fact ->
+            val payload = fact.payload as EvidenceFactPayload.RenderedPilotReportPhraseology
+            payload.tokens == expectedTokens && payload.obligationKinds.containsAll(expectedObligationKinds)
+        }
+        return if (matching.isNotEmpty()) {
+            EvidenceAuditOutcome.Pass(
+                matching.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedPilotReportPhraseology
+                    "${payload.template}:${payload.text.value}@${fact.provenance.sequence.value}"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Rendered pilot report phraseology did not match expected tokens",
+                evidence = candidates.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedPilotReportPhraseology
+                    "${payload.template}:${payload.obligationKinds}:${payload.tokens}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
     }
 }
 

@@ -7,6 +7,8 @@ import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.Frequency
+import xyz.easiersaid.twr.protocol.Report
+import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimTime
@@ -252,6 +254,60 @@ class Icao9432PhraseologyEvidenceTest {
         report.assertNoFailures()
     }
 
+    @Test
+    fun `synthetic pilot reports render ICAO 9432 final and long-final wording only`() {
+        val aircraft = AircraftId("FASTAIR 345")
+
+        val report = simEvidence("icao9432-rendered-final-report-wording") {
+            observe {
+                EvidenceFactAdapters.fromTransmissionRecords(
+                    scenarioId = "icao9432-rendered-final-report-wording",
+                    records = listOf(
+                        pilotReportRecord(
+                            transmissionId = TransmissionId(90),
+                            aircraft = aircraft,
+                            event = ReportEvent.Final,
+                        ),
+                        pilotReportRecord(
+                            transmissionId = TransmissionId(91),
+                            aircraft = aircraft,
+                            event = ReportEvent.LongFinal,
+                        ),
+                    ),
+                )
+            }
+            source("FINAL report rendered wording branch only") {
+                cites(ICAO9432.FinalApproachLanding.FinalReportWording)
+                sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §4.7")
+                sample("coverage-scope", "rendered wording branch only")
+                sample("distance-timing", "blocked")
+                expect {
+                    renderedPilotReportPhraseology(aircraft).finalReport()
+                }
+            }
+            source("LONG FINAL final-turn rendered wording branch only") {
+                cites(ICAO9432.FinalApproachLanding.LongFinalTurnReportWording)
+                sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §4.7")
+                sample("coverage-scope", "rendered wording branch only")
+                sample("final-turn-distance", "blocked")
+                expect {
+                    renderedPilotReportPhraseology(aircraft).longFinalReport()
+                }
+            }
+            source("straight-in LONG FINAL rendered wording branch only") {
+                cites(ICAO9432.FinalApproachLanding.StraightInLongFinalReportWording)
+                sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §4.7")
+                sample("coverage-scope", "rendered wording branch only")
+                sample("straight-in-timing-policy", "blocked")
+                expect {
+                    renderedPilotReportPhraseology(aircraft).longFinalReport()
+                }
+            }
+        }
+
+        report.assertNoFailures()
+    }
+
     private fun stopImmediatelyRecord(
         aircraft: AircraftId,
     ): TransmissionRecord {
@@ -270,6 +326,20 @@ class Icao9432PhraseologyEvidenceTest {
             utterance = Utterance.FromController(output),
         )
     }
+
+    private fun pilotReportRecord(
+        transmissionId: TransmissionId,
+        aircraft: AircraftId,
+        event: ReportEvent,
+    ): TransmissionRecord =
+        TransmissionRecord(
+            transmissionId = transmissionId,
+            time = SimTime.ZERO,
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(2),
+            speaker = SpeakerRef.Pilot(aircraft),
+            receiver = ReceiverRef.Controller(ControllerId("LOWG_TWR")),
+            utterance = Utterance.FromPilot(Report(events = listOf(event))),
+        )
 
     private fun combinedEvidenceFactSet(
         scenarioId: String,

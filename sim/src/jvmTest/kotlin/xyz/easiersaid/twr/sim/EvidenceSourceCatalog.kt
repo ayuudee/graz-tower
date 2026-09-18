@@ -254,8 +254,29 @@ object ICAO9432 {
             claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
         )
 
+        val FinalReportWording: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044",
+            title = "Wording-only FINAL report phraseology; distance/timing remains blocked",
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
+        )
+
+        val LongFinalTurnReportWording: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4",
+            title = "Wording-only LONG FINAL report phraseology; final-turn distance remains blocked",
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
+        )
+
+        val StraightInLongFinalReportWording: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075",
+            title = "Wording-only straight-in LONG FINAL report phraseology; timing and policy remain blocked",
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
+        )
+
         val TouchAndGo: Set<EvidenceSourceRef> =
             setOf(TouchAndGoRequest, ClearedTouchAndGoPhrase)
+
+        val ReportWording: Set<EvidenceSourceRef> =
+            setOf(FinalReportWording, LongFinalTurnReportWording, StraightInLongFinalReportWording)
     }
 
     object GoAroundProcedures {
@@ -812,6 +833,7 @@ object EvidenceSourceCatalog {
             ICAO9432.Taxi.Chunk03AuditItems +
             ICAO9432.TakeoffProcedures.Chunk04ScenarioItems +
             ICAO9432.FinalApproachLanding.TouchAndGo +
+            ICAO9432.FinalApproachLanding.ReportWording +
             ICAO9432.GoAroundProcedures.Chunk06GoAroundItems +
             ICAO9432.AfterLanding.Chunk06PolicyItems +
             ICAO9432.TransferCommunications.RequiredProcedures +

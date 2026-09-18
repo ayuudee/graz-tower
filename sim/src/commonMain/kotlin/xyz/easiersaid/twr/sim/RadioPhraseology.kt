@@ -11,6 +11,8 @@ import xyz.easiersaid.twr.protocol.FrequencyReadback
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.LineUpReadback
 import xyz.easiersaid.twr.protocol.Readback
+import xyz.easiersaid.twr.protocol.Report
+import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimpleElement
 import xyz.easiersaid.twr.protocol.StopImmediately
@@ -33,6 +35,8 @@ enum class RenderedPhraseologyTemplate {
     ContactFrequencyInstruction,
     FrequencyReadback,
     StopImmediatelyInstruction,
+    FinalReport,
+    LongFinalReport,
 }
 
 @JvmInline
@@ -61,6 +65,8 @@ sealed interface PhraseologyToken {
     data object Touch : PhraseologyToken
     data object And : PhraseologyToken
     data object Go : PhraseologyToken
+    data object Final : PhraseologyToken
+    data object Long : PhraseologyToken
 }
 
 data class RenderedControllerPhraseology(
@@ -95,6 +101,23 @@ data class RenderedPilotReadbackPhraseology(
 sealed interface PilotReadbackPhraseologyRenderResult {
     data class Rendered(val phraseology: RenderedPilotReadbackPhraseology) : PilotReadbackPhraseologyRenderResult
     data class UnsupportedReadback(val readback: Readback) : PilotReadbackPhraseologyRenderResult
+}
+
+data class RenderedPilotReportPhraseology(
+    val template: RenderedPhraseologyTemplate,
+    val obligationKinds: Set<PhraseologyObligationKind>,
+    val tokens: List<PhraseologyToken>,
+    val text: RenderedPhraseText,
+) {
+    init {
+        require(obligationKinds.isNotEmpty()) { "rendered pilot report phraseology must name obligation kinds" }
+        require(tokens.isNotEmpty()) { "rendered pilot report phraseology must carry tokens" }
+    }
+}
+
+sealed interface PilotReportPhraseologyRenderResult {
+    data class Rendered(val phraseology: RenderedPilotReportPhraseology) : PilotReportPhraseologyRenderResult
+    data class UnsupportedReport(val report: Report) : PilotReportPhraseologyRenderResult
 }
 
 fun renderControllerPhraseology(output: ControllerOutput.Instruct): ControllerPhraseologyRenderResult {
@@ -133,6 +156,33 @@ fun renderPilotReadbackPhraseology(
         else -> return PilotReadbackPhraseologyRenderResult.UnsupportedReadback(readback)
     }
     return PilotReadbackPhraseologyRenderResult.Rendered(phraseology)
+}
+
+fun renderPilotReportPhraseology(report: Report): PilotReportPhraseologyRenderResult {
+    val phraseology = when (report.events.singleOrNull()) {
+        ReportEvent.Final -> finalReportPhraseology()
+        ReportEvent.LongFinal -> longFinalReportPhraseology()
+        null,
+        is ReportEvent.Downwind,
+        ReportEvent.Base,
+        ReportEvent.Airborne,
+        ReportEvent.Established,
+        ReportEvent.EstablishedLocaliser,
+        ReportEvent.EstablishedGlidepath,
+        ReportEvent.RunwayVacated,
+        ReportEvent.Ready,
+        ReportEvent.GoingAround,
+        ReportEvent.VisualWithField,
+        ReportEvent.EstablishedInHold,
+        ReportEvent.TcasRa,
+        ReportEvent.MinimumFuel,
+        is ReportEvent.PassingLevel,
+        is ReportEvent.LeavingLevel,
+        is ReportEvent.DistanceDme,
+        is ReportEvent.OverFix,
+        -> return PilotReportPhraseologyRenderResult.UnsupportedReport(report)
+    }
+    return PilotReportPhraseologyRenderResult.Rendered(phraseology)
 }
 
 private fun lineUpAndWaitPhraseology(
@@ -281,9 +331,31 @@ private fun frequencyReadbackPhraseology(
     )
 }
 
+private fun finalReportPhraseology(): RenderedPilotReportPhraseology =
+    RenderedPilotReportPhraseology(
+        template = RenderedPhraseologyTemplate.FinalReport,
+        obligationKinds = reportObligations,
+        tokens = listOf(PhraseologyToken.Final),
+        text = RenderedPhraseText("FINAL"),
+    )
+
+private fun longFinalReportPhraseology(): RenderedPilotReportPhraseology =
+    RenderedPilotReportPhraseology(
+        template = RenderedPhraseologyTemplate.LongFinalReport,
+        obligationKinds = reportObligations,
+        tokens = listOf(PhraseologyToken.Long, PhraseologyToken.Final),
+        text = RenderedPhraseText("LONG FINAL"),
+    )
+
 private val renderedClearanceObligations: Set<PhraseologyObligationKind> =
     setOf(
         PhraseologyObligationKind.OrderedPhrase,
         PhraseologyObligationKind.SemanticSlot,
         PhraseologyObligationKind.ForbiddenMeaning,
+    )
+
+private val reportObligations: Set<PhraseologyObligationKind> =
+    setOf(
+        PhraseologyObligationKind.OrderedPhrase,
+        PhraseologyObligationKind.SemanticSlot,
     )

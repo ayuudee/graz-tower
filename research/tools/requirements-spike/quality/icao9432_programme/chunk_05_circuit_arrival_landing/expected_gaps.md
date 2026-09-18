@@ -11,7 +11,10 @@ marked covered-green with the current model/evidence surface.
 |---|---:|
 | `policy-blocked` | 6 |
 | `model-gap` | 2 |
-| `phraseology-later` | 13 |
+| `phraseology-later` | 10 |
+| `split: FINAL wording covered; distance/timing remains blocked` | 1 |
+| `split: LONG FINAL wording covered; final-turn distance remains blocked` | 1 |
+| `split: straight-in LONG FINAL wording covered; straight-in timing/policy remains blocked` | 1 |
 
 ## Policy-Blocked
 
@@ -38,13 +41,18 @@ marked covered-green with the current model/evidence surface.
 | `icao9432-extracted::aerodrome_traffic_circuit_4_6_part1_en::58ae778732ec6347` | `PHRASE-1` | Requires rendered right-hand circuit pattern wording. |
 | `icao9432-extracted::aerodrome_traffic_circuit_4_6_part1_en::a4fcedaac8a838e1` | `PHRASE-1` | Requires rendered initial-call ATIS acknowledgement. |
 | `icao9432-extracted::aerodrome_traffic_circuit_4_6_part2_en::7e3aec5e5fd60c41` | `PHRASE-1` | Requires rendered tower initial-contact ATIS confirmation. |
-| `icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044` | `PHRASE-1`; distance-at-report evidence | Requires rendered `FINAL` report and 7 km / 4 NM threshold evidence. |
 | `icao9432-extracted::final_approach_landing_4_7_en::1327871f46c1d348` | `PHRASE-1` | Requires rendered undercarriage phrase `WHEELS APPEAR UP`. |
 | `icao9432-extracted::final_approach_landing_4_7_en::1960f59d8b9efecb` | `PHRASE-1` | Requires rendered undercarriage phrase `LANDING GEAR APPEARS DOWN`. |
 | `icao9432-extracted::final_approach_landing_4_7_en::1db805d02051bf47` | `PHRASE-1` | Requires rendered wheel-not-appearing-up/down phrase. |
-| `icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4` | `PHRASE-1`; distance-at-report evidence | Requires rendered `LONG FINAL` report and greater-than-7 km / 4 NM threshold evidence. |
-| `icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075` | `PHRASE-1`; straight-in policy; distance-at-report evidence | Requires rendered straight-in `LONG FINAL` report at about 15 km / 8 NM. |
 | `icao9432-extracted::final_approach_landing_4_7_en::7bbc96aa5ee36893` | `PHRASE-1` | Requires rendered wheel-appearing-up/down phrase. |
 | `icao9432-extracted::final_approach_landing_4_7_en::aaf5262d8e7750b2` | `PHRASE-1` | Requires rendered low-pass example dialogue. |
 | `icao9432-extracted::final_approach_landing_4_7_en::b1c21e2f70bbf36f` | `PHRASE-1`; traffic-congestion policy | Requires rendered unable-touch-and-go phraseology and traffic-congestion policy. |
 | `icao9432-extracted::final_approach_landing_4_7_en::fbae3a11e1d068a3` | `PHRASE-1` | Requires rendered `LONG FINAL` / `FINAL` example dialogue, wind, and landing clearance wording. |
+
+## Split Residuals
+
+| Source unit | Residual blocker | Reason |
+|---|---|---|
+| `icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044` | distance-at-report evidence | fn-83 covers rendered `FINAL` wording; 7 km / 4 NM threshold evidence remains blocked. |
+| `icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4` | distance-at-report evidence | fn-83 covers rendered `LONG FINAL` wording; greater-than-7 km / 4 NM final-turn threshold evidence remains blocked. |
+| `icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075` | straight-in policy; distance-at-report evidence | fn-83 covers rendered `LONG FINAL` wording; straight-in procedure policy and about-15 km / 8 NM evidence remains blocked. |

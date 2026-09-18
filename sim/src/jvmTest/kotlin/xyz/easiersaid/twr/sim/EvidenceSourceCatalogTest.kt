@@ -1,5 +1,7 @@
 package xyz.easiersaid.twr.sim
 
+import java.nio.file.Files
+import java.nio.file.Paths
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -31,6 +33,9 @@ class EvidenceSourceCatalogTest {
                 "icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6b5a0d8b27525cbd",
                 "icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef",
                 "icao9432-extracted::final_approach_landing_4_7_en::0ece166e11d7728e",
+                "icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044",
+                "icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4",
+                "icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075",
                 "icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4",
                 "icao9432-extracted::go_around_4_8_en::43c33a8e74b02873",
                 "icao9432-extracted::go_around_4_8_en::6c8993a0519d5d64",
@@ -175,6 +180,9 @@ class EvidenceSourceCatalogTest {
                 "icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef",
                 "icao9432-extracted::transfer_communications_2_8_2_en::96720e821bf926cc",
                 "icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4",
+                "icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044",
+                "icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4",
+                "icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075",
                 "icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649",
                 "icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71",
             ),
@@ -184,4 +192,49 @@ class EvidenceSourceCatalogTest {
                 .toSet(),
         )
     }
+
+    @Test
+    fun `final report rendered phraseology refs are explicitly wording only`() {
+        val refs = ICAO9432.FinalApproachLanding.ReportWording
+
+        assertEquals(
+            setOf(
+                "icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044",
+                "icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4",
+                "icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075",
+            ),
+            refs.map { ref -> ref.canonicalId }.toSet(),
+        )
+        assertTrue(refs.all { ref -> ref.record.title.contains("Wording-only") })
+        assertTrue(refs.all { ref -> ref.record.title.contains("blocked") })
+        assertTrue(refs.all { ref -> ref.record.claimScope == EvidenceSourceClaimScope.RenderedPhraseologyTrace })
+    }
+
+    @Test
+    fun `final report residual blockers remain represented in central manifest`() {
+        val manifest = Files.readString(
+            manifestPath(),
+        )
+
+        listOf(
+            "icao9432-extracted::final_approach_landing_4_7_en::00baaf3c55155044" to
+                "split: FINAL wording covered; distance/timing remains blocked",
+            "icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4" to
+                "split: LONG FINAL wording covered; final-turn distance remains blocked",
+            "icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075" to
+                "split: straight-in LONG FINAL wording covered; straight-in timing/policy remains blocked",
+        ).forEach { (sourceId, state) ->
+            assertTrue(manifest.contains(sourceId), "manifest missing $sourceId")
+            assertTrue(manifest.contains(state), "manifest missing state $state")
+        }
+    }
+
+    private fun manifestPath() =
+        generateSequence(Paths.get("").toAbsolutePath()) { path -> path.parent }
+            .map { path ->
+                path.resolve(
+                    "research/tools/requirements-spike/quality/icao9432_programme/implementation_blocker_manifest.csv",
+                )
+            }
+            .first { path -> Files.exists(path) }
 }

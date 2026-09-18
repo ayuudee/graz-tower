@@ -72,7 +72,7 @@ class EvidenceFactsTest {
         ).orderedFacts()
 
         val reportFacts = facts.filter { fact -> fact.payload is EvidenceFactPayload.PilotReport }
-        assertEquals(listOf(EvidenceSequence(1), EvidenceSequence(12)), reportFacts.map { fact -> fact.provenance.sequence })
+        assertEquals(listOf(EvidenceSequence(1), EvidenceSequence(13)), reportFacts.map { fact -> fact.provenance.sequence })
         assertEquals(listOf(TransmissionId(100), TransmissionId(101)), reportFacts.map { fact -> fact.provenance.sourceTransmissionId })
         assertTrue(reportFacts.all { fact -> fact.provenance.simTime == SimTime.ZERO })
     }
@@ -156,7 +156,7 @@ class EvidenceFactsTest {
         )
         assertEquals(RenderedPhraseText("OE-ABC RUNWAY 16C CLEARED FOR TAKE-OFF"), payload.text)
         assertEquals(payload.transmissionRef, fact.provenance.sourceTransmissionId)
-        assertEquals(9, fact.provenance.sequence.value % 11)
+        assertEquals(9, fact.provenance.sequence.value % 12)
         assertEquals(
             fact.provenance.sequence.value - 9,
             facts.orderedFacts()
@@ -262,6 +262,137 @@ class EvidenceFactsTest {
         assertTrue(0 in sequences)
         assertTrue(9 in sequences)
         assertEquals(sequences.toSet().size, sequences.size)
+    }
+
+    @Test
+    fun `rendered pilot report phraseology projection emits final and long-final wording at reserved offset`() {
+        val aircraft = AircraftId("OE-ABC")
+        val records = listOf(
+            pilotTransmissionRecord(
+                index = 0,
+                aircraft = aircraft,
+                transmission = Report(events = listOf(ReportEvent.Final)),
+            ),
+            pilotTransmissionRecord(
+                index = 1,
+                aircraft = aircraft,
+                transmission = Report(events = listOf(ReportEvent.LongFinal)),
+            ),
+        )
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "rendered-pilot-report",
+            records = records,
+        )
+
+        val rendered = facts.facts
+            .mapNotNull { fact -> fact.payload as? EvidenceFactPayload.RenderedPilotReportPhraseology }
+            .sortedBy { payload -> payload.template.name }
+        assertEquals(2, rendered.size)
+        assertEquals(
+            listOf(PhraseologyToken.Final),
+            rendered.single { payload -> payload.template == RenderedPhraseologyTemplate.FinalReport }.tokens,
+        )
+        assertEquals(
+            RenderedPhraseText("LONG FINAL"),
+            rendered.single { payload -> payload.template == RenderedPhraseologyTemplate.LongFinalReport }.text,
+        )
+        assertEquals(
+            listOf(11, 23),
+            facts.orderedFacts()
+                .filter { fact -> fact.payload is EvidenceFactPayload.RenderedPilotReportPhraseology }
+                .map { fact -> fact.provenance.sequence.value },
+        )
+    }
+
+    @Test
+    fun `rendered pilot report phraseology projection suppresses non-clear supported report`() {
+        val aircraft = AircraftId("OE-ABC")
+        val record = pilotTransmissionRecord(
+            index = 0,
+            aircraft = aircraft,
+            transmission = Report(events = listOf(ReportEvent.Final)),
+        ).copy(receptionQuality = ReceptionQuality.Doubtful(ReceptionDoubtCause.SteppedOn))
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "rendered-pilot-report-non-clear",
+            records = listOf(record),
+        )
+
+        assertTrue(facts.facts.none { fact -> fact.payload is EvidenceFactPayload.RenderedPilotReportPhraseology })
+        assertTrue(facts.facts.none { fact -> fact.payload is EvidenceFactPayload.UnsupportedRenderedPilotReportPhraseology })
+    }
+
+    @Test
+    fun `rendered pilot report phraseology projection emits typed unsupported fact for clear unsupported report shape`() {
+        val aircraft = AircraftId("OE-ABC")
+        val report = Report(events = listOf(ReportEvent.Final, ReportEvent.Ready))
+        val record = pilotTransmissionRecord(
+            index = 0,
+            aircraft = aircraft,
+            transmission = report,
+        )
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "rendered-pilot-report-unsupported",
+            records = listOf(record),
+        )
+
+        assertTrue(facts.facts.none { fact -> fact.payload is EvidenceFactPayload.RenderedPilotReportPhraseology })
+        val unsupported = facts.facts
+            .mapNotNull { fact -> fact.payload as? EvidenceFactPayload.UnsupportedRenderedPilotReportPhraseology }
+            .single()
+        assertEquals(aircraft, unsupported.aircraftId)
+        assertEquals(record.transmissionId, unsupported.transmissionRef)
+        assertEquals(report, unsupported.report)
+    }
+
+    @Test
+    fun `rendered pilot report phraseology projection ignores non-report and non-pilot transmissions`() {
+        val aircraft = AircraftId("OE-ABC")
+        val nonReport = pilotTransmissionRecord(
+            index = 0,
+            aircraft = aircraft,
+            transmission = Request(RequestFrequencyChange()),
+        )
+        val nonPilotReport = TransmissionRecord(
+            transmissionId = TransmissionId(799),
+            time = SimTime.ZERO,
+            endedAt = SimTime.ofSeconds(2),
+            speaker = SpeakerRef.Controller(ControllerId("LOWG_TWR")),
+            receiver = ReceiverRef.Pilot(aircraft),
+            utterance = Utterance.FromPilot(Report(events = listOf(ReportEvent.Final))),
+        )
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "rendered-pilot-report-speaker-scope",
+            records = listOf(nonReport, nonPilotReport),
+        )
+
+        assertTrue(facts.facts.none { fact -> fact.payload is EvidenceFactPayload.RenderedPilotReportPhraseology })
+        assertTrue(facts.facts.none { fact -> fact.payload is EvidenceFactPayload.UnsupportedRenderedPilotReportPhraseology })
+    }
+
+    @Test
+    fun `rendered pilot report phraseology offset keeps fact ids unique within report record`() {
+        val aircraft = AircraftId("OE-ABC")
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "rendered-pilot-report-unique",
+            records = listOf(
+                pilotTransmissionRecord(
+                    index = 0,
+                    aircraft = aircraft,
+                    transmission = Report(events = listOf(ReportEvent.Final)),
+                ),
+            ),
+        )
+        val sequences = facts.orderedFacts().map { fact -> fact.provenance.sequence.value }
+
+        assertTrue(0 in sequences)
+        assertTrue(1 in sequences)
+        assertTrue(11 in sequences)
+        assertEquals(sequences.toSet().size, sequences.size)
+        assertEquals(facts.facts.map { fact -> fact.id }.toSet().size, facts.facts.size)
     }
 
     @Test
@@ -959,7 +1090,7 @@ class EvidenceFactsTest {
             .first { (it.payload as EvidenceFactPayload.FrequencyTransfer).mode == FrequencyTransferMode.PilotNotifiedAbsentAdvice }
             .provenance.sequence.value
         assertEquals(3, controllerAdvisedSeq)
-        assertEquals(2 * 11 + 4, pilotNotifiedSeq)
+        assertEquals(2 * 12 + 4, pilotNotifiedSeq)
     }
 
     // Selector primitive-level coverage (R5 hook + selector unit test).
