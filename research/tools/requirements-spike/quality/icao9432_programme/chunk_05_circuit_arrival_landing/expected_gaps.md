@@ -11,7 +11,7 @@ marked covered-green with the current model/evidence surface.
 |---|---:|
 | `policy-blocked` | 6 |
 | `model-gap` | 2 |
-| `phraseology-later` | 14 |
+| `phraseology-later` | 13 |
 
 ## Policy-Blocked
 
@@ -45,7 +45,6 @@ marked covered-green with the current model/evidence surface.
 | `icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4` | `PHRASE-1`; distance-at-report evidence | Requires rendered `LONG FINAL` report and greater-than-7 km / 4 NM threshold evidence. |
 | `icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075` | `PHRASE-1`; straight-in policy; distance-at-report evidence | Requires rendered straight-in `LONG FINAL` report at about 15 km / 8 NM. |
 | `icao9432-extracted::final_approach_landing_4_7_en::7bbc96aa5ee36893` | `PHRASE-1` | Requires rendered wheel-appearing-up/down phrase. |
-| `icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4` | `PHRASE-1`; typed-trace evidence only | Current traces prove typed `ClearedTouchAndGo`, not rendered `CLEARED TOUCH AND GO` wording. |
 | `icao9432-extracted::final_approach_landing_4_7_en::aaf5262d8e7750b2` | `PHRASE-1` | Requires rendered low-pass example dialogue. |
 | `icao9432-extracted::final_approach_landing_4_7_en::b1c21e2f70bbf36f` | `PHRASE-1`; traffic-congestion policy | Requires rendered unable-touch-and-go phraseology and traffic-congestion policy. |
 | `icao9432-extracted::final_approach_landing_4_7_en::fbae3a11e1d068a3` | `PHRASE-1` | Requires rendered `LONG FINAL` / `FINAL` example dialogue, wind, and landing clearance wording. |

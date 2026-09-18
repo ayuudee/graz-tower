@@ -159,12 +159,15 @@ class EvidenceSourceCatalogTest {
     }
 
     @Test
-    fun `catalog records do not claim phraseology compliance`() {
-        assertTrue(
-            EvidenceSourceCatalog.All.none { source ->
-                source.record.claimScope.name.contains("PhraseologyCompliance")
-            },
-            "catalog entries may cite phraseology source units but must not claim phraseology compliance",
+    fun `rendered phraseology claim scope is limited to reviewed PHRASE-1 proof units`() {
+        assertEquals(
+            setOf(
+                "icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4",
+            ),
+            EvidenceSourceCatalog.All
+                .filter { source -> source.record.claimScope == EvidenceSourceClaimScope.RenderedPhraseologyTrace }
+                .map { source -> source.canonicalId }
+                .toSet(),
         )
     }
 }

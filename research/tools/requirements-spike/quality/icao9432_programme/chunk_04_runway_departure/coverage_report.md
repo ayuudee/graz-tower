@@ -15,13 +15,16 @@ Chunk: ICAO 9432 runway entry, line-up, and take-off.
 Chunk 04 deliberately produces no universal covered-green rows. The LOWG
 departure trace provides scenario evidence for the usual GROUND-to-TOWER
 transfer pattern in ICAO 9432 §4.5.1, but the source says "usually", so final
-coverage remains policy-blocked rather than promoted to universal law.
+coverage remains policy-blocked rather than promoted to universal law. fn-61
+adds renderer support for take-off clearance wording, but the
+`13264a6ac6d529c3` source unit remains support-only / review-only rather than
+standalone covered-green.
 
 ## Coverage Table
 
 | Source unit | Final state | Test / blocker | Claim |
 |---|---|---|---|
-| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3` | `phraseology-later` | `PHRASE-1` | Take-off clearance phraseology. |
+| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3` | `phraseology-later` | `PHRASE-1`; support-only / review-only | Take-off clearance phraseology. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::152f0ffb84869af5` | `phraseology-later` | `PHRASE-1` | Immediate-departure line-up phraseology. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587` | `policy-blocked` with scenario evidence | `Icao9432Chunk04RunwayDepartureEvidenceTest`; `POLICY-1` | Aircraft are usually transferred to TOWER at/approaching runway-holding position. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751` | `phraseology-later` | `PHRASE-1` | Immediate-departure readiness query phraseology. |
@@ -51,12 +54,12 @@ coverage remains policy-blocked rather than promoted to universal law.
 ## Review Considerations
 
 - FP / type safety: permanent source refs use typed `EvidenceSourceRef`
-  records. No production state or evidence payload type was added.
+  records. No production state was added.
 - Test architecture: the LOWG transfer witness is a real scenario run with
   trace correlation to the `ContactFrequency(TOWER)` transmission id and the
   aircraft's holding-point state. It is scenario evidence only, not universal
   closure.
-- Impact: no controller, pilot, sim behaviour, phraseology rendering, or
-  policy behaviour was changed.
+- Impact: no controller, pilot, sim behaviour, phraseology source coverage, or
+  policy behaviour was changed for chunk 04.
 - Operational correctness: ICAO 9432 §4.5.1's "usually" language remains
   policy-blocked; `may`/`should`/traffic-contingency rows remain gaps.

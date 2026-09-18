@@ -119,6 +119,153 @@ class EvidenceFactsTest {
     }
 
     @Test
+    fun `rendered phraseology projection emits takeoff clearance tokens at reserved offset`() {
+        val aircraft = AircraftId("OE-ABC")
+        val runway = RunwayId("16C")
+        val facts = EvidenceFactAdapters.lowgCircuitTraining(
+            scenarioId = "rendered-takeoff",
+            outcomes = listOf(CircuitOutcome.FullStop),
+            untilMinutes = 45,
+        )
+
+        val fact = facts.facts.single { fact ->
+            val payload = fact.payload as? EvidenceFactPayload.RenderedPhraseology ?: return@single false
+            payload.template == RenderedPhraseologyTemplate.TakeoffClearance && payload.aircraftId == aircraft
+        }
+        val payload = fact.payload as EvidenceFactPayload.RenderedPhraseology
+        assertEquals(aircraft, payload.aircraftId)
+        assertEquals(RenderedPhraseologyTemplate.TakeoffClearance, payload.template)
+        assertEquals(
+            setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.SemanticSlot,
+                PhraseologyObligationKind.ForbiddenMeaning,
+            ),
+            payload.obligationKinds,
+        )
+        assertEquals(
+            listOf(
+                PhraseologyToken.AircraftCallsign(aircraft),
+                PhraseologyToken.Runway,
+                PhraseologyToken.RunwayDesignator(runway),
+                PhraseologyToken.Cleared,
+                PhraseologyToken.For,
+                PhraseologyToken.TakeOff,
+            ),
+            payload.tokens,
+        )
+        assertEquals(RenderedPhraseText("OE-ABC RUNWAY 16C CLEARED FOR TAKE-OFF"), payload.text)
+        assertEquals(payload.transmissionRef, fact.provenance.sourceTransmissionId)
+        assertEquals(9, fact.provenance.sequence.value % 10)
+        assertEquals(
+            fact.provenance.sequence.value - 9,
+            facts.orderedFacts()
+                .single { candidate ->
+                    candidate.provenance.sourceTransmissionId == payload.transmissionRef &&
+                        candidate.payload is EvidenceFactPayload.Instruction
+                }
+                .provenance.sequence.value,
+        )
+        assertTrue(fact.provenance.extractionPath.value.endsWith(".controller.renderedPhraseology"))
+    }
+
+    @Test
+    fun `rendered phraseology projection emits touch-and-go clearance tokens`() {
+        val aircraft = AircraftId("OE-ABC")
+        val facts = EvidenceFactAdapters.lowgCircuitTraining(
+            scenarioId = "rendered-touch-and-go",
+            outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop),
+            untilMinutes = 45,
+        )
+
+        val payload = facts.facts
+            .mapNotNull { fact -> fact.payload as? EvidenceFactPayload.RenderedPhraseology }
+            .filter { payload -> payload.template == RenderedPhraseologyTemplate.TouchAndGoClearance }
+            .single()
+        assertEquals(RenderedPhraseologyTemplate.TouchAndGoClearance, payload.template)
+        assertEquals(
+            listOf(
+                PhraseologyToken.AircraftCallsign(aircraft),
+                PhraseologyToken.Cleared,
+                PhraseologyToken.Touch,
+                PhraseologyToken.And,
+                PhraseologyToken.Go,
+            ),
+            payload.tokens,
+        )
+        assertEquals(RenderedPhraseText("OE-ABC CLEARED TOUCH AND GO"), payload.text)
+    }
+
+    @Test
+    fun `rendered phraseology projection emits typed unsupported evidence for clear unsupported instructions`() {
+        val aircraft = AircraftId("OE-ABC")
+        val unsupported = controllerInstructionRecord(
+            index = 0,
+            instruction = ContactFrequency(
+                target = aircraft,
+                role = RoleName.TOWER,
+                frequency = Frequency.unsafe("118.500"),
+            ),
+        )
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "rendered-unsupported-clear",
+            records = listOf(unsupported),
+        )
+
+        assertTrue(facts.facts.none { fact -> fact.payload is EvidenceFactPayload.RenderedPhraseology })
+        val unsupportedPayload = facts.facts
+            .mapNotNull { fact -> fact.payload as? EvidenceFactPayload.UnsupportedRenderedPhraseology }
+            .single()
+        assertEquals(aircraft, unsupportedPayload.aircraftId)
+        assertEquals(unsupported.transmissionId, unsupportedPayload.transmissionRef)
+        assertTrue(unsupportedPayload.instruction is ContactFrequency)
+    }
+
+    @Test
+    fun `rendered phraseology projection emits no phraseology evidence for doubtful unsupported instructions`() {
+        val aircraft = AircraftId("OE-ABC")
+        val doubtfulUnsupported = controllerInstructionRecord(
+            index = 0,
+            instruction = ContactFrequency(
+                target = aircraft,
+                role = RoleName.TOWER,
+                frequency = Frequency.unsafe("118.500"),
+            ),
+        ).copy(receptionQuality = ReceptionQuality.Doubtful(ReceptionDoubtCause.SteppedOn))
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "rendered-unsupported-doubtful",
+            records = listOf(doubtfulUnsupported),
+        )
+
+        assertTrue(facts.facts.none { fact -> fact.payload is EvidenceFactPayload.RenderedPhraseology })
+        assertTrue(facts.facts.none { fact -> fact.payload is EvidenceFactPayload.UnsupportedRenderedPhraseology })
+    }
+
+    @Test
+    fun `unsupported phraseology sequence offset is unique within controller instruction record`() {
+        val aircraft = AircraftId("OE-ABC")
+        val sequences = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "rendered-sequence-unique",
+            records = listOf(
+                controllerInstructionRecord(
+                    index = 0,
+                    instruction = ContactFrequency(
+                        target = aircraft,
+                        role = RoleName.TOWER,
+                        frequency = Frequency.unsafe("118.500"),
+                    ),
+                ),
+            ),
+        ).orderedFacts().map { fact -> fact.provenance.sequence.value }
+
+        assertTrue(0 in sequences)
+        assertTrue(9 in sequences)
+        assertEquals(sequences.toSet().size, sequences.size)
+    }
+
+    @Test
     fun `projection facts express aerodrome information critical windows and transfers`() {
         val aircraft = AircraftId("OE-ABC")
 

@@ -17,6 +17,7 @@ import xyz.easiersaid.twr.protocol.PushbackApproved
 import xyz.easiersaid.twr.protocol.PushbackFace
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.ReduceTaxiSpeed
+import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.StartupApproved
 import xyz.easiersaid.twr.protocol.StopImmediately
@@ -471,6 +472,13 @@ class EvidenceExpectContext internal constructor(
             activate = { factId -> activated += factId },
         )
 
+    fun renderedPhraseology(aircraftId: AircraftId): AuditRenderedPhraseologySubject =
+        AuditRenderedPhraseologySubject(
+            aircraftId = aircraftId,
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
+
     fun taxiInstructions(): AuditTaxiInstructionSubject =
         AuditTaxiInstructionSubject(
             facts = facts.orderedFacts(),
@@ -903,6 +911,86 @@ class AuditGroundStationTestSignalSubject internal constructor(
                 evidence = overLimit.map { fact -> fact.id.value },
             )
         }
+    }
+}
+
+class AuditRenderedPhraseologySubject internal constructor(
+    private val aircraftId: AircraftId,
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun takeoffClearance(runway: RunwayId): EvidenceAuditOutcome =
+        phraseologyOutcome(
+            template = RenderedPhraseologyTemplate.TakeoffClearance,
+            expectedObligationKinds = renderedClearanceObligations,
+            expectedTokens = listOf(
+                PhraseologyToken.AircraftCallsign(aircraftId),
+                PhraseologyToken.Runway,
+                PhraseologyToken.RunwayDesignator(runway),
+                PhraseologyToken.Cleared,
+                PhraseologyToken.For,
+                PhraseologyToken.TakeOff,
+            ),
+            failReason = "Missing rendered take-off clearance phraseology for ${aircraftId.value} runway ${runway.value}",
+        )
+
+    fun touchAndGoClearance(): EvidenceAuditOutcome =
+        phraseologyOutcome(
+            template = RenderedPhraseologyTemplate.TouchAndGoClearance,
+            expectedObligationKinds = renderedClearanceObligations,
+            expectedTokens = listOf(
+                PhraseologyToken.AircraftCallsign(aircraftId),
+                PhraseologyToken.Cleared,
+                PhraseologyToken.Touch,
+                PhraseologyToken.And,
+                PhraseologyToken.Go,
+            ),
+            failReason = "Missing rendered touch-and-go clearance phraseology for ${aircraftId.value}",
+        )
+
+    private fun phraseologyOutcome(
+        template: RenderedPhraseologyTemplate,
+        expectedObligationKinds: Set<PhraseologyObligationKind>,
+        expectedTokens: List<PhraseologyToken>,
+        failReason: String,
+    ): EvidenceAuditOutcome {
+        val candidates = facts.filter { fact ->
+            val payload = fact.payload as? EvidenceFactPayload.RenderedPhraseology ?: return@filter false
+            payload.aircraftId == aircraftId && payload.template == template
+        }
+        if (candidates.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(reason = failReason, evidence = emptyList())
+        }
+        candidates.forEach { fact -> activate(fact.id) }
+        val matching = candidates.filter { fact ->
+            val payload = fact.payload as EvidenceFactPayload.RenderedPhraseology
+            payload.tokens == expectedTokens && payload.obligationKinds.containsAll(expectedObligationKinds)
+        }
+        return if (matching.isNotEmpty()) {
+            EvidenceAuditOutcome.Pass(
+                matching.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedPhraseology
+                    "${payload.template}:${payload.text.value}@${fact.provenance.sequence.value}"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = failReason,
+                evidence = candidates.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedPhraseology
+                    "${payload.template}:${payload.obligationKinds}:${payload.tokens}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
+    }
+
+    private companion object {
+        val renderedClearanceObligations: Set<PhraseologyObligationKind> =
+            setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.SemanticSlot,
+                PhraseologyObligationKind.ForbiddenMeaning,
+            )
     }
 }
 

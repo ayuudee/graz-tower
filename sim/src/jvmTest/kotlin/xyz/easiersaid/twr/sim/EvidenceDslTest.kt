@@ -8,6 +8,7 @@ import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedForTakeoffReadback
+import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RunwayId
@@ -93,4 +94,95 @@ class EvidenceDslTest {
 
         assertTrue(failure.message.orEmpty().contains("observe"))
     }
+
+    @Test
+    fun `renderedPhraseology selector passes only matching takeoff runway tokens`() {
+        val aircraft = AircraftId("OE-ABC")
+        val facts = EvidenceFactAdapters.fromProjectedPayloads(
+            scenarioId = "rendered-selector-takeoff",
+            payloads = listOf(
+                renderedPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.TakeoffClearance,
+                    tokens = listOf(
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                        PhraseologyToken.Runway,
+                        PhraseologyToken.RunwayDesignator(RunwayId("16C")),
+                        PhraseologyToken.Cleared,
+                        PhraseologyToken.For,
+                        PhraseologyToken.TakeOff,
+                    ),
+                    text = "OE-ABC RUNWAY 16C CLEARED FOR TAKE-OFF",
+                ),
+            ),
+        )
+
+        val report = simEvidence("rendered-selector-takeoff") {
+            observe { facts }
+            invariant("matching runway") {
+                expect { renderedPhraseology(aircraft).takeoffClearance(RunwayId("16C")) }
+            }
+            invariant("wrong runway") {
+                expect { renderedPhraseology(aircraft).takeoffClearance(RunwayId("34C")) }
+            }
+        }
+
+        assertTrue(report.results[0].outcome is EvidenceAuditOutcome.Pass)
+        assertTrue(report.results[0].activationFactIds.isNotEmpty())
+        assertTrue(report.results[1].outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(report.results[1].activationFactIds.isNotEmpty())
+    }
+
+    @Test
+    fun `renderedPhraseology selector does not satisfy touch-and-go from takeoff phraseology`() {
+        val aircraft = AircraftId("OE-ABC")
+        val facts = EvidenceFactAdapters.fromProjectedPayloads(
+            scenarioId = "rendered-selector-template-mismatch",
+            payloads = listOf(
+                renderedPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.TakeoffClearance,
+                    tokens = listOf(
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                        PhraseologyToken.Runway,
+                        PhraseologyToken.RunwayDesignator(RunwayId("16C")),
+                        PhraseologyToken.Cleared,
+                        PhraseologyToken.For,
+                        PhraseologyToken.TakeOff,
+                    ),
+                    text = "OE-ABC RUNWAY 16C CLEARED FOR TAKE-OFF",
+                ),
+            ),
+        )
+
+        val report = simEvidence("rendered-selector-template-mismatch") {
+            observe { facts }
+            source("touch and go missing") {
+                cites(ICAO9432.FinalApproachLanding.ClearedTouchAndGoPhrase)
+                expect { renderedPhraseology(aircraft).touchAndGoClearance() }
+            }
+        }
+
+        assertTrue(report.results.single().outcome is EvidenceAuditOutcome.Fail)
+    }
+
+    private fun renderedPhraseologyPayload(
+        aircraft: AircraftId,
+        template: RenderedPhraseologyTemplate,
+        tokens: List<PhraseologyToken>,
+        text: String,
+    ): EvidenceFactPayload.RenderedPhraseology =
+        EvidenceFactPayload.RenderedPhraseology(
+            controllerId = ControllerId("LOWG_TWR"),
+            aircraftId = aircraft,
+            transmissionRef = TransmissionId(1),
+            template = template,
+            obligationKinds = setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.SemanticSlot,
+                PhraseologyObligationKind.ForbiddenMeaning,
+            ),
+            tokens = tokens,
+            text = RenderedPhraseText(text),
+        )
 }

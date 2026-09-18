@@ -29,7 +29,7 @@ icao9432-extracted::pushback_powerback_4_3_en::da5fd317668b375a,chunk_03_ground_
 icao9432-extracted::pushback_powerback_4_3_en::fc3dfdf7cc913637,chunk_03_ground_movement,phraseology-later,PHRASE-1,PHRASE-1
 icao9432-extracted::taxi_4_4_en::03985c8e2cf3f473,chunk_03_ground_movement,policy-blocked,POLICY-1;LocalProcedurePolicy,POLICY-1; LocalProcedurePolicy
 icao9432-extracted::taxi_4_4_en::417f64324f7495bf,chunk_03_ground_movement,policy-blocked with scenario evidence,POLICY-1,POLICY-1; legacy Icao9432TaxiSourceBackedScenarioTest scenario leg
-icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3,chunk_04_runway_departure,phraseology-later,PHRASE-1,PHRASE-1
+icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3,chunk_04_runway_departure,phraseology-later,PHRASE-1,PHRASE-1; support-only / review-only
 icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::152f0ffb84869af5,chunk_04_runway_departure,phraseology-later,PHRASE-1,PHRASE-1
 icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::19cfd36a9fce4587,chunk_04_runway_departure,policy-blocked with scenario evidence,POLICY-1,Icao9432Chunk04RunwayDepartureEvidenceTest; POLICY-1
 icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751,chunk_04_runway_departure,phraseology-later,PHRASE-1,PHRASE-1
@@ -63,7 +63,6 @@ icao9432-extracted::final_approach_landing_4_7_en::1db805d02051bf47,chunk_05_cir
 icao9432-extracted::final_approach_landing_4_7_en::4c698a5ad52a30e4,chunk_05_circuit_arrival_landing,phraseology-later,PHRASE-1,Icao9432ModelGapSourceUnitSpecTest; PHRASE-1; distance evidence
 icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075,chunk_05_circuit_arrival_landing,phraseology-later,PHRASE-1,Icao9432ModelGapSourceUnitSpecTest; PHRASE-1; policy/distance evidence
 icao9432-extracted::final_approach_landing_4_7_en::7bbc96aa5ee36893,chunk_05_circuit_arrival_landing,phraseology-later,PHRASE-1,Icao9432ModelGapSourceUnitSpecTest; PHRASE-1
-icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4,chunk_05_circuit_arrival_landing,phraseology-later with typed-trace evidence,PHRASE-1,Icao9432TouchAndGoSourceBackedScenarioTest; PHRASE-1
 icao9432-extracted::final_approach_landing_4_7_en::aaf5262d8e7750b2,chunk_05_circuit_arrival_landing,phraseology-later,PHRASE-1,Icao9432ModelGapSourceUnitSpecTest; PHRASE-1
 icao9432-extracted::final_approach_landing_4_7_en::b1c21e2f70bbf36f,chunk_05_circuit_arrival_landing,phraseology-later,PHRASE-1,Icao9432ModelGapSourceUnitSpecTest; PHRASE-1; traffic policy
 icao9432-extracted::final_approach_landing_4_7_en::fbae3a11e1d068a3,chunk_05_circuit_arrival_landing,phraseology-later,PHRASE-1,Icao9432ModelGapSourceUnitSpecTest; PHRASE-1

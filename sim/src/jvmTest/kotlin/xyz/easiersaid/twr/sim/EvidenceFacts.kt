@@ -239,6 +239,32 @@ sealed interface EvidenceFactPayload {
         override val kind: EvidenceFactKind = EvidenceFactKind.GroundStationTestSignal
     }
 
+    data class RenderedPhraseology(
+        val controllerId: ControllerId,
+        val aircraftId: AircraftId,
+        val transmissionRef: TransmissionId,
+        val template: RenderedPhraseologyTemplate,
+        val obligationKinds: Set<PhraseologyObligationKind>,
+        val tokens: List<PhraseologyToken>,
+        val text: RenderedPhraseText,
+    ) : EvidenceFactPayload {
+        init {
+            require(obligationKinds.isNotEmpty()) { "rendered phraseology must name obligation kinds" }
+            require(tokens.isNotEmpty()) { "rendered phraseology must carry tokens" }
+        }
+
+        override val kind: EvidenceFactKind = EvidenceFactKind.RenderedPhraseology
+    }
+
+    data class UnsupportedRenderedPhraseology(
+        val controllerId: ControllerId,
+        val aircraftId: AircraftId,
+        val transmissionRef: TransmissionId,
+        val instruction: AtcInstruction,
+    ) : EvidenceFactPayload {
+        override val kind: EvidenceFactKind = EvidenceFactKind.UnsupportedRenderedPhraseology
+    }
+
     data class SampleFact(
         val name: String,
         val displayValue: String,
@@ -265,6 +291,8 @@ enum class EvidenceFactKind {
     ReceptionDoubt,
     ClearancePacing,
     GroundStationTestSignal,
+    RenderedPhraseology,
+    UnsupportedRenderedPhraseology,
     Sample,
 }
 
@@ -744,9 +772,17 @@ object EvidenceFactAdapters {
                     targetAircraft = output.target,
                     phaseAtTransmission = phaseAtTransmission,
                 )
+                val phraseologyFact = renderedPhraseologyFact(
+                    scenarioId = scenarioId,
+                    recordIndex = recordIndex,
+                    record = record,
+                    controller = controller,
+                    output = output,
+                )
                 listOf(instructionFact) +
                     listOfNotNull(frequencyTransferFact) +
-                    listOfNotNull(clearancePacingFact)
+                    listOfNotNull(clearancePacingFact) +
+                    listOfNotNull(phraseologyFact)
             }
 
             is ControllerOutput.Respond -> emptyList()
@@ -1080,6 +1116,57 @@ object EvidenceFactAdapters {
                 duration = record.endedAt - record.time,
             ),
         )
+
+    /**
+     * Project rendered phraseology for the deliberately tiny PHRASE-1A proof
+     * set. This adapter reads the sim-level phraseology renderer and preserves
+     * typed unsupported evidence for clear controller instructions outside the
+     * renderer's current scope.
+     *
+     * Sequence offset `+9` is reserved for rendered phraseology. The fact is
+     * emitted only for clearly received transmissions; stepped-on or doubtful
+     * transmissions cannot prove spoken wording.
+     */
+    private fun renderedPhraseologyFact(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        controller: SpeakerRef.Controller,
+        output: ControllerOutput.Instruct,
+    ): EvidenceFact? {
+        if (record.receptionQuality !is ReceptionQuality.Clear) return null
+        val renderResult = renderControllerPhraseology(output)
+        val payload = when (renderResult) {
+            is ControllerPhraseologyRenderResult.Rendered ->
+                EvidenceFactPayload.RenderedPhraseology(
+                    controllerId = controller.id,
+                    aircraftId = output.target,
+                    transmissionRef = record.transmissionId,
+                    template = renderResult.phraseology.template,
+                    obligationKinds = renderResult.phraseology.obligationKinds,
+                    tokens = renderResult.phraseology.tokens,
+                    text = renderResult.phraseology.text,
+                )
+            is ControllerPhraseologyRenderResult.UnsupportedInstruction ->
+                EvidenceFactPayload.UnsupportedRenderedPhraseology(
+                    controllerId = controller.id,
+                    aircraftId = output.target,
+                    transmissionRef = record.transmissionId,
+                    instruction = renderResult.instruction,
+                )
+        }
+        return fact(
+            scenarioId = scenarioId,
+            origin = EvidenceFactOrigin.SimRun,
+            sequence = EvidenceSequence(recordIndex * FACTS_PER_RECORD + 9),
+            simTime = record.time,
+            sourceTransmissionId = record.transmissionId,
+            extractionPath = EvidenceExtractionPath(
+                "sim.records[$recordIndex].controller.renderedPhraseology",
+            ),
+            payload = payload,
+        )
+    }
 
     /**
      * Map an observed [PilotPhase] to the regulation-relevant

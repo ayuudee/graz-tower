@@ -38,7 +38,7 @@ covered-green with the current model/evidence surface.
 
 | Source unit | Blocker | Reason |
 |---|---|---|
-| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3` | `PHRASE-1` | Requires rendered take-off clearance phraseology. |
+| `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3` | `PHRASE-1`; support-only / review-only | Requires rendered take-off clearance phraseology and is classified as a support-only example, not standalone sim-executable coverage. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::152f0ffb84869af5` | `PHRASE-1` | Requires rendered immediate-departure line-up phraseology. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751` | `PHRASE-1` | Requires rendered immediate-departure readiness query. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03` | `PHRASE-1` | Requires rendered `LINE UP AND WAIT` phraseology and acknowledgement. |

@@ -49,7 +49,7 @@ phrase `CLEARED TOUCH AND GO`.
 | `icao9432-extracted::final_approach_landing_4_7_en::63836b7aef62a6f6` | Pilot may request to fly past tower/observation point for visual inspection from ground. | `testable-now` | `model-gap` | `ClearedLowApproach` exists, but current sim lacks a pilot low-pass request workflow and controller rule producing it from scenario evidence. |
 | `icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075` | Straight-in approach `LONG FINAL` report at about 15 km / 8 NM. | `phraseology-later` | `phraseology-later` | `PHRASE-1`, straight-in procedure policy, and distance-at-report evidence. |
 | `icao9432-extracted::final_approach_landing_4_7_en::7bbc96aa5ee36893` | Low-pass phrase for wheel appearing up/down may be used. | `phraseology-later` | `phraseology-later` | `PHRASE-1`. |
-| `icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4` | ATC may clear `TOUCH AND GO` using phrase `CLEARED TOUCH AND GO`. | `phraseology-later` | `phraseology-later` with typed-trace scenario evidence | Existing test proves typed `ClearedTouchAndGo`, not rendered phraseology. Keep phraseology-later unless rendered wording is asserted. |
+| `icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4` | ATC may clear `TOUCH AND GO` using phrase `CLEARED TOUCH AND GO`. | `phraseology-later` | `covered-green` | `Icao9432PhraseologyEvidenceTest`; fn-61 rendered phraseology trace. |
 | `icao9432-extracted::final_approach_landing_4_7_en::aaf5262d8e7750b2` | Example dialogue for low-pass request and clearance. | `phraseology-later` | `phraseology-later` | `PHRASE-1`; illustrative dialogue, no rendered dialogue support. |
 | `icao9432-extracted::final_approach_landing_4_7_en::b1c21e2f70bbf36f` | If unable to approve touch-and-go due traffic, ATC may instruct full stop or another circuit. | `phraseology-later` | `phraseology-later` | Requires rendered phraseology; also depends on traffic-congestion policy before an operational scenario can be green. |
 | `icao9432-extracted::final_approach_landing_4_7_en::e17d8b9b99c43496` | For training, pilot may request an approach along/parallel to runway without landing. | `testable-now` | `model-gap` | No current mission/scenario workflow for training low approach / low pass request. |
@@ -61,7 +61,8 @@ phrase `CLEARED TOUCH AND GO`.
    `Icao9432TouchAndGoSourceBackedScenarioTest` so it honestly covers
    `0ece166e11d7728e` as a circuit-training request capability by asserting a
    pilot report / request with touch-and-go intent before `ClearedTouchAndGo`.
-   It must not claim rendered phraseology closure for `a4c8fffd8a61adb4`.
+   Rendered phraseology closure for `a4c8fffd8a61adb4` is handled separately by
+   `Icao9432PhraseologyEvidenceTest`.
 2. **Circuit report scenario evidence**: if current LOWG circuit traces expose
    useful Downwind/Base/Final reports, add scenario evidence for `34445...` and
    `dcf776...` while leaving final coverage policy-blocked because local

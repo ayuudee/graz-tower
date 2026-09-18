@@ -495,7 +495,6 @@ class Icao9432ModelGapSourceUnitSpecTest {
                     SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::1960f59d8b9efecb"),
                     SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::1db805d02051bf47"),
                     SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::7bbc96aa5ee36893"),
-                    SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4"),
                     SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::aaf5262d8e7750b2"),
                     SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::b1c21e2f70bbf36f"),
                     SourceUnitRef("icao9432-extracted::final_approach_landing_4_7_en::fbae3a11e1d068a3"),

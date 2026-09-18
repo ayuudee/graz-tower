@@ -6,18 +6,18 @@ Chunk: ICAO 9432 circuit, final approach, and landing.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 1 |
+| `covered-green` | 2 |
 | `covered-red` | 0 |
 | `model-gap` | 2 |
 | `policy-blocked` | 6 |
-| `phraseology-later` | 14 |
+| `phraseology-later` | 13 |
 
-The only covered-green source unit in this chunk is the touch-and-go request
-capability. It is covered by a real LOWG circuit-training trace that observes
+The covered-green source units in this chunk are the touch-and-go request
+capability and the rendered `CLEARED TOUCH AND GO` clearance phrase. They are
+covered by real LOWG circuit-training traces that observe
 `ReportEvent.Downwind(circuitIntent = TOUCH_AND_GO)` before
-`ClearedTouchAndGo`. The separate `CLEARED TOUCH AND GO` phraseology source
-unit remains `phraseology-later`; typed `ClearedTouchAndGo` is not rendered
-phraseology compliance.
+`ClearedTouchAndGo`, plus fn-61 rendered phraseology evidence for the clearance
+wording.
 
 ## Coverage Table
 
@@ -41,7 +41,7 @@ phraseology compliance.
 | `icao9432-extracted::final_approach_landing_4_7_en::63836b7aef62a6f6` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest` | Pilot may request fly-past for visual inspection from ground. |
 | `icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1`; policy/distance evidence | Straight-in `LONG FINAL` at about 15 km / 8 NM. |
 | `icao9432-extracted::final_approach_landing_4_7_en::7bbc96aa5ee36893` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1` | Wheel appears up/down phrase. |
-| `icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4` | `phraseology-later` with typed-trace evidence | `Icao9432TouchAndGoSourceBackedScenarioTest`; `PHRASE-1` | ATC may clear touch-and-go using `CLEARED TOUCH AND GO`. |
+| `icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4` | `covered-green` | `Icao9432PhraseologyEvidenceTest`; `RenderedPhraseologyTrace` | ATC may clear touch-and-go using `CLEARED TOUCH AND GO`. |
 | `icao9432-extracted::final_approach_landing_4_7_en::aaf5262d8e7750b2` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1` | Low-pass example dialogue. |
 | `icao9432-extracted::final_approach_landing_4_7_en::b1c21e2f70bbf36f` | `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `PHRASE-1`; traffic policy | Unable touch-and-go alternative instructions due traffic. |
 | `icao9432-extracted::final_approach_landing_4_7_en::e17d8b9b99c43496` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest` | Training approach along or parallel to runway without landing. |
@@ -52,15 +52,19 @@ phraseology compliance.
 - Source-unit provenance: all 23 accepted candidate JSON records have source
   quotes that normalize-match `research/txt/icao9432-extracted.txt`.
 - Focused verification:
-  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432TouchAndGoSourceBackedScenarioTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidencePermanentTwentyCaseTest' --tests '*.EvidenceSourceCatalogTest'`.
+  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432TouchAndGoSourceBackedScenarioTest' --tests '*.Icao9432PhraseologyEvidenceTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidencePermanentTwentyCaseTest' --tests '*.EvidenceSourceCatalogTest'`.
 
 ## Review Considerations
 
-- FP / type safety: permanent green citation uses typed `EvidenceSourceRef`.
-  No production state or evidence payload type was added.
+- FP / type safety: permanent green citations use typed `EvidenceSourceRef`.
+  Rendered phraseology evidence is a sealed test-side payload with typed
+  phrase tokens.
 - Test architecture: touch-and-go request is proven by pilot intent before
-  controller clearance. Phraseology and policy rows remain explicit gaps.
-- Impact: no controller, pilot, sim behaviour, phraseology rendering, or
-  policy behaviour was changed.
+  controller clearance. Touch-and-go wording is proven by rendered phraseology
+  evidence over the observed controller clearance. Other phraseology and policy
+  rows remain explicit gaps.
+- Impact: no controller, pilot, sim behaviour, or policy behaviour was
+  changed. Phraseology rendering is a test-side evidence adapter over observed
+  typed transmissions.
 - Operational correctness: ICAO 9432 §4.6 / §4.7 local-procedure, traffic,
   permissive, and phraseology modalities remain distinct.

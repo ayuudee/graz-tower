@@ -23,6 +23,7 @@ enum class EvidenceSourceClaimScope {
     StructuralProtocol,
     ScenarioBehavior,
     TypedInstructionTraceOnly,
+    RenderedPhraseologyTrace,
     ProjectionGapSource,
 }
 
@@ -199,7 +200,7 @@ object ICAO9432 {
         val ClearedTouchAndGoPhrase: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::final_approach_landing_4_7_en::a4c8fffd8a61adb4",
             title = "ATC may clear touch-and-go using CLEARED TOUCH AND GO",
-            claimScope = EvidenceSourceClaimScope.TypedInstructionTraceOnly,
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
         )
 
         val TouchAndGo: Set<EvidenceSourceRef> =
