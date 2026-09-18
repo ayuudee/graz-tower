@@ -187,6 +187,8 @@ class EvidenceSourceCatalogTest {
                 "icao9432-extracted::final_approach_landing_4_7_en::70e781a65920c075",
                 "icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3",
                 "icao9432-extracted::after_landing_4_9_en::e30350fdecad45a1",
+                "icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::7759017903acf140",
+                "icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::4b103081585bfb71",
                 "icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649",
                 "icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71",
             ),

@@ -3,10 +3,13 @@ package xyz.easiersaid.twr.sim
 import kotlin.test.fail
 import xyz.easiersaid.twr.pilot.PilotPhase
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.AtomicReadback
 import xyz.easiersaid.twr.protocol.AtcInstruction
 import xyz.easiersaid.twr.protocol.AirTaxiTo
 import xyz.easiersaid.twr.protocol.BacktrackRunway
+import xyz.easiersaid.twr.protocol.Callsign
+import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.CrossRunway
 import xyz.easiersaid.twr.protocol.ExpediteTaxi
 import xyz.easiersaid.twr.protocol.Frequency
@@ -514,6 +517,13 @@ class EvidenceExpectContext internal constructor(
     fun afterLandingPhraseology(aircraftId: AircraftId): AuditAfterLandingPhraseologySubject =
         AuditAfterLandingPhraseologySubject(
             aircraftId = aircraftId,
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
+
+    fun renderedVehicleDriverPhraseology(vehicleId: VehicleId): AuditRenderedVehicleDriverPhraseologySubject =
+        AuditRenderedVehicleDriverPhraseologySubject(
+            vehicleId = vehicleId,
             facts = facts.orderedFacts(),
             activate = { factId -> activated += factId },
         )
@@ -1540,6 +1550,193 @@ class AuditAfterLandingPhraseologySubject internal constructor(
         val routeReadback: EvidenceFact,
         val routeTokens: RenderedTaxiRoute,
     )
+}
+
+class AuditRenderedVehicleDriverPhraseologySubject internal constructor(
+    private val vehicleId: VehicleId,
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun initialCall(
+        callsign: Callsign,
+        position: PointId,
+        destination: PointId,
+        route: List<PointId>,
+    ): EvidenceAuditOutcome {
+        require(route.isNotEmpty()) { "vehicle initial-call expected route must not be empty" }
+        return phraseologyOutcome(
+            template = RenderedPhraseologyTemplate.VehicleInitialCall,
+            expectedTokens = listOf(
+                PhraseologyToken.VehicleCallsign(callsign),
+                PhraseologyToken.PointName(position),
+                PhraseologyToken.To,
+                PhraseologyToken.PointName(destination),
+                PhraseologyToken.Via,
+            ) + route.map(PhraseologyToken::PointName),
+            expectedText = RenderedPhraseText(
+                "${callsign.value} ${position.value} TO ${destination.value} VIA ${pointValues(route)}",
+            ),
+            failReason = "Missing rendered vehicle initial-call phraseology for ${vehicleId.value}",
+        )
+    }
+
+    fun towRequest(
+        callsign: Callsign,
+        receivingStation: ControllerId,
+        aircraft: AircraftId,
+        aircraftType: AircraftType,
+        operator: AircraftOperator,
+    ): EvidenceAuditOutcome =
+        phraseologyOutcome(
+            template = RenderedPhraseologyTemplate.VehicleTowRequest,
+            expectedTokens = listOf(
+                PhraseologyToken.StationName(receivingStation),
+                PhraseologyToken.VehicleCallsign(callsign),
+                PhraseologyToken.Request,
+                PhraseologyToken.Tow,
+                PhraseologyToken.AircraftCallsign(aircraft),
+                PhraseologyToken.AircraftTypeName(aircraftType),
+                PhraseologyToken.OperatorName(operator),
+            ),
+            expectedText = RenderedPhraseText(
+                listOf(
+                    receivingStation.value,
+                    callsign.value,
+                    "REQUEST TOW",
+                    aircraft.value,
+                    aircraftType.icaoDesignator.raw,
+                    operator.value,
+                ).joinToString(separator = " "),
+            ),
+            failReason = "Missing rendered vehicle tow-request phraseology for ${vehicleId.value}",
+        )
+
+    fun unsupportedRequestFurtherPermission(): EvidenceAuditOutcome =
+        unsupportedTransmission(VehicleDriverTransmission.RequestFurtherPermission::class.simpleName)
+
+    private fun unsupportedTransmission(transmissionName: String?): EvidenceAuditOutcome {
+        val candidates = facts.filter { fact ->
+            val payload = fact.payload as? EvidenceFactPayload.UnsupportedRenderedVehicleDriverPhraseology
+                ?: return@filter false
+            payload.vehicleId == vehicleId && payload.transmission::class.simpleName == transmissionName
+        }
+        return if (candidates.isEmpty()) {
+            EvidenceAuditOutcome.Fail(
+                reason = "Missing unsupported rendered vehicle phraseology evidence for $transmissionName",
+                evidence = emptyList(),
+            )
+        } else {
+            candidates.forEach { fact -> activate(fact.id) }
+            EvidenceAuditOutcome.Pass(
+                candidates.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.UnsupportedRenderedVehicleDriverPhraseology
+                    "${payload.transmission::class.simpleName}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
+    }
+
+    private fun phraseologyOutcome(
+        template: RenderedPhraseologyTemplate,
+        expectedTokens: List<PhraseologyToken>,
+        expectedText: RenderedPhraseText,
+        failReason: String,
+    ): EvidenceAuditOutcome {
+        val candidates = facts.filter { fact ->
+            val payload = fact.payload as? EvidenceFactPayload.RenderedVehicleDriverPhraseology
+                ?: return@filter false
+            payload.vehicleId == vehicleId && payload.template == template
+        }
+        if (candidates.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(reason = failReason, evidence = emptyList())
+        }
+        candidates.forEach { fact -> activate(fact.id) }
+        val expectedObligationKinds = setOf(
+            PhraseologyObligationKind.OrderedPhrase,
+            PhraseologyObligationKind.SemanticSlot,
+        )
+        val matching = candidates.filter { fact ->
+            val payload = fact.payload as EvidenceFactPayload.RenderedVehicleDriverPhraseology
+            payload.tokens == expectedTokens &&
+                payload.text == expectedText &&
+                payload.obligationKinds.containsAll(expectedObligationKinds)
+        }
+        return if (matching.isNotEmpty()) {
+            EvidenceAuditOutcome.Pass(
+                matching.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedVehicleDriverPhraseology
+                    "${payload.template}:${payload.text.value}@${fact.provenance.sequence.value}"
+                },
+            )
+        } else {
+            val malformed = candidates.filter { fact ->
+                val payload = fact.payload as EvidenceFactPayload.RenderedVehicleDriverPhraseology
+                payload.tokens.hasValidShapeFor(template).not() ||
+                    payload.obligationKinds.containsAll(expectedObligationKinds).not()
+            }
+            val reason = if (malformed.isNotEmpty()) {
+                "Malformed rendered vehicle phraseology for ${vehicleId.value}"
+            } else {
+                "Mismatched rendered vehicle phraseology for ${vehicleId.value}"
+            }
+            EvidenceAuditOutcome.Fail(
+                reason = reason,
+                evidence = candidates.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedVehicleDriverPhraseology
+                    "${payload.template}:${payload.obligationKinds}:${payload.tokens}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
+    }
+
+    private fun List<PhraseologyToken>.hasValidShapeFor(template: RenderedPhraseologyTemplate): Boolean =
+        when (template) {
+            RenderedPhraseologyTemplate.VehicleInitialCall -> hasVehicleInitialCallShape()
+            RenderedPhraseologyTemplate.VehicleTowRequest -> hasVehicleTowRequestShape()
+            RenderedPhraseologyTemplate.ContactFrequencyInstruction,
+            RenderedPhraseologyTemplate.FrequencyReadback,
+            RenderedPhraseologyTemplate.TaxiToStandInstruction,
+            RenderedPhraseologyTemplate.TaxiRouteReadback,
+            RenderedPhraseologyTemplate.LineUpAndWaitInstruction,
+            RenderedPhraseologyTemplate.LineUpReadback,
+            RenderedPhraseologyTemplate.TakeoffClearance,
+            RenderedPhraseologyTemplate.TouchAndGoClearance,
+            RenderedPhraseologyTemplate.StopImmediatelyInstruction,
+            RenderedPhraseologyTemplate.RunwayVacatedReport,
+            RenderedPhraseologyTemplate.FinalReport,
+            RenderedPhraseologyTemplate.LongFinalReport,
+            -> false
+        }
+
+    private fun List<PhraseologyToken>.hasVehicleInitialCallShape(): Boolean =
+        size > VehicleInitialCallFixedTokenCount &&
+            this[0] is PhraseologyToken.VehicleCallsign &&
+            this[1] is PhraseologyToken.PointName &&
+            this[2] == PhraseologyToken.To &&
+            this[3] is PhraseologyToken.PointName &&
+            this[4] == PhraseologyToken.Via &&
+            drop(VehicleInitialCallFixedTokenCount).all { token -> token is PhraseologyToken.PointName }
+
+    private fun List<PhraseologyToken>.hasVehicleTowRequestShape(): Boolean =
+        size in VehicleTowRequestTokenCountWithoutOperator..VehicleTowRequestTokenCountWithOperator &&
+            this[0] is PhraseologyToken.StationName &&
+            this[1] is PhraseologyToken.VehicleCallsign &&
+            this[2] == PhraseologyToken.Request &&
+            this[3] == PhraseologyToken.Tow &&
+            this[4] is PhraseologyToken.AircraftCallsign &&
+            this[5] is PhraseologyToken.AircraftTypeName &&
+            getOrNull(VehicleTowRequestOperatorTokenIndex)
+                ?.let { token -> token is PhraseologyToken.OperatorName } != false
+
+    private fun pointValues(route: List<PointId>): String =
+        route.joinToString(separator = " ") { point -> point.value }
+
+    private companion object {
+        const val VehicleInitialCallFixedTokenCount = 5
+        const val VehicleTowRequestTokenCountWithoutOperator = 6
+        const val VehicleTowRequestTokenCountWithOperator = 7
+        const val VehicleTowRequestOperatorTokenIndex = 6
+    }
 }
 
 class AuditOperationalPolicySubject internal constructor(

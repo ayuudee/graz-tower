@@ -113,6 +113,7 @@ sealed interface VehicleDriverTransmission {
 
     data class RequestTow(
         override val vehicle: VehicleId,
+        val callsign: Callsign,
         val receivingStation: ControllerId,
         val tow: TowMetadata,
     ) : VehicleDriverTransmission

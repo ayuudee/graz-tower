@@ -332,6 +332,30 @@ sealed interface EvidenceFactPayload {
         override val kind: EvidenceFactKind = EvidenceFactKind.UnsupportedRenderedPilotReportPhraseology
     }
 
+    data class RenderedVehicleDriverPhraseology(
+        val vehicleId: VehicleId,
+        val transmissionRef: TransmissionId,
+        val template: RenderedPhraseologyTemplate,
+        val obligationKinds: Set<PhraseologyObligationKind>,
+        val tokens: List<PhraseologyToken>,
+        val text: RenderedPhraseText,
+    ) : EvidenceFactPayload {
+        init {
+            require(obligationKinds.isNotEmpty()) { "rendered vehicle phraseology must name obligation kinds" }
+            require(tokens.isNotEmpty()) { "rendered vehicle phraseology must carry tokens" }
+        }
+
+        override val kind: EvidenceFactKind = EvidenceFactKind.RenderedVehicleDriverPhraseology
+    }
+
+    data class UnsupportedRenderedVehicleDriverPhraseology(
+        val vehicleId: VehicleId,
+        val transmissionRef: TransmissionId,
+        val transmission: VehicleDriverTransmission,
+    ) : EvidenceFactPayload {
+        override val kind: EvidenceFactKind = EvidenceFactKind.UnsupportedRenderedVehicleDriverPhraseology
+    }
+
     data class ConfiguredPolicy(
         val policy: ConfiguredPolicyBinding,
     ) : EvidenceFactPayload {
@@ -371,6 +395,8 @@ enum class EvidenceFactKind {
     UnsupportedRenderedPilotReadbackPhraseology,
     RenderedPilotReportPhraseology,
     UnsupportedRenderedPilotReportPhraseology,
+    RenderedVehicleDriverPhraseology,
+    UnsupportedRenderedVehicleDriverPhraseology,
     ConfiguredPolicy,
     Sample,
 }
@@ -826,8 +852,18 @@ object EvidenceFactAdapters {
                 is SpeakerRef.VehicleDriver -> emptyList()
             }
 
-            is Utterance.FromVehicleController,
-            is Utterance.FromVehicleDriver -> emptyList()
+            is Utterance.FromVehicleController -> emptyList()
+            is Utterance.FromVehicleDriver -> when (val speaker = record.speaker) {
+                is SpeakerRef.VehicleDriver -> vehicleDriverFacts(
+                    scenarioId = scenarioId,
+                    recordIndex = recordIndex,
+                    record = record,
+                    vehicleDriver = speaker,
+                    transmission = utterance.transmission,
+                )
+                is SpeakerRef.Controller -> emptyList()
+                is SpeakerRef.Pilot -> emptyList()
+            }
         }
 
     private fun controllerFacts(
@@ -1394,6 +1430,73 @@ object EvidenceFactAdapters {
             sourceTransmissionId = record.transmissionId,
             extractionPath = EvidenceExtractionPath(
                 "sim.records[$recordIndex].pilot.renderedReportPhraseology",
+            ),
+            payload = payload,
+        )
+    }
+
+    private fun vehicleDriverFacts(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        vehicleDriver: SpeakerRef.VehicleDriver,
+        transmission: VehicleDriverTransmission,
+    ): List<EvidenceFact> =
+        listOfNotNull(
+            renderedVehicleDriverPhraseologyFact(
+                scenarioId = scenarioId,
+                recordIndex = recordIndex,
+                record = record,
+                vehicleDriver = vehicleDriver,
+                transmission = transmission,
+            ),
+        )
+
+    /**
+     * Project rendered phraseology for the deliberately narrow vehicle-driver
+     * PHRASE-1 proof set. Supported payloads are fn-85's first call and tow
+     * request. Clear vehicle-driver transmissions outside that scope emit typed
+     * unsupported evidence.
+     *
+     * Sequence offset `+11` is shared with rendered pilot-report phraseology:
+     * a transmission record has exactly one utterance kind, so vehicle-driver
+     * records and pilot-report records cannot emit both facts for the same
+     * record.
+     */
+    private fun renderedVehicleDriverPhraseologyFact(
+        scenarioId: String,
+        recordIndex: Int,
+        record: TransmissionRecord,
+        vehicleDriver: SpeakerRef.VehicleDriver,
+        transmission: VehicleDriverTransmission,
+    ): EvidenceFact? {
+        if (record.receptionQuality !is ReceptionQuality.Clear) return null
+        val renderResult = renderVehicleDriverPhraseology(transmission)
+        val payload = when (renderResult) {
+            is VehicleDriverPhraseologyRenderResult.Rendered ->
+                EvidenceFactPayload.RenderedVehicleDriverPhraseology(
+                    vehicleId = vehicleDriver.vehicleId,
+                    transmissionRef = record.transmissionId,
+                    template = renderResult.phraseology.template,
+                    obligationKinds = renderResult.phraseology.obligationKinds,
+                    tokens = renderResult.phraseology.tokens,
+                    text = renderResult.phraseology.text,
+                )
+            is VehicleDriverPhraseologyRenderResult.UnsupportedTransmission ->
+                EvidenceFactPayload.UnsupportedRenderedVehicleDriverPhraseology(
+                    vehicleId = vehicleDriver.vehicleId,
+                    transmissionRef = record.transmissionId,
+                    transmission = renderResult.transmission,
+                )
+        }
+        return fact(
+            scenarioId = scenarioId,
+            origin = EvidenceFactOrigin.SimRun,
+            sequence = EvidenceSequence(recordIndex * FACTS_PER_RECORD + 11),
+            simTime = record.time,
+            sourceTransmissionId = record.transmissionId,
+            extractionPath = EvidenceExtractionPath(
+                "sim.records[$recordIndex].vehicleDriver.renderedPhraseology",
             ),
             payload = payload,
         )

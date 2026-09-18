@@ -24,10 +24,11 @@ and a permission lifecycle for standby, hold-position, and intermediate
 clearance-limit cases. fn-65 adds vehicle-specific runway crossing permission,
 acknowledgement, and vehicle-only clear-beyond-holding-point evidence. fn-67
 adds structured tow metadata, receiving-station tow addressing, and explicit
-vehicle-plus-tow clear-beyond-holding-point evidence. It does not model
+vehicle-plus-tow clear-beyond-holding-point evidence. fn-85 adds rendered
+vehicle first-call and tow-request wording evidence. It does not model
 aircraft-operation expectation triggers, geometry-derived tow extent, apron
-traffic policy, or rendered vehicle phraseology. Aircraft taxi/runway compliance
-must not be reused as vehicle compliance.
+traffic policy, or dangerous-situation intervention policy. Aircraft
+taxi/runway compliance must not be reused as vehicle compliance.
 
 ## Planned Coverage
 
@@ -36,14 +37,14 @@ must not be reused as vehicle compliance.
 | `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::122426242abf3225` | Vehicle drivers should be vigilant and comply with local procedures and ATC instructions near aircraft. | `needs-sim-model` | `model-gap` + `policy-blocked` | `VEHICLE-1`; `OperationalGuidancePolicy`; no vehicle actor, proximity-to-aircraft evidence, or local-procedure compliance model. |
 | `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::6061311019d039c7` | After `HOLD POSITION`, driver shall not proceed until controller calls back with permission. | `needs-sim-model` | `covered-green` | `Icao9432VehicleMovementSourceBackedScenarioTest`; vehicle remains stationary after `HoldPosition` and proceeds only after callback permission. |
 | `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::606d053954eff037` | Apron proceed permission may include instructions regarding other traffic. | `needs-sim-model` | `model-gap` + `policy-blocked` | `VEHICLE-1`; traffic-dependent apron vehicle instructions and give-way/jet-blast caution policy are not modelled. |
-| `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::7759017903acf140` | Vehicle first-call should identify call sign, position, intended destination, and route when possible. | `phraseology-later` | `split: structured first-call content covered-green; rendered wording phraseology-later` | `Icao9432VehicleMovementSourceBackedScenarioTest`; typed vehicle first-call carries call sign, position, destination, and route. `PHRASE-1` remains for rendered wording. |
+| `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::7759017903acf140` | Vehicle first-call should identify call sign, position, intended destination, and route when possible. | `phraseology-later` | `covered-green rendered vehicle first-call branch` | `Icao9432VehicleMovementSourceBackedScenarioTest`; typed and rendered vehicle first-call carries call sign, position, destination, and route. |
 | `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::84c61b2ef1f12ad5` | If clearance limit is not destination, driver must stop there and request permission before proceeding. | `needs-sim-model` | `covered-green` | `Icao9432VehicleMovementSourceBackedScenarioTest`; vehicle stops at intermediate clearance limit and requests onward permission before continuing. |
 | `icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::ed59ee805ff7fe77` | After standby, driver shall not proceed until permission is given. | `needs-sim-model` | `covered-green` | `Icao9432VehicleMovementSourceBackedScenarioTest`; vehicle remains stationary after standby and proceeds only after later permission. |
 | `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::0b45b4a4dc2acc0c` | Vehicle on movement area may need dangerous-situation information and stop instruction. | `needs-sim-model` | `model-gap` + `policy-blocked` | `VEHICLE-1`; no vehicle movement-area occupancy, hazard relation, or controller intervention policy. |
 | `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::24f7b6a86407ef6f` | Driver shall not cross runway unless positive permission has been given and acknowledged. | `needs-sim-model` | `covered-green` | `Icao9432VehicleRunwaySourceBackedScenarioTest`; vehicle starts holding short, positive runway-crossing permission is recorded, and crossing begins only after driver acknowledgement. |
 | `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::29be4b26bb851605` | Tow drivers should not assume receiving station knows an aircraft is to be towed. | `needs-sim-model` | `covered-green structured tow-awareness branch` | `Icao9432VehicleTowingSourceBackedScenarioTest`; tow-specific request identifies the aircraft under tow and is addressed to the receiving station. |
 | `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::331c1cfc98ead868` | Vehicle on runway shall be instructed to leave when aircraft landing/takeoff expected. | `needs-sim-model` | `model-gap` | `ExpectedAircraftOperationTrigger`; no explicit expected landing/takeoff trigger that obliges the controller to instruct a runway vehicle to leave. |
-| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::4b103081585bfb71` | Tow drivers should state aircraft type and operator where applicable. | `needs-sim-model` | `split: structured type/operator metadata covered-green; rendered wording phraseology-later` | `Icao9432VehicleTowingSourceBackedScenarioTest`; tow request carries aircraft type and operator metadata. `PHRASE-1` remains for rendered vehicle/tow wording. |
+| `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::4b103081585bfb71` | Tow drivers should state aircraft type and operator where applicable. | `needs-sim-model` | `covered-green rendered tow-request type/operator branch` | `Icao9432VehicleTowingSourceBackedScenarioTest`; tow request carries rendered aircraft type and operator metadata. |
 | `icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::735b3e9ada06105b` | Vehicle/tow runway-vacated report shall wait until clear beyond holding point. | `needs-sim-model` | `covered-green for explicit vehicle+tow clear-beyond-holding-point evidence` | `Icao9432VehicleTowingSourceBackedScenarioTest`; active-tow runway-vacated report requires correlated vehicle and tow clear-beyond-holding-point evidence. This is explicit state evidence, not geometry-derived proof. |
 
 ## Planned Tests
@@ -54,8 +55,7 @@ must not be reused as vehicle compliance.
    model surface:
    - vehicle vigilance, local-procedure compliance, and apron traffic policy;
    - dangerous-situation stop instruction and expected-aircraft-operation
-     vehicle-runway conflicts;
-   - rendered vehicle/tow phraseology.
+     vehicle-runway conflicts.
 
 ## Review Considerations
 
@@ -68,7 +68,7 @@ must not be reused as vehicle compliance.
 - Impact: fn-66/fn-65/fn-67 add vehicle movement, runway evidence, and
   structured towing evidence without changing current aircraft behaviour.
   Expected-aircraft-operation conflict triggers, geometry-derived tow extent,
-  apron traffic policy, and rendered phraseology remain future implementation
-  boundaries.
+  apron traffic policy, and dangerous-situation intervention policy remain
+  future implementation boundaries.
 - Operational correctness: ICAO 9432 §5.1-§5.4 is about vehicle drivers and
   towing operations, not aircraft pilots.

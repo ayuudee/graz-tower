@@ -49,13 +49,14 @@ class Icao9432VehicleTowingSourceBackedScenarioTest {
                             receiver = RECEIVING_STATION,
                             transmission = VehicleDriverTransmission.RequestTow(
                                 vehicle = VEHICLE,
+                                callsign = CALLSIGN,
                                 receivingStation = RECEIVING_STATION,
                                 tow = TOW,
                             ),
                         ),
                     ),
                 )
-                val (_, _, trace) = runUntilWithStateTrace(
+                val (_, records, trace) = runUntilWithStateTrace(
                     scenario.initialState,
                     scenario.events,
                     SimTime.ZERO + SimDuration.ofSeconds(10),
@@ -89,8 +90,38 @@ class Icao9432VehicleTowingSourceBackedScenarioTest {
                 }
                 hit("type-and-operator-structured-metadata")
 
+                val report = simEvidence("icao9432-vehicle-tow-request-rendered-wording") {
+                    observe {
+                        EvidenceFactAdapters.fromTransmissionRecords(
+                            scenarioId = "icao9432-vehicle-tow-request-rendered-wording",
+                            records = records,
+                            diagnostic = "Vehicle tow-request rendered phraseology",
+                        )
+                    }
+                    source("vehicle tow request rendered wording") {
+                        cites(ICAO9432.VehiclesAndTowing.TowRequestStatesAircraftTypeAndOperator)
+                        sample("vehicle", VEHICLE.value)
+                        sample("receiving-station", RECEIVING_STATION.value)
+                        sample("aircraft", TOWED_AIRCRAFT.value)
+                        sample("aircraft-type", AircraftType.B738.icaoDesignator.raw)
+                        sample("operator", OPERATOR.value)
+                        expect {
+                            renderedVehicleDriverPhraseology(VEHICLE).towRequest(
+                                callsign = CALLSIGN,
+                                receivingStation = RECEIVING_STATION,
+                                aircraft = TOWED_AIRCRAFT,
+                                aircraftType = AircraftType.B738,
+                                operator = OPERATOR,
+                            )
+                        }
+                    }
+                }
+                report.assertNoFailures()
+                hit("type-and-operator-rendered-wording")
+
                 requireHits("aircraft-under-tow-stated-to-receiving-station")
                 requireHits("type-and-operator-structured-metadata")
+                requireHits("type-and-operator-rendered-wording")
             }
         }.assertSatisfied().assertNoModelGaps()
     }
@@ -227,6 +258,7 @@ class Icao9432VehicleTowingSourceBackedScenarioTest {
         val tx = vehicleDriverTransmission(
             VehicleDriverTransmission.RequestTow(
                 vehicle = other,
+                callsign = Callsign("WORKER 99"),
                 receivingStation = RECEIVING_STATION,
                 tow = TOW,
             ),

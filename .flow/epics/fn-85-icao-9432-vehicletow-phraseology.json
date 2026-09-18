@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-85-icao-9432-vehicletow-phraseology",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-21T12:48:25.590529Z",
+  "created_at": "2026-09-18T23:02:49.677204Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-85-icao-9432-vehicletow-phraseology",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-18T23:06:32.864038Z",
+  "spec_path": ".flow/specs/fn-85-icao-9432-vehicletow-phraseology.md",
+  "status": "done",
+  "title": "ICAO 9432 vehicle/tow phraseology evidence",
+  "updated_at": "2026-09-21T12:48:25.701319Z"
+}

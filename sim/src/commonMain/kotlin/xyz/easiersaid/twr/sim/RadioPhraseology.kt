@@ -2,6 +2,7 @@ package xyz.easiersaid.twr.sim
 
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
 import xyz.easiersaid.twr.protocol.AfterPassingLevelClimbTo
 import xyz.easiersaid.twr.protocol.AfterPassingLevelDescendTo
@@ -16,6 +17,7 @@ import xyz.easiersaid.twr.protocol.BreakOff
 import xyz.easiersaid.twr.protocol.BreakOffReadback
 import xyz.easiersaid.twr.protocol.CancelClearance
 import xyz.easiersaid.twr.protocol.AtcInstruction
+import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.Clearance
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedForTakeoffReadback
@@ -37,6 +39,7 @@ import xyz.easiersaid.twr.protocol.ContinueApproach
 import xyz.easiersaid.twr.protocol.ContinuePresentHeading
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ConfirmSquawk
+import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.CrossRunway
 import xyz.easiersaid.twr.protocol.CrossRunwayReadback
 import xyz.easiersaid.twr.protocol.DescendTo
@@ -189,6 +192,8 @@ enum class RenderedPhraseologyTemplate {
     TaxiToStandInstruction,
     TaxiRouteReadback,
     RunwayVacatedReport,
+    VehicleInitialCall,
+    VehicleTowRequest,
 }
 
 @JvmInline
@@ -200,6 +205,10 @@ value class RenderedPhraseText(val value: String) {
 
 sealed interface PhraseologyToken {
     data class AircraftCallsign(val aircraftId: AircraftId) : PhraseologyToken
+    data class VehicleCallsign(val callsign: Callsign) : PhraseologyToken
+    data class StationName(val station: ControllerId) : PhraseologyToken
+    data class AircraftTypeName(val aircraftType: AircraftType) : PhraseologyToken
+    data class OperatorName(val operator: AircraftOperator) : PhraseologyToken
     data class RunwayDesignator(val runway: RunwayId) : PhraseologyToken
     data object Runway : PhraseologyToken
     data object Cleared : PhraseologyToken
@@ -222,6 +231,8 @@ sealed interface PhraseologyToken {
     data object Taxi : PhraseologyToken
     data object To : PhraseologyToken
     data object Via : PhraseologyToken
+    data object Request : PhraseologyToken
+    data object Tow : PhraseologyToken
     data object Vacated : PhraseologyToken
     data class PointName(val point: PointId) : PhraseologyToken
 }
@@ -275,6 +286,25 @@ data class RenderedPilotReportPhraseology(
 sealed interface PilotReportPhraseologyRenderResult {
     data class Rendered(val phraseology: RenderedPilotReportPhraseology) : PilotReportPhraseologyRenderResult
     data class UnsupportedReport(val report: Report) : PilotReportPhraseologyRenderResult
+}
+
+data class RenderedVehicleDriverPhraseology(
+    val template: RenderedPhraseologyTemplate,
+    val obligationKinds: Set<PhraseologyObligationKind>,
+    val tokens: List<PhraseologyToken>,
+    val text: RenderedPhraseText,
+) {
+    init {
+        require(obligationKinds.isNotEmpty()) { "rendered vehicle phraseology must name obligation kinds" }
+        require(tokens.isNotEmpty()) { "rendered vehicle phraseology must carry tokens" }
+    }
+}
+
+sealed interface VehicleDriverPhraseologyRenderResult {
+    data class Rendered(val phraseology: RenderedVehicleDriverPhraseology) : VehicleDriverPhraseologyRenderResult
+    data class UnsupportedTransmission(
+        val transmission: VehicleDriverTransmission,
+    ) : VehicleDriverPhraseologyRenderResult
 }
 
 fun renderControllerPhraseology(output: ControllerOutput.Instruct): ControllerPhraseologyRenderResult {

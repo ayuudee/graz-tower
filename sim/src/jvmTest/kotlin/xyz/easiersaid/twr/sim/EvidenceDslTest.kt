@@ -7,6 +7,8 @@ import kotlin.test.assertTrue
 import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AircraftType
+import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedForTakeoffReadback
 import xyz.easiersaid.twr.protocol.ControllerId
@@ -546,6 +548,243 @@ class EvidenceDslTest {
     }
 
     @Test
+    fun `rendered vehicle initial-call selector matches exact route and rejects malformed cases`() {
+        val vehicle = VehicleId("WORKER-21")
+        val callsign = Callsign("WORKER 21")
+        val position = PointId("GATE-27")
+        val destination = PointId("HOTEL")
+        val route = listOf(PointId("KILO"), PointId("ALPHA"))
+
+        val passReport = renderedVehicleInitialCallReport(
+            scenarioId = "vehicle-initial-call-pass",
+            vehicle = vehicle,
+            payload = renderedVehiclePhraseologyPayload(
+                vehicle = vehicle,
+                template = RenderedPhraseologyTemplate.VehicleInitialCall,
+                tokens = vehicleInitialCallTokens(callsign, position, destination, route),
+                text = "WORKER 21 GATE-27 TO HOTEL VIA KILO ALPHA",
+            ),
+            callsign = callsign,
+            position = position,
+            destination = destination,
+            route = route,
+        )
+        assertTrue(passReport.results.single().outcome is EvidenceAuditOutcome.Pass)
+        assertTrue(passReport.results.single().activationFactIds.isNotEmpty())
+
+        val failingPayloads = listOf(
+            Triple("missing-callsign", vehicleInitialCallTokens(callsign, position, destination, route).drop(1), "x"),
+            Triple(
+                "missing-route",
+                vehicleInitialCallTokens(callsign, position, destination, route).take(5),
+                "WORKER 21 GATE-27 TO HOTEL VIA",
+            ),
+            Triple(
+                "wrong-destination",
+                vehicleInitialCallTokens(callsign, position, PointId("WRONG"), route),
+                "WORKER 21 GATE-27 TO WRONG VIA KILO ALPHA",
+            ),
+            Triple(
+                "reordered-route",
+                vehicleInitialCallTokens(callsign, position, destination, route.reversed()),
+                "WORKER 21 GATE-27 TO HOTEL VIA ALPHA KILO",
+            ),
+            Triple(
+                "shorter-route",
+                vehicleInitialCallTokens(callsign, position, destination, listOf(PointId("KILO"))),
+                "WORKER 21 GATE-27 TO HOTEL VIA KILO",
+            ),
+            Triple(
+                "wrong-text",
+                vehicleInitialCallTokens(callsign, position, destination, route),
+                "WORKER 21 GATE-27 TO HOTEL VIA WRONG",
+            ),
+        )
+        failingPayloads.forEach { (scenario, tokens, text) ->
+            val report = renderedVehicleInitialCallReport(
+                scenarioId = "vehicle-initial-call-$scenario",
+                vehicle = vehicle,
+                payload = renderedVehiclePhraseologyPayload(
+                    vehicle = vehicle,
+                    template = RenderedPhraseologyTemplate.VehicleInitialCall,
+                    tokens = tokens,
+                    text = text,
+                ),
+                callsign = callsign,
+                position = position,
+                destination = destination,
+                route = route,
+            )
+            val outcome = report.results.single().outcome
+            assertTrue(outcome is EvidenceAuditOutcome.Fail)
+            val expectedReason = if (scenario.startsWith("missing-")) "Malformed" else "Mismatched"
+            assertTrue(outcome.reason.contains(expectedReason))
+            assertTrue(report.results.single().activationFactIds.isNotEmpty())
+        }
+
+        val aircraftPhraseologyReport = simEvidence("vehicle-initial-call-rejects-aircraft-phraseology") {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = "vehicle-initial-call-rejects-aircraft-phraseology",
+                    payloads = listOf(
+                        renderedPhraseologyPayload(
+                            aircraft = AircraftId("OE-ABC"),
+                            template = RenderedPhraseologyTemplate.TaxiToStandInstruction,
+                            tokens = listOf(
+                                PhraseologyToken.AircraftCallsign(AircraftId("OE-ABC")),
+                                PhraseologyToken.Taxi,
+                                PhraseologyToken.To,
+                                PhraseologyToken.PointName(destination),
+                            ),
+                            text = "OE-ABC TAXI TO HOTEL",
+                        ),
+                        renderedPhraseologyPayload(
+                            aircraft = AircraftId("OE-DEF"),
+                            template = RenderedPhraseologyTemplate.TakeoffClearance,
+                            tokens = listOf(
+                                PhraseologyToken.AircraftCallsign(AircraftId("OE-DEF")),
+                                PhraseologyToken.Runway,
+                                PhraseologyToken.RunwayDesignator(RunwayId("16C")),
+                                PhraseologyToken.Cleared,
+                                PhraseologyToken.For,
+                                PhraseologyToken.TakeOff,
+                            ),
+                            text = "OE-DEF RUNWAY 16C CLEARED FOR TAKE-OFF",
+                        ),
+                    ),
+                )
+            }
+            invariant("vehicle selector ignores aircraft phraseology") {
+                expect { renderedVehicleDriverPhraseology(vehicle).initialCall(callsign, position, destination, route) }
+            }
+        }
+        assertTrue(aircraftPhraseologyReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(aircraftPhraseologyReport.results.single().activationFactIds.isEmpty())
+
+        val absentVehicleEvidenceReport = simEvidence("vehicle-initial-call-absent-rendered-evidence") {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = "vehicle-initial-call-absent-rendered-evidence",
+                    payloads = emptyList(),
+                )
+            }
+            invariant("vehicle selector reports absent rendered vehicle evidence") {
+                expect { renderedVehicleDriverPhraseology(vehicle).initialCall(callsign, position, destination, route) }
+            }
+        }
+        assertTrue(absentVehicleEvidenceReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(absentVehicleEvidenceReport.results.single().activationFactIds.isEmpty())
+    }
+
+    @Test
+    fun `rendered vehicle tow selector matches metadata and rejects missing fields`() {
+        val vehicle = VehicleId("TUG-5")
+        val callsign = Callsign("TUG-5")
+        val station = ControllerId("LOWG_TOWER")
+        val aircraft = AircraftId("OE-TOW")
+        val operator = AircraftOperator("Austrian")
+
+        val passReport = renderedVehicleTowReport(
+            scenarioId = "vehicle-tow-pass",
+            vehicle = vehicle,
+            payload = renderedVehiclePhraseologyPayload(
+                vehicle = vehicle,
+                template = RenderedPhraseologyTemplate.VehicleTowRequest,
+                tokens = vehicleTowTokens(callsign, station, aircraft, AircraftType.B738, operator),
+                text = "LOWG_TOWER TUG-5 REQUEST TOW OE-TOW B738 Austrian",
+            ),
+            callsign = callsign,
+            station = station,
+            aircraft = aircraft,
+            operator = operator,
+        )
+        assertTrue(passReport.results.single().outcome is EvidenceAuditOutcome.Pass)
+
+        val failingPayloads = listOf(
+            Triple(
+                "missing-addressee",
+                vehicleTowTokens(callsign, station, aircraft, AircraftType.B738, operator).drop(1),
+                "TUG-5 REQUEST TOW OE-TOW B738 Austrian",
+            ),
+            Triple(
+                "wrong-aircraft",
+                vehicleTowTokens(callsign, station, AircraftId("OE-WRONG"), AircraftType.B738, operator),
+                "LOWG_TOWER TUG-5 REQUEST TOW OE-WRONG B738 Austrian",
+            ),
+            Triple(
+                "missing-type-operator",
+                listOf(
+                    PhraseologyToken.StationName(station),
+                    PhraseologyToken.VehicleCallsign(callsign),
+                    PhraseologyToken.Request,
+                    PhraseologyToken.Tow,
+                    PhraseologyToken.AircraftCallsign(aircraft),
+                ),
+                "LOWG_TOWER TUG-5 REQUEST TOW OE-TOW",
+            ),
+            Triple(
+                "wrong-text",
+                vehicleTowTokens(callsign, station, aircraft, AircraftType.B738, operator),
+                "LOWG_TOWER TUG-5 REQUEST TOW OE-TOW WRONG Austrian",
+            ),
+        )
+        failingPayloads.forEach { (scenario, tokens, text) ->
+            val report = renderedVehicleTowReport(
+                scenarioId = "vehicle-tow-$scenario",
+                vehicle = vehicle,
+                payload = renderedVehiclePhraseologyPayload(
+                    vehicle = vehicle,
+                    template = RenderedPhraseologyTemplate.VehicleTowRequest,
+                    tokens = tokens,
+                    text = text,
+                ),
+                callsign = callsign,
+                station = station,
+                aircraft = aircraft,
+                operator = operator,
+            )
+            val outcome = report.results.single().outcome
+            assertTrue(outcome is EvidenceAuditOutcome.Fail)
+            val expectedReason = if (scenario == "wrong-aircraft" || scenario == "wrong-text") {
+                "Mismatched"
+            } else {
+                "Malformed"
+            }
+            assertTrue(outcome.reason.contains(expectedReason))
+            assertTrue(report.results.single().activationFactIds.isNotEmpty())
+        }
+    }
+
+    @Test
+    fun `rendered vehicle unsupported payload selector stays explicit`() {
+        val vehicle = VehicleId("WORKER-21")
+        val payload = EvidenceFactPayload.UnsupportedRenderedVehicleDriverPhraseology(
+            vehicleId = vehicle,
+            transmissionRef = TransmissionId(1),
+            transmission = VehicleDriverTransmission.RequestFurtherPermission(
+                vehicle = vehicle,
+                from = PointId("HOLD-1"),
+                destination = PointId("HOTEL"),
+            ),
+        )
+
+        val report = simEvidence("vehicle-unsupported-rendered-phraseology") {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = "vehicle-unsupported-rendered-phraseology",
+                    payloads = listOf(payload),
+                )
+            }
+            invariant("unsupported request further permission") {
+                expect { renderedVehicleDriverPhraseology(vehicle).unsupportedRequestFurtherPermission() }
+            }
+        }
+
+        assertTrue(report.results.single().outcome is EvidenceAuditOutcome.Pass)
+        assertTrue(report.results.single().activationFactIds.isNotEmpty())
+    }
+
+    @Test
     fun `operationalPolicy selector requires explicit configured branch and scope`() {
         val scope = OperationalPolicyScope.AerodromeRunway(
             aerodrome = AerodromeId("LOWG"),
@@ -728,6 +967,105 @@ class EvidenceDslTest {
             tokens = tokens,
             text = RenderedPhraseText(text),
         )
+
+    private fun renderedVehiclePhraseologyPayload(
+        vehicle: VehicleId,
+        template: RenderedPhraseologyTemplate,
+        tokens: List<PhraseologyToken>,
+        text: String,
+    ): EvidenceFactPayload.RenderedVehicleDriverPhraseology =
+        EvidenceFactPayload.RenderedVehicleDriverPhraseology(
+            vehicleId = vehicle,
+            transmissionRef = TransmissionId(1),
+            template = template,
+            obligationKinds = setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.SemanticSlot,
+            ),
+            tokens = tokens,
+            text = RenderedPhraseText(text),
+        )
+
+    private fun vehicleInitialCallTokens(
+        callsign: Callsign,
+        position: PointId,
+        destination: PointId,
+        route: List<PointId>,
+    ): List<PhraseologyToken> =
+        listOf(
+            PhraseologyToken.VehicleCallsign(callsign),
+            PhraseologyToken.PointName(position),
+            PhraseologyToken.To,
+            PhraseologyToken.PointName(destination),
+            PhraseologyToken.Via,
+        ) + route.map(PhraseologyToken::PointName)
+
+    private fun vehicleTowTokens(
+        callsign: Callsign,
+        station: ControllerId,
+        aircraft: AircraftId,
+        aircraftType: AircraftType,
+        operator: AircraftOperator,
+    ): List<PhraseologyToken> =
+        listOf(
+            PhraseologyToken.StationName(station),
+            PhraseologyToken.VehicleCallsign(callsign),
+            PhraseologyToken.Request,
+            PhraseologyToken.Tow,
+            PhraseologyToken.AircraftCallsign(aircraft),
+            PhraseologyToken.AircraftTypeName(aircraftType),
+            PhraseologyToken.OperatorName(operator),
+        )
+
+    private fun renderedVehicleInitialCallReport(
+        scenarioId: String,
+        vehicle: VehicleId,
+        payload: EvidenceFactPayload.RenderedVehicleDriverPhraseology,
+        callsign: Callsign,
+        position: PointId,
+        destination: PointId,
+        route: List<PointId>,
+    ): EvidenceAuditReport =
+        simEvidence(scenarioId) {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = scenarioId,
+                    payloads = listOf(payload),
+                )
+            }
+            invariant("vehicle initial call") {
+                expect { renderedVehicleDriverPhraseology(vehicle).initialCall(callsign, position, destination, route) }
+            }
+        }
+
+    private fun renderedVehicleTowReport(
+        scenarioId: String,
+        vehicle: VehicleId,
+        payload: EvidenceFactPayload.RenderedVehicleDriverPhraseology,
+        callsign: Callsign,
+        station: ControllerId,
+        aircraft: AircraftId,
+        operator: AircraftOperator,
+    ): EvidenceAuditReport =
+        simEvidence(scenarioId) {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = scenarioId,
+                    payloads = listOf(payload),
+                )
+            }
+            invariant("vehicle tow request") {
+                expect {
+                    renderedVehicleDriverPhraseology(vehicle).towRequest(
+                        callsign = callsign,
+                        receivingStation = station,
+                        aircraft = aircraft,
+                        aircraftType = AircraftType.B738,
+                        operator = operator,
+                    )
+                }
+            }
+        }
 
     private fun renderedTakeOffWordUseReport(
         scenarioId: String,

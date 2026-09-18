@@ -469,7 +469,7 @@ object ICAO9432 {
         val FirstCallIdentifiesVehicleRoute: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::aerodrome_vehicles_intro_movement_5_1_to_5_2_en::7759017903acf140",
             title = "Vehicle first-call identifies call sign position destination and route",
-            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
         )
 
         val StopAtLimitThenRequestFurtherPermission: EvidenceSourceRef = source(
@@ -511,7 +511,7 @@ object ICAO9432 {
         val TowRequestStatesAircraftTypeAndOperator: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::aerodrome_vehicles_crossing_towing_5_3_to_5_4_en::4b103081585bfb71",
             title = "Tow driver should state aircraft type and operator where applicable",
-            claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
         )
 
         val RunwayVacatedReportAfterVehicleTowClear: EvidenceSourceRef = source(

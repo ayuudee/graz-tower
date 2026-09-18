@@ -700,34 +700,6 @@ class Icao9432ModelGapSourceUnitSpecTest {
     }
 
     @Test
-    fun `vehicle towing source units report missing rendered vehicle phraseology`() {
-        sourceUnitSpec("icao9432-vehicle-towing-phraseology-model-gaps") {
-            title("Vehicle towing rendered wording remains outside the structured metadata branch")
-            sourceUnit(
-                ICAO9432.VehiclesAndTowing.TowRequestStatesAircraftTypeAndOperator.toSourceUnitRef(),
-            )
-            domain("transmission", setOf("tow-request"))
-            domain("structured-metadata", setOf("aircraft-type-operator-present"))
-            domain("phraseology-surface", setOf("rendered-vehicle-utterance", "not-rendered"))
-
-            partition(
-                name = "tow request rendered wording",
-                parameters = mapOf(
-                    "transmission" to "tow-request",
-                    "structured-metadata" to "aircraft-type-operator-present",
-                    "phraseology-surface" to "rendered-vehicle-utterance",
-                ),
-            ) {
-                hit("rendered-vehicle-tow-phraseology-required")
-                modelGap(
-                    "The sim has structured vehicle/tow metadata and receiving-station addressing, but no " +
-                        "rendered vehicle/tow phraseology surface for asserting the spoken wording.",
-                )
-            }
-        }.assertSatisfied().assertHasModelGap()
-    }
-
-    @Test
     fun `chunk 08 emergency source specs cite every accepted source unit exactly once`() {
         val citedRefs = chunk08GapSpecRefGroups.flatten()
         val distinctCitedRefs = citedRefs.toSet()

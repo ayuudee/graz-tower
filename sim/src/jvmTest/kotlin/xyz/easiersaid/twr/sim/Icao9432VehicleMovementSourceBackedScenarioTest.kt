@@ -64,7 +64,7 @@ class Icao9432VehicleMovementSourceBackedScenarioTest {
                         ),
                     ),
                 )
-                val (_, _, trace) = runUntilWithStateTrace(
+                val (_, records, trace) = runUntilWithStateTrace(
                     scenario.initialState,
                     scenario.events,
                     SimTime.ZERO + SimDuration.ofSeconds(40),
@@ -79,6 +79,33 @@ class Icao9432VehicleMovementSourceBackedScenarioTest {
                 }
                 hit("first-call-structured-content")
 
+                val report = simEvidence("icao9432-vehicle-first-call-rendered-wording") {
+                    observe {
+                        EvidenceFactAdapters.fromTransmissionRecords(
+                            scenarioId = "icao9432-vehicle-first-call-rendered-wording",
+                            records = records,
+                            diagnostic = "Vehicle first-call rendered phraseology",
+                        )
+                    }
+                    source("vehicle first-call rendered wording") {
+                        cites(ICAO9432.VehiclesAndTowing.FirstCallIdentifiesVehicleRoute)
+                        sample("vehicle", VEHICLE.value)
+                        sample("position", START.value)
+                        sample("destination", DESTINATION.value)
+                        sample("route", "KILO")
+                        expect {
+                            renderedVehicleDriverPhraseology(VEHICLE).initialCall(
+                                callsign = CALLSIGN,
+                                position = START,
+                                destination = DESTINATION,
+                                route = listOf(PointId("KILO")),
+                            )
+                        }
+                    }
+                }
+                report.assertNoFailures()
+                hit("first-call-rendered-wording")
+
                 val standbyStep = trace.afterVehicleInstruction<VehicleControllerTransmission.Standby>()
                 standbyStep.assertVehicleAt(START)
                 standbyStep.assertVehiclePhase<VehicleMovementPhase.Standby>()
@@ -90,6 +117,7 @@ class Icao9432VehicleMovementSourceBackedScenarioTest {
                 }
                 hit("permission-after-standby")
                 requireHits("first-call-structured-content")
+                requireHits("first-call-rendered-wording")
                 requireHits("standby-received-no-move")
                 requireHits("permission-after-standby")
             }
