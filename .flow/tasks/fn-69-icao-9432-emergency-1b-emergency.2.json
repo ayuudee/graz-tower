@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T14:28:50.359040Z",
+  "depends_on": [
+    "fn-69-icao-9432-emergency-1b-emergency.1"
+  ],
+  "epic": "fn-69-icao-9432-emergency-1b-emergency",
+  "id": "fn-69-icao-9432-emergency-1b-emergency.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-69-icao-9432-emergency-1b-emergency.2.md",
+  "status": "todo",
+  "title": "Implement emergency priority and silence evidence",
+  "updated_at": "2026-09-18T14:28:50.359143Z"
+}

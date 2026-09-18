@@ -11,9 +11,6 @@ class Icao9432ModelGapSourceUnitSpecTest {
     )
 
     private val chunk08EmergencyPrioritySilenceRefs: List<SourceUnitRef> = chunk08Refs(
-        "icao9432-extracted::distress_urgency_intro_9_1_en::3b1079aa56df2ce6",
-        "icao9432-extracted::distress_urgency_intro_9_1_en::1a20cd48e58a5693",
-        "icao9432-extracted::distress_urgency_intro_9_1_en::7d35c042421b5b03",
         "icao9432-extracted::distress_urgency_intro_9_1_en::06f7a72397c325ac",
         "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d",
     )
@@ -36,9 +33,6 @@ class Icao9432ModelGapSourceUnitSpecTest {
         "icao9432-extracted::distress_urgency_intro_9_1_en::8e9f7818b91d08c3",
         "icao9432-extracted::distress_urgency_intro_9_1_en::cb12c2f9b97c64b7",
         "icao9432-extracted::distress_messages_9_2_en::4b37e039e7eb8afa",
-        "icao9432-extracted::distress_messages_9_2_en::e2902de496f43a95",
-        "icao9432-extracted::distress_messages_9_2_en::ed898005cd1a4da5",
-        "icao9432-extracted::distress_messages_9_2_en::c20024dad1b7144e",
     )
 
     private val chunk08EmergencyDescentRefs: List<SourceUnitRef> = chunk08Refs(
@@ -75,6 +69,12 @@ class Icao9432ModelGapSourceUnitSpecTest {
         "icao9432-extracted::distress_urgency_intro_9_1_en::c959f0325390e7fe",
         "icao9432-extracted::distress_urgency_intro_9_1_en::d742970b22d8de26",
         "icao9432-extracted::distress_messages_9_2_en::23c9f447cd6c7814",
+        "icao9432-extracted::distress_urgency_intro_9_1_en::3b1079aa56df2ce6",
+        "icao9432-extracted::distress_urgency_intro_9_1_en::1a20cd48e58a5693",
+        "icao9432-extracted::distress_urgency_intro_9_1_en::7d35c042421b5b03",
+        "icao9432-extracted::distress_messages_9_2_en::e2902de496f43a95",
+        "icao9432-extracted::distress_messages_9_2_en::ed898005cd1a4da5",
+        "icao9432-extracted::distress_messages_9_2_en::c20024dad1b7144e",
     )
 
     private val chunk08GapSpecRefGroups: List<List<SourceUnitRef>> =
@@ -773,27 +773,27 @@ class Icao9432ModelGapSourceUnitSpecTest {
     }
 
     @Test
-    fun `emergency priority and radio silence source units report missing priority arbitration`() {
+    fun `residual emergency interference policy source units report missing suppression policy`() {
         sourceUnitSpec("icao9432-emergency-priority-silence-model-gaps") {
-            title("Emergency traffic priority and silence claims require emergency radio arbitration")
+            title("Emergency traffic interference claims require suppression policy")
             sourceUnits(chunk08EmergencyPrioritySilenceRefs)
-            domain("message-priority", setOf("distress", "urgency", "routine"))
-            domain("frequency-state", setOf("emergency-active", "routine-open"))
+            domain("message-kind", setOf("urgency", "distress"))
+            domain("frequency-state", setOf("emergency-active"))
             domain("interference-policy", setOf("suppress-superfluous", "not-modelled"))
 
             partition(
-                name = "distress outranks urgency and routine transmissions",
+                name = "superfluous and interfering transmissions are suppressed by policy",
                 parameters = mapOf(
-                    "message-priority" to "distress",
+                    "message-kind" to "urgency",
                     "frequency-state" to "emergency-active",
                     "interference-policy" to "suppress-superfluous",
                 ),
             ) {
-                hit("emergency-priority-radio-arbitration-required")
+                hit("emergency-interference-suppression-policy-required")
                 modelGap(
-                    "The sim has no distress/urgency/routine priority class, no emergency-traffic " +
-                        "frequency silence state, and no policy evidence suppressing superfluous or " +
-                        "interfering transmissions during emergency traffic.",
+                    "The sim has structured emergency priority and frequency discipline evidence, but " +
+                        "no policy evidence identifying and suppressing superfluous or interfering " +
+                        "transmissions during emergency traffic.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()
@@ -827,28 +827,27 @@ class Icao9432ModelGapSourceUnitSpecTest {
     }
 
     @Test
-    fun `emergency assistance relay and termination source units report missing emergency traffic control`() {
+    fun `emergency assistance and relay source units report missing emergency traffic control`() {
         sourceUnitSpec("icao9432-emergency-assistance-relay-termination-model-gaps") {
-            title("Emergency assistance, relay, silence, and termination claims require emergency traffic control")
+            title("Emergency assistance and relay claims require emergency traffic control")
             sourceUnits(chunk08AssistanceRelayTerminationRefs)
-            domain("actor", setOf("called-station", "other-station", "other-aircraft", "distress-aircraft"))
+            domain("actor", setOf("called-station", "other-station", "other-aircraft"))
             domain("frequency-choice", setOf("current", "alternate"))
-            domain("traffic-state", setOf("active-distress", "silence-imposed", "distress-ended"))
+            domain("traffic-state", setOf("active-distress", "relay-required"))
 
             partition(
-                name = "other station assists and silence ends only when distress ends",
+                name = "other station assists and relays emergency traffic",
                 parameters = mapOf(
                     "actor" to "other-station",
                     "frequency-choice" to "current",
-                    "traffic-state" to "silence-imposed",
+                    "traffic-state" to "relay-required",
                 ),
             ) {
-                hit("emergency-assistance-relay-and-termination-required")
+                hit("emergency-assistance-and-relay-required")
                 modelGap(
                     "The sim has no non-addressed emergency assistance actor, intercepted-distress relay " +
                         "state, emergency frequency-continuity or alternate-frequency decision, SSR 7700 " +
-                        "distress assistance model, silence-imposition model, per-aircraft silence " +
-                        "obligation, or distress-ended termination state.",
+                        "distress assistance model, or emergency relay workflow.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()
