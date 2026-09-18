@@ -1,0 +1,15 @@
+{
+  "branch_name": "main",
+  "created_at": "2026-09-18T10:21:43.713811Z",
+  "depends_on_epics": [
+    "fn-59-icao-9432-implementation-roadmap"
+  ],
+  "id": "fn-71-icao-9432-emergency-1d-communications",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-71-icao-9432-emergency-1d-communications.md",
+  "status": "open",
+  "title": "ICAO 9432 EMERGENCY-1D communications failure blind transmissions SSR",
+  "updated_at": "2026-09-18T10:25:01.061442Z"
+}

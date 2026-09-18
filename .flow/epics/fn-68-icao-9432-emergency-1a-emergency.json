@@ -1,0 +1,15 @@
+{
+  "branch_name": "main",
+  "created_at": "2026-09-18T10:21:43.679566Z",
+  "depends_on_epics": [
+    "fn-59-icao-9432-implementation-roadmap"
+  ],
+  "id": "fn-68-icao-9432-emergency-1a-emergency",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-68-icao-9432-emergency-1a-emergency.md",
+  "status": "open",
+  "title": "ICAO 9432 EMERGENCY-1A emergency classification and message payload",
+  "updated_at": "2026-09-18T10:25:00.765136Z"
+}

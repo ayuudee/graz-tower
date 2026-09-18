@@ -1,0 +1,15 @@
+{
+  "branch_name": "main",
+  "created_at": "2026-09-18T10:21:36.381896Z",
+  "depends_on_epics": [
+    "fn-59-icao-9432-implementation-roadmap"
+  ],
+  "id": "fn-65-icao-9432-vehicle-1b-vehicle-runway",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-65-icao-9432-vehicle-1b-vehicle-runway.md",
+  "status": "open",
+  "title": "ICAO 9432 VEHICLE-1B vehicle runway crossing and occupancy",
+  "updated_at": "2026-09-18T10:25:00.468053Z"
+}

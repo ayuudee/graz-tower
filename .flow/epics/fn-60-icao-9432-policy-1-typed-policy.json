@@ -1,0 +1,15 @@
+{
+  "branch_name": "main",
+  "created_at": "2026-09-18T10:21:27.463828Z",
+  "depends_on_epics": [
+    "fn-59-icao-9432-implementation-roadmap"
+  ],
+  "id": "fn-60-icao-9432-policy-1-typed-policy",
+  "next_task": 1,
+  "plan_review_status": "unknown",
+  "plan_reviewed_at": null,
+  "spec_path": ".flow/specs/fn-60-icao-9432-policy-1-typed-policy.md",
+  "status": "open",
+  "title": "ICAO 9432 POLICY-1 typed policy substrate",
+  "updated_at": "2026-09-18T10:24:59.972960Z"
+}

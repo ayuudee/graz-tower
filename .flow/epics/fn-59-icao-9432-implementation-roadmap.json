@@ -1,0 +1,18 @@
+{
+  "branch_name": "main",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-18T10:24:48.134299Z",
+  "created_at": "2026-09-18T10:14:50.479021Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-59-icao-9432-implementation-roadmap",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-18T10:24:48.113537Z",
+  "spec_path": ".flow/specs/fn-59-icao-9432-implementation-roadmap.md",
+  "status": "done",
+  "title": "ICAO 9432 implementation roadmap",
+  "updated_at": "2026-09-18T10:24:50.994534Z"
+}
