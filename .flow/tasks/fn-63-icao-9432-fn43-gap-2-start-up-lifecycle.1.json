@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T11:38:01.244318Z",
+  "depends_on": [],
+  "epic": "fn-63-icao-9432-fn43-gap-2-start-up-lifecycle",
+  "id": "fn-63-icao-9432-fn43-gap-2-start-up-lifecycle.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-63-icao-9432-fn43-gap-2-start-up-lifecycle.1.md",
+  "status": "todo",
+  "title": "Build start-up lifecycle movement manifest and impact plan",
+  "updated_at": "2026-09-18T11:38:12.414000Z"
+}
