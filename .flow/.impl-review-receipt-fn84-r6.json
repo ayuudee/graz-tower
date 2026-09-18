@@ -1,0 +1,14 @@
+{
+  "type": "impl_review",
+  "id": "fn-84-icao-9432-phrase-1-after-landing.1",
+  "mode": "codex",
+  "base": "HEAD~1",
+  "verdict": "SHIP",
+  "session_id": "01a0b6b6-377e-7f43-a5db-cdc45e7b79a7",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T22:50:48.233226Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b6b6-377e-7f43-a5db-cdc45e7b79a7\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"I\u2019ll review this as an implementation review, using only the supplied diff and embedded file contents as requested. I\u2019m focusing on ship-blocking behavior introduced by this changeset, especially evidence overclaims and selector/rendering consistency.\"}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_1\",\"type\":\"agent_message\",\"text\":\"No surviving introduced findings.\\n\\n## Pre-existing issues (not blocking this verdict)\\n\\nNone.\\n\\nClassification counts: 0 introduced, 0 pre_existing.\\n\\nThe implementation matches the fn-84 split: it adds the rendered templates/tokens, keeps `AirTaxiTo` out of scope, requires correlated taxi-to-stand/readback evidence with ordered route matching, and leaves the contact-ground row visibly split with the first-right residual documented.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":106882,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":2978,\"reasoning_output_tokens\":2826}}\n",
+  "focus": "Review amended fn-84 after-landing phraseology evidence after typed-route parser and activation fixes. Confirm prior findings are closed; still check malformed route rejection, failure diagnostics activation, central blocker manifest consistency, stale docs, overclaiming ICAO 9432 \u00a74.9 examples, unsupported AirTaxiTo/vacating-runway/essential-info phraseology boundaries, and rendered-evidence test quality."
+}

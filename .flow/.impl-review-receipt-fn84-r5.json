@@ -1,0 +1,16 @@
+{
+  "type": "impl_review",
+  "id": "fn-84-icao-9432-phrase-1-after-landing.1",
+  "mode": "codex",
+  "base": "HEAD~1",
+  "verdict": "NEEDS_WORK",
+  "session_id": "01a0b6b3-65dc-7800-aa5f-00dde0d9b7b4",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T22:48:19.929507Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b6b3-65dc-7800-aa5f-00dde0d9b7b4\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"I\u2019ll treat this strictly as a code review over the provided diff and embedded files, without reaching into the checkout. I\u2019m focusing on whether the new evidence proof can overclaim the ICAO \u00a74.9 source rows, since that\u2019s the sharp edge in this change.\"}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_1\",\"type\":\"agent_message\",\"text\":\"**Severity**: Major  \\n**Confidence**: 75  \\n**Classification**: introduced  \\n**File:Line**: `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceDsl.kt:858`  \\n**Problem**: The after-landing correlation accepts malformed route token lists as a valid \u201csame destination/route\u201d match. `taxiRouteTokens()` returns whatever remains after `AircraftCallsign, Taxi, To`, and `readbackRouteTokens()` returns whatever precedes the callsign. If both are empty, or start with `Via` and have no destination, the source selector can pass without any `PointName(destination)`, violating the spec\u2019s same-destination requirement.  \\n**Suggestion**: Parse route tokens into a typed shape, e.g. `RenderedTaxiRoute(destination: PointId, via: List<PointId>)`, and return `null` unless the token list is exactly `PointName(destination)` or `PointName(destination), Via, PointName...`. Add a negative selector test for missing destination / dangling `Via`.\\n\\n**Severity**: Minor  \\n**Confidence**: 100  \\n**Classification**: introduced  \\n**File:Line**: `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceDsl.kt:720`  \\n**Problem**: `runwayVacatedTaxiToStandExchange()` only activates facts on success. On mismatch, a source case with real but non-correlating facts will have its specific failure replaced by the generic \u201cdid not activate any evidence facts\u201d failure. Other selectors in this file explicitly activate examined facts before branching to preserve honest diagnostics.  \\n**Suggestion**: Activate all consulted runway-vacated, taxi-to-stand, and readback facts before returning mismatch failures.\\n\\n## Pre-existing Issues (Not Blocking This Verdict)\\n\\nNone.\\n\\nSuppressed findings: none.  \\nClassification counts: 2 introduced, 0 pre_existing.\\n\\n<verdict>NEEDS_WORK</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":106218,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":5019,\"reasoning_output_tokens\":4541}}\n",
+  "focus": "Review amended fn-84 after-landing phraseology evidence after manifest and coverage-report review fixes. Confirm prior findings are closed; still check central blocker manifest consistency, stale docs, overclaiming ICAO 9432 \u00a74.9 examples, unsupported AirTaxiTo/vacating-runway/essential-info phraseology boundaries, and rendered-evidence test quality.",
+  "introduced_count": 2,
+  "pre_existing_count": 0
+}

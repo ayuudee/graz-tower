@@ -1,0 +1,16 @@
+{
+  "type": "impl_review",
+  "id": "fn-84-icao-9432-phrase-1-after-landing.1",
+  "mode": "codex",
+  "base": "HEAD~1",
+  "verdict": "NEEDS_WORK",
+  "session_id": "01a0b6b0-bb46-7f50-ac69-08aea65d572c",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T22:45:36.191732Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b6b0-bb46-7f50-ac69-08aea65d572c\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"I\u2019ll treat this as a strict implementation review and stay within the supplied diff/context. I\u2019m checking the new renderer/projection surfaces first, then the evidence correlation and docs/tests against the acceptance contract.\"}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_1\",\"type\":\"agent_message\",\"text\":\"**Severity**: Major  \\n**Confidence**: 75  \\n**Classification**: introduced  \\n**File:Line**: `research/tools/requirements-spike/quality/icao9432_programme/chunk_06_go_around_after_landing_aerodrome_info/coverage_report.md:35`  \\n**Problem**: `df25159c1e7b94a3` is moved into an explicit split-residual state in the chunk docs, but the central blocker manifest is not updated or pinned. The embedded catalog test shows a central `implementation_blocker_manifest.csv` already exists and is used for split residual tracking, but this diff does not modify it for the new after-landing residual. That leaves downstream programme tracking inconsistent with the updated coverage/gap docs.  \\n**Suggestion**: Update the central manifest with the `df251...` split state/residual, and add a regression assertion like the existing final-report residual manifest test.\\n\\n**Severity**: Minor  \\n**Confidence**: 100  \\n**Classification**: introduced  \\n**File:Line**: `research/tools/requirements-spike/quality/icao9432_programme/chunk_06_go_around_after_landing_aerodrome_info/coverage_report.md:68`  \\n**Problem**: The \u201cReview Considerations\u201d section is stale after this change. It still says the test architecture is only the VFR go-around trace and that no phraseology rendering changed, but this diff adds after-landing phraseology rendering plus source-mapped phraseology evidence.  \\n**Suggestion**: Refresh that section so it names the new after-landing rendered phraseology coverage and limits the \u201cno behavior changed\u201d claim to controller/pilot/movement/policy behavior.\\n\\n## Pre-existing issues (not blocking this verdict)\\n\\nNone.\\n\\nSuppressed findings: 1 at anchor 50.  \\nClassification counts: 2 introduced, 0 pre_existing.\\n\\n<verdict>NEEDS_WORK</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":96103,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":5630,\"reasoning_output_tokens\":5178}}\n",
+  "focus": "Review amended fn-84 after-landing phraseology evidence after catalog, order-correlation, synthetic metadata, and coverage-report verification fixes. Confirm prior findings are closed; still check overclaiming ICAO 9432 \u00a74.9 examples, unsupported AirTaxiTo/vacating-runway/essential-info phraseology boundaries, and whether tests prove rendered phraseology rather than type-only protocol facts.",
+  "introduced_count": 2,
+  "pre_existing_count": 0
+}

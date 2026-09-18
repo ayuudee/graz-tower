@@ -1,0 +1,16 @@
+{
+  "type": "impl_review",
+  "id": "fn-84-icao-9432-phrase-1-after-landing.1",
+  "mode": "codex",
+  "base": "HEAD~1",
+  "verdict": "NEEDS_WORK",
+  "session_id": "01a0b6ab-33fd-7ef1-bceb-30685c635b48",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T22:39:49.041887Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b6ab-33fd-7ef1-bceb-30685c635b48\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"I\u2019ll treat this as a pure implementation review from the supplied diff and embedded files, and I\u2019ll stay inside that box. I\u2019m going to focus on whether the new evidence can overclaim ICAO \u00a74.9 coverage or accidentally miss the paths it says it proves.\"}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_1\",\"type\":\"agent_message\",\"text\":\"**Severity**: Major  \\n**Confidence**: 75  \\n**Classification**: introduced  \\n**File:Line**: `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/EvidenceDsl.kt:1408`  \\n**Problem**: `runwayVacatedTaxiToStandExchange()` correlates the runway-vacated report, `TaxiToStandInstruction`, and `TaxiRouteReadback` only by aircraft and matching route tokens. It does not require the exchange order. A fact set with `TaxiRouteReadback` before `TaxiToStand`, or `TaxiToStand` before `RUNWAY VACATED`, can still pass as \u00a74.9 after-landing dialogue evidence. That overclaims the source-mapped phraseology example as an exchange rather than just three unrelated rendered facts.  \\n**Suggestion**: Match a triple with strict provenance order, e.g. `RunwayVacatedReport.sequence < TaxiToStandInstruction.sequence < TaxiRouteReadback.sequence`, and add selector tests for reversed readback/instruction and taxi-before-vacated cases.\\n\\n## Pre-existing Issues (Not Blocking This Verdict)\\n\\nNone.\\n\\nSuppressed findings: 3 at anchor 50.  \\nClassification counts: 1 introduced, 0 pre_existing.\\n\\n<verdict>NEEDS_WORK</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":95075,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":6457,\"reasoning_output_tokens\":6120}}\n",
+  "focus": "Review amended fn-84 after-landing phraseology evidence. Pay particular attention to catalog completeness, overclaiming ICAO 9432 \u00a74.9 examples, the generic TaxiRouteReadback correlation rule, unsupported AirTaxiTo/vacating-runway/essential-info phraseology boundaries, and whether tests prove rendered phraseology rather than type-only protocol facts.",
+  "introduced_count": 1,
+  "pre_existing_count": 0
+}

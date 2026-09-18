@@ -1,0 +1,16 @@
+{
+  "type": "impl_review",
+  "id": "fn-84-icao-9432-phrase-1-after-landing.1",
+  "mode": "codex",
+  "base": "HEAD~1",
+  "verdict": "NEEDS_WORK",
+  "session_id": "01a0b6ae-515f-7643-8ed8-f1c0c5a1d5f7",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T22:43:16.153978Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b6ae-515f-7643-8ed8-f1c0c5a1d5f7\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"I\u2019m going through this as a review, sticking to the diff and embedded file contents only. The main thing I\u2019m checking is whether the new phraseology evidence can overclaim coverage or miss the spec\u2019s split/residual boundaries.\"}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_1\",\"type\":\"agent_message\",\"text\":\"**Findings**\\n\\n- **Severity**: Minor  \\n  **Confidence**: 100  \\n  **Classification**: introduced  \\n  **File:Line**: `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432PhraseologyEvidenceTest.kt:374`  \\n  **Problem**: The synthetic contact-ground readback source case lacks the required `production-renderer-path` sample metadata. The task says any synthetic use must name the failed real-trace branch and the production renderer path exercised; the instruction case does this, but the readback case only names source, synthetic branch, why synthetic, and residual.  \\n  **Suggestion**: Add a `sample(\\\"production-renderer-path\\\", \\\"...\\\")` to the frequency readback source case, naming the `FrequencyReadback` renderer path through `EvidenceFactAdapters.fromTransmissionRecords`.\\n\\n- **Severity**: Minor  \\n  **Confidence**: 100  \\n  **Classification**: introduced  \\n  **File:Line**: `research/tools/requirements-spike/quality/icao9432_programme/chunk_06_go_around_after_landing_aerodrome_info/coverage_report.md:57`  \\n  **Problem**: The coverage report now claims fn-84 phraseology coverage, but its verification commands still omit `Icao9432PhraseologyEvidenceTest` and validate the old fn-62 epic. That makes the updated report\u2019s verification block stale for the new coverage claims.  \\n  **Suggestion**: Update the verification commands to include the fn-84 focused tests and the fn-84 flow validation command.\\n\\n## Pre-existing issues (not blocking this verdict)\\n\\nNone.\\n\\nClassification counts: 2 introduced, 0 pre_existing.\\n\\n<verdict>NEEDS_WORK</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":95981,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":6620,\"reasoning_output_tokens\":6196}}\n",
+  "focus": "Review amended fn-84 after-landing phraseology evidence after catalog and order-correlation fixes. Pay particular attention to catalog completeness, strict RunwayVacated < TaxiToStand < TaxiRouteReadback ordering, overclaiming ICAO 9432 \u00a74.9 examples, unsupported AirTaxiTo/vacating-runway/essential-info phraseology boundaries, and whether tests prove rendered phraseology rather than type-only protocol facts.",
+  "introduced_count": 2,
+  "pre_existing_count": 0
+}
