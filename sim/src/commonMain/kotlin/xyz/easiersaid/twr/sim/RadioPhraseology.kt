@@ -13,6 +13,7 @@ import xyz.easiersaid.twr.protocol.LineUpReadback
 import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SimpleElement
+import xyz.easiersaid.twr.protocol.StopImmediately
 
 enum class PhraseologyObligationKind {
     MandatoryWords,
@@ -31,6 +32,7 @@ enum class RenderedPhraseologyTemplate {
     LineUpReadback,
     ContactFrequencyInstruction,
     FrequencyReadback,
+    StopImmediatelyInstruction,
 }
 
 @JvmInline
@@ -54,6 +56,8 @@ sealed interface PhraseologyToken {
     data object Contact : PhraseologyToken
     data class UnitName(val value: String) : PhraseologyToken
     data class FrequencyValue(val frequency: Frequency) : PhraseologyToken
+    data object Stop : PhraseologyToken
+    data object Immediately : PhraseologyToken
     data object Touch : PhraseologyToken
     data object And : PhraseologyToken
     data object Go : PhraseologyToken
@@ -107,6 +111,7 @@ fun renderControllerPhraseology(output: ControllerOutput.Instruct): ControllerPh
         }
         is ClearedForTakeoff -> takeoffClearancePhraseology(output.target, instruction.runway)
         is ClearedTouchAndGo -> touchAndGoClearancePhraseology(output.target)
+        is StopImmediately -> stopImmediatelyPhraseology(output.target)
         else -> return ControllerPhraseologyRenderResult.UnsupportedInstruction(instruction)
     }
     return ControllerPhraseologyRenderResult.Rendered(phraseology)
@@ -209,6 +214,30 @@ private fun touchAndGoClearancePhraseology(
         obligationKinds = renderedClearanceObligations,
         tokens = tokens,
         text = RenderedPhraseText("${aircraftId.value} CLEARED TOUCH AND GO"),
+    )
+}
+
+private fun stopImmediatelyPhraseology(
+    aircraftId: AircraftId,
+): RenderedControllerPhraseology {
+    val tokens = listOf(
+        PhraseologyToken.AircraftCallsign(aircraftId),
+        PhraseologyToken.Stop,
+        PhraseologyToken.Immediately,
+        PhraseologyToken.AircraftCallsign(aircraftId),
+        PhraseologyToken.Stop,
+        PhraseologyToken.Immediately,
+    )
+    return RenderedControllerPhraseology(
+        template = RenderedPhraseologyTemplate.StopImmediatelyInstruction,
+        obligationKinds = setOf(
+            PhraseologyObligationKind.OrderedPhrase,
+            PhraseologyObligationKind.SemanticSlot,
+        ),
+        tokens = tokens,
+        text = RenderedPhraseText(
+            "${aircraftId.value} STOP IMMEDIATELY ${aircraftId.value} STOP IMMEDIATELY",
+        ),
     )
 }
 

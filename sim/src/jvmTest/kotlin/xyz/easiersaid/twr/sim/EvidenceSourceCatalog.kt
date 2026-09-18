@@ -199,6 +199,12 @@ object ICAO9432 {
             claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
         )
 
+        val StopImmediatelyPhrase: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6b5a0d8b27525cbd",
+            title = "Stop-immediately instruction repeats instruction and callsign",
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
+        )
+
         val LineUpAndWaitPhrase: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03",
             title = "Line-up instruction uses LINE UP AND WAIT and pilot acknowledges LINING UP",
@@ -210,6 +216,7 @@ object ICAO9432 {
                 TowerTransferAtHoldingPosition,
                 TakeoffClearancePhrase,
                 LineUpAndWaitPhrase,
+                StopImmediatelyPhrase,
                 RunwayNumberInTakeoffClearance,
             )
     }

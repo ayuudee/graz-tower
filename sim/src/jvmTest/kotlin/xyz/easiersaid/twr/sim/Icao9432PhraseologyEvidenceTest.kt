@@ -1,10 +1,18 @@
 package xyz.easiersaid.twr.sim
 
 import kotlin.test.Test
+import xyz.easiersaid.twr.controller.ControllerOutput
+import xyz.easiersaid.twr.controller.DecisionTrace
 import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SimDuration
+import xyz.easiersaid.twr.protocol.SimTime
+import xyz.easiersaid.twr.protocol.StopImmediately
+import xyz.easiersaid.twr.protocol.Urgency
+import xyz.easiersaid.twr.sim.testing.TransmissionRecord
 
 class Icao9432PhraseologyEvidenceTest {
     @Test
@@ -36,6 +44,44 @@ class Icao9432PhraseologyEvidenceTest {
                 sample("frequency", towerFrequency.mhz)
                 expect {
                     renderedPilotReadbackPhraseology(aircraft).frequencyReadback(towerFrequency)
+                }
+            }
+        }
+
+        report.assertNoFailures()
+    }
+
+    @Test
+    fun `synthetic stop-immediately instruction renders repeated ICAO 9432 phraseology`() {
+        val aircraft = AircraftId("FASTAIR 345")
+        val output = ControllerOutput.Instruct.fromEmergencyPolicy(
+            instruction = StopImmediately(aircraft),
+            urgency = Urgency.SAFETY,
+            trace = DecisionTrace("TEST-STOP", "test stop-immediately phraseology", emptyList()),
+            doctrine = "ICAO Doc 9432 §4.5.11",
+        )
+        val record = TransmissionRecord(
+            transmissionId = TransmissionId(80),
+            time = SimTime.ZERO,
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(2),
+            speaker = SpeakerRef.Controller(ControllerId("LOWG_TWR")),
+            receiver = ReceiverRef.Pilot(aircraft),
+            utterance = Utterance.FromController(output),
+        )
+
+        val report = simEvidence("icao9432-rendered-stop-immediately") {
+            observe {
+                EvidenceFactAdapters.fromTransmissionRecords(
+                    scenarioId = "icao9432-rendered-stop-immediately",
+                    records = listOf(record),
+                )
+            }
+            source("stop-immediately rendered phraseology") {
+                cites(ICAO9432.TakeoffProcedures.StopImmediatelyPhrase)
+                sample("source-text", "FASTAIR 345 STOP IMMEDIATELY FASTAIR 345 STOP IMMEDIATELY")
+                sample("coverage-scope", "rendered phraseology only")
+                expect {
+                    renderedPhraseology(aircraft).stopImmediately()
                 }
             }
         }

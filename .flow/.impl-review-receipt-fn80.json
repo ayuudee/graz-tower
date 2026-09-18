@@ -1,0 +1,16 @@
+{
+  "type": "impl_review",
+  "id": "fn-80-icao-9432-phrase-1-stop-immediately.1",
+  "mode": "codex",
+  "base": "HEAD~1",
+  "verdict": "SHIP",
+  "session_id": "01a0b66c-66ce-7211-aa1e-1f2c4e0fdc24",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T21:33:18.697847Z",
+  "review": "No blocking findings in the updated implementation.\n\nThe stop-immediately renderer and DSL now use only `OrderedPhrase` and `SemanticSlot`; contact-frequency metadata is unchanged. The exact six-token sequence is asserted through the transmission adapter, and the coverage documents preserve the operational-trigger gap.\n\nThe spec still names `fromAdministrative`, although that factory accepts only `NumberInSequence`. The implemented `fromEmergencyPolicy` fixture is a reasonable adjustment; update the spec during closeout.\n\nReview was limited to embedded content. Tests and the original source quotation were not independently verified.\n\nClassification counts: 0 introduced, 0 pre_existing.\n\n<verdict>SHIP</verdict>\n",
+  "focus": "source-mapped-evidence,phraseology,exact-token-order,split-not-overclaim",
+  "introduced_count": 0,
+  "pre_existing_count": 0
+}

@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-80-icao-9432-stop-immediately-phraseology",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-18T21:34:23.066325Z",
+  "created_at": "2026-09-18T21:22:29.032295Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-80-icao-9432-phrase-1-stop-immediately",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-18T21:24:22.624157Z",
+  "spec_path": ".flow/specs/fn-80-icao-9432-phrase-1-stop-immediately.md",
+  "status": "done",
+  "title": "ICAO 9432 PHRASE-1 stop-immediately phraseology evidence",
+  "updated_at": "2026-09-18T21:34:23.177542Z"
+}

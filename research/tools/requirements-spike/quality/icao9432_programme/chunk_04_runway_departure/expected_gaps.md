@@ -12,7 +12,8 @@ covered-green with the current model/evidence surface.
 | `covered-green` | 4 |
 | `policy-blocked` | 9 |
 | `model-gap` | 1 |
-| `phraseology-later` | 5 |
+| `phraseology-later` | 4 |
+| `split: rendered phraseology covered; trigger policy blocked` | 1 |
 
 ## Covered-Green Configured Policy
 
@@ -22,6 +23,12 @@ covered-green with the current model/evidence surface.
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::13264a6ac6d529c3` | `Icao9432PhraseologyEvidenceTest` | The LOWG trace proves rendered controller `RUNWAY [designator] CLEARED FOR TAKE-OFF` phraseology. This does not close immediate-departure, conditional-clearance, taxi-ambiguity, or stop-immediately phraseology. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::a93888a25f0bad03` | `Icao9432PhraseologyEvidenceTest` | The LOWG trace proves rendered controller `RUNWAY [designator] LINE UP AND WAIT` phraseology and rendered pilot `LINING UP [callsign]` acknowledgement. This does not close immediate-departure or conditional-clearance phraseology. |
 | `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef` | `Icao9432PhraseologyEvidenceTest` | In an explicitly declared several-runways / confusion-risk branch, the rendered take-off clearance contains `RUNWAY` plus the active runway designator token. This is rendered phraseology evidence, not typed activation evidence for detecting confusion risk. |
+
+## Split Coverage
+
+| Source unit | Covered branch | Remaining blocker |
+|---|---|---|
+| `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6b5a0d8b27525cbd` | `Icao9432PhraseologyEvidenceTest` proves rendered `STOP IMMEDIATELY` repeated with exactly two callsign tokens. | Takeoff-roll / dangerous-traffic trigger policy and a live emergency scenario remain blocked. |
 
 ## Policy-Blocked
 
@@ -51,4 +58,3 @@ covered-green with the current model/evidence surface.
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::42b0460ed4f07751` | `PHRASE-1` | Requires rendered immediate-departure readiness query. |
 | `icao9432-extracted::takeoff_procedures_4_5_1_to_4_5_5_en::db8a2c3dcd586b0e` | `PHRASE-1` | Requires rendered taxi phraseology ambiguity checking. |
 | `icao9432-extracted::takeoff_procedures_4_5_6_to_4_5_7_en::9b30810984e06a35` | `PHRASE-1` | Requires rendered conditional-clearance element ordering. |
-| `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6b5a0d8b27525cbd` | `PHRASE-1` | Requires rendered repeated stop-immediately instruction and callsign. |

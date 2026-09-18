@@ -10,7 +10,8 @@ Chunk: ICAO 9432 runway entry, line-up, and take-off.
 | `covered-red` | 0 |
 | `model-gap` | 1 |
 | `policy-blocked` | 9 |
-| `phraseology-later` | 5 |
+| `phraseology-later` | 4 |
+| `split: rendered phraseology covered; trigger policy blocked` | 1 |
 
 Chunk 04 now has one configured-policy green row: the LOWG separate
 GROUND/TOWER departure branch is explicitly bound to transfer at the holding
@@ -24,6 +25,12 @@ TAKE-OFF`. This is a narrow rendered-phraseology closure for
 `13264a6ac6d529c3`; it does not change controller behaviour or close
 immediate-departure, conditional-clearance, taxi-ambiguity, or
 stop-immediately phraseology rows.
+
+fn-80 adds rendered phraseology evidence for ICAO 9432 §4.5.11's emergency
+stop instruction wording: `STOP IMMEDIATELY` repeated with the aircraft callsign
+repeated. The row is intentionally split: rendered wording is covered, but the
+takeoff-roll / dangerous-traffic trigger remains blocked as operational policy
+and scenario work.
 
 fn-76 adds a declared-branch rendered phraseology green row for ICAO 9432
 §4.5.8: where several runways are in use and pilot confusion is possible, the
@@ -55,7 +62,7 @@ conditional-clearance, taxi-ambiguity, or stop-immediately phraseology rows.
 | `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::0afe0064c4c933af` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `POLICY-1` | Abandoned take-off should be reported to tower as soon as practicable. |
 | `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::2b7c45264775e3e2` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `ControllerInterventionPolicy` | Abandoned take-off should request assistance or taxi instructions as required. |
 | `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::2cc8caf62c15688b` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `POLICY-1` | Departure instructions may be given with take-off clearance. |
-| `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6b5a0d8b27525cbd` | `phraseology-later` | `PHRASE-1` | Stop-immediately instruction and callsign repeated during take-off roll. |
+| `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6b5a0d8b27525cbd` | `split: rendered phraseology covered; takeoff-roll/dangerous-traffic trigger policy blocked` | `Icao9432PhraseologyEvidenceTest`; `RenderedPhraseologyTrace`; operational trigger policy remains blocked | Stop-immediately instruction and callsign repeated during take-off roll. |
 | `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6bee6c63069d8250` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `POLICY-1` | Take-off clearance cancellation may be necessary due traffic / long departure. |
 | `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::81490161201eb712` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `POLICY-1` | It may be necessary to quickly free runway for landing traffic. |
 | `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef` | `covered-green` declared-branch rendered phraseology | `Icao9432PhraseologyEvidenceTest`; `RenderedPhraseologyTrace` | Runway number should be stated in take-off clearance where confusion is possible. |

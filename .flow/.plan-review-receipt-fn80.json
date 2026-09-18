@@ -1,0 +1,12 @@
+{
+  "type": "plan_review",
+  "id": "fn-80-icao-9432-phrase-1-stop-immediately",
+  "mode": "codex",
+  "verdict": "SHIP",
+  "session_id": "01a0b666-eb1d-7a91-a6f6-6ca6657052d9",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T21:24:17.571219Z",
+  "review": "No blocking findings in the updated plan. Epic and task acceptance criteria now align on the full transmission, exact token order, evidence adapter and DSL path, source scope, and explicit coverage split. The task is sufficiently defined to implement.\n\nReview was limited to the supplied specs; compatibility with existing code and accuracy of the source quotation remain implementation checks.\n\n<verdict>SHIP</verdict>\n"
+}

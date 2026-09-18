@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T21:23:08.664681Z",
+  "depends_on": [],
+  "epic": "fn-80-icao-9432-phrase-1-stop-immediately",
+  "id": "fn-80-icao-9432-phrase-1-stop-immediately.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-80-icao-9432-phrase-1-stop-immediately.1.md",
+  "status": "todo",
+  "title": "Implement source-mapped stop-immediately phraseology evidence",
+  "updated_at": "2026-09-18T21:23:08.664780Z"
+}

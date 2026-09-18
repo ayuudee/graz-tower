@@ -1087,6 +1087,24 @@ class AuditRenderedPhraseologySubject internal constructor(
             failReason = "Missing rendered contact-frequency phraseology for ${aircraftId.value} $unitName ${frequency.mhz}",
         )
 
+    fun stopImmediately(): EvidenceAuditOutcome =
+        phraseologyOutcome(
+            template = RenderedPhraseologyTemplate.StopImmediatelyInstruction,
+            expectedObligationKinds = setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.SemanticSlot,
+            ),
+            expectedTokens = listOf(
+                PhraseologyToken.AircraftCallsign(aircraftId),
+                PhraseologyToken.Stop,
+                PhraseologyToken.Immediately,
+                PhraseologyToken.AircraftCallsign(aircraftId),
+                PhraseologyToken.Stop,
+                PhraseologyToken.Immediately,
+            ),
+            failReason = "Missing rendered stop-immediately phraseology for ${aircraftId.value}",
+        )
+
     private fun phraseologyOutcome(
         template: RenderedPhraseologyTemplate,
         expectedObligationKinds: Set<PhraseologyObligationKind>,

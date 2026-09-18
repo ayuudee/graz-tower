@@ -23,6 +23,7 @@ import xyz.easiersaid.twr.protocol.ConditionalPredicate
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.ControllerResponse
+import xyz.easiersaid.twr.protocol.EmergencyInstruction
 import xyz.easiersaid.twr.protocol.GoAround
 import xyz.easiersaid.twr.protocol.Heading
 import xyz.easiersaid.twr.protocol.Knots
@@ -376,6 +377,19 @@ sealed interface ControllerOutput {
 
             fun fromReactiveSeparationEmergency(
                 instruction: BreakOff,
+                urgency: Urgency,
+                trace: DecisionTrace,
+                doctrine: String,
+            ): Instruct = fromReactiveSeparationEmergency(
+                target = instruction.target,
+                dispatch = Dispatch.Direct(instruction),
+                urgency = urgency,
+                trace = trace,
+                doctrine = doctrine,
+            )
+
+            fun fromEmergencyPolicy(
+                instruction: EmergencyInstruction,
                 urgency: Urgency,
                 trace: DecisionTrace,
                 doctrine: String,
