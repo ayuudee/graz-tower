@@ -7,10 +7,10 @@ failure.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` / split structured branch | 32 |
+| `covered-green` / split structured branch | 36 |
 | `covered-red` | 0 |
 | `model-gap` | 2 |
-| `model-gap` + `policy-blocked` | 8 |
+| `model-gap` + `policy-blocked` | 4 |
 | `model-gap` + `phraseology-later` | 4 |
 
 Chunk 08 now has narrow structured fn-68 emergency evidence for distress versus
@@ -22,11 +22,13 @@ projection evidence for communications-failure route-appropriate alternate
 contacts, blind-transmission scheduling payloads, SSR 7600/7700 distinction,
 blind-clearance prohibition/exception handling, and fn-72 structured projection
 evidence for emergency assistance actors, intercepted-distress relay, emergency
-frequency policy, and distress/urgency interference suppression. It still has
-no emergency message addressing/payload policy, emergency-descent specific-
+frequency policy, and distress/urgency interference suppression. fn-73 adds
+structured projection evidence for emergency message addressing, relayed
+distress-message variation, urgency-message payload selection, and urgency
+addressing/frequency policy. It still has no emergency-descent specific-
 instruction necessity policy, controller-side lost-contact relay workflow,
-ATC-originated blind non-clearance workflow, Annex 10 conformance model, any-
-means distress communication model, or rendered emergency phraseology/order.
+ATC-originated blind non-clearance workflow, Annex 10 conformance model,
+any-means distress communication model, or rendered emergency phraseology/order.
 Ordinary VFR, go-around, or routine radio traces are not emergency-compliance
 evidence.
 
@@ -54,14 +56,14 @@ evidence.
 | `icao9432-extracted::distress_urgency_intro_9_1_en::d742970b22d8de26` | `split: protocol emergency-type discriminator mapping covered-green; rendered spoken-word identification phraseology-later` | `Icao9432EmergencyClassificationPayloadSourceBackedTest`; `PHRASE-1` |
 | `icao9432-extracted::distress_messages_9_2_en::23c9f447cd6c7814` | `split: all-fields-present structured distress-message payload representation covered-green; rendered wording/order phraseology-later` | `Icao9432EmergencyClassificationPayloadSourceBackedTest`; `PHRASE-1` |
 | `icao9432-extracted::distress_messages_9_2_en::f0e99a4c08ea0cb3` | `model-gap` + `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `PHRASE-1` |
-| `icao9432-extracted::distress_messages_9_2_en::27a450fa3bfcbc0a` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
-| `icao9432-extracted::distress_messages_9_2_en::94e94be0c800c982` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
+| `icao9432-extracted::distress_messages_9_2_en::27a450fa3bfcbc0a` | `covered-green configured distress-message addressing policy branch` | `Icao9432EmergencyMessagePolicySourceBackedTest`; `OperationalGuidancePolicy` |
+| `icao9432-extracted::distress_messages_9_2_en::94e94be0c800c982` | `covered-green configured relayed-distress payload-variation policy branch` | `Icao9432EmergencyMessagePolicySourceBackedTest`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::distress_messages_9_2_en::4b37e039e7eb8afa` | `split: structured distress SSR 7700 branch covered-green; distress assistance/any-means branch remains model-gap` | `Icao9432CommunicationsFailureSourceBackedTest`; `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1` |
 | `icao9432-extracted::distress_messages_9_2_en::e2902de496f43a95` | `covered-green structured silence-imposition branch` | `Icao9432EmergencyPrioritySilenceSourceBackedTest` |
 | `icao9432-extracted::distress_messages_9_2_en::ed898005cd1a4da5` | `covered-green structured silence-obligation branch` | `Icao9432EmergencyPrioritySilenceSourceBackedTest` |
 | `icao9432-extracted::distress_messages_9_2_en::c20024dad1b7144e` | `covered-green structured silence-termination branch` | `Icao9432EmergencyPrioritySilenceSourceBackedTest` |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::b95d7bb1cb409bca` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8` | `covered-green configured urgency-message payload policy branch` | `Icao9432EmergencyMessagePolicySourceBackedTest`; `OperationalGuidancePolicy` |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::b95d7bb1cb409bca` | `covered-green configured urgency addressing and frequency policy branch` | `Icao9432EmergencyMessagePolicySourceBackedTest`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d` | `covered-green configured urgency interference-suppression branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c` | `covered-green structured emergency-descent safeguarding projection branch` | `Icao9432EmergencyDescentSourceBackedTest` |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e` | `split: structured emergency-descent warning projection branch covered-green; specific-instruction necessity policy remains model-gap + policy-blocked` | `Icao9432EmergencyDescentSourceBackedTest`; `OperationalGuidancePolicy` |
@@ -87,7 +89,7 @@ evidence.
   the registry with `lifecycle.state = accepted`. Source text was checked
   against `research/txt/icao9432-extracted.txt` in Chapter 9.
 - Focused verification:
-  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432EmergencyClassificationPayloadSourceBackedTest' --tests '*.Icao9432EmergencyPrioritySilenceSourceBackedTest' --tests '*.Icao9432EmergencyDescentSourceBackedTest' --tests '*.Icao9432CommunicationsFailureSourceBackedTest' --tests '*.Icao9432EmergencyAssistanceRelaySourceBackedTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
+  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432EmergencyClassificationPayloadSourceBackedTest' --tests '*.Icao9432EmergencyPrioritySilenceSourceBackedTest' --tests '*.Icao9432EmergencyDescentSourceBackedTest' --tests '*.Icao9432CommunicationsFailureSourceBackedTest' --tests '*.Icao9432EmergencyAssistanceRelaySourceBackedTest' --tests '*.Icao9432EmergencyMessagePolicySourceBackedTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
 - Full verification:
   `./gradlew-nix :sim:jvmTest`;
   `./gradlew-nix detekt`;
@@ -103,15 +105,17 @@ evidence.
   `EmergencyType`; fn-71 adds closed local communications-failure projection
   types for contact attempts, blind-transmission payloads, SSR code selection,
   and blind-clearance policy; fn-72 adds closed local assistance, relay,
-  frequency-policy, and suppression projections.
+  frequency-policy, and suppression projections; fn-73 adds closed local
+  emergency message addressing and payload-policy projections.
 - Test architecture: source-backed tests cover the narrow structured branches;
   expected-gap specs still decompose residual `EMERGENCY-1` into missing
   surfaces and include an exact-union guard for all 46 refs.
 - Impact: no controller, pilot, sim scheduler, phraseology rendering, SSR, or
-  policy behaviour was changed. fn-69, fn-70, fn-71, and fn-72 are structured
-  projection evidence, not production radio queue preemption, production
-  emergency descent conflict-resolution behavior, production communications-
-  failure workflow, or global emergency assistance scheduling.
+  policy behaviour was changed. fn-69, fn-70, fn-71, fn-72, and fn-73 are
+  structured projection evidence, not production radio queue preemption,
+  production emergency descent conflict-resolution behavior, production
+  communications-failure workflow, global emergency assistance scheduling, or
+  rendered emergency message phraseology.
 - Operational correctness: ICAO 9432 Chapter 9 emergency and communications-
   failure obligations remain distinct from ordinary radio, VFR, and go-around
   traces.

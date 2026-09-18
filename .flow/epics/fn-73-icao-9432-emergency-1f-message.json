@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-73-icao-9432-emergency-1f-message-policy",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-18T20:18:29.985814Z",
+  "created_at": "2026-09-18T20:05:07.196714Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-73-icao-9432-emergency-1f-message",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-18T20:09:58.715157Z",
+  "spec_path": ".flow/specs/fn-73-icao-9432-emergency-1f-message.md",
+  "status": "done",
+  "title": "ICAO 9432 EMERGENCY-1F message addressing and payload policy",
+  "updated_at": "2026-09-18T20:18:30.119035Z"
+}

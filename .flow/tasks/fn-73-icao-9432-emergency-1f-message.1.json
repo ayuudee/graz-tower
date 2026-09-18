@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T20:05:42.875602Z",
+  "depends_on": [],
+  "epic": "fn-73-icao-9432-emergency-1f-message",
+  "id": "fn-73-icao-9432-emergency-1f-message.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-73-icao-9432-emergency-1f-message.1.md",
+  "status": "todo",
+  "title": "Build message policy movement manifest and plan review",
+  "updated_at": "2026-09-18T20:05:42.875707Z"
+}

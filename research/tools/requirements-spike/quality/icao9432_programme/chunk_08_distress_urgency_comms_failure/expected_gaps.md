@@ -9,9 +9,9 @@ marked covered-green with the current model/evidence surface.
 
 | Source-unit state | Units |
 |---|---:|
-| `covered-green` / split structured branch | 32 |
+| `covered-green` / split structured branch | 36 |
 | `model-gap` | 2 |
-| `model-gap` + `policy-blocked` | 8 |
+| `model-gap` + `policy-blocked` | 4 |
 | `model-gap` + `phraseology-later` | 4 |
 | `phraseology-later` | 0 |
 
@@ -24,10 +24,12 @@ structured communications-failure contact routing, blind-transmission payload,
 SSR-code, and blind-clearance policy branches to source-backed coverage.
 fn-72 moved emergency assistance actor, intercepted-distress relay, emergency
 frequency-policy, and distress/urgency interference-suppression branches to
-source-backed coverage. `EMERGENCY-1` remains the dominant blocker for message
-addressing/payload policy, emergency-descent specific-instruction necessity
-policy, controller-side lost-contact workflow, Annex 10 conformance, any-means
-distress communication, and emergency phraseology/order work.
+source-backed coverage. fn-73 moved emergency message addressing, relayed
+distress-message variation, urgency-message payload selection, and urgency
+addressing/frequency policy branches to source-backed coverage. `EMERGENCY-1`
+remains the dominant blocker for emergency-descent specific-instruction
+necessity policy, controller-side lost-contact workflow, Annex 10 conformance,
+any-means distress communication, and emergency phraseology/order work.
 
 ## Model Gaps
 
@@ -41,10 +43,6 @@ distress communication, and emergency phraseology/order work.
 | Source unit | Blocker | Reason |
 |---|---|---|
 | `icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No pilot safety-doubt trigger. |
-| `icao9432-extracted::distress_messages_9_2_en::27a450fa3bfcbc0a` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No distress-message addressing policy. |
-| `icao9432-extracted::distress_messages_9_2_en::94e94be0c800c982` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No relayed/non-distressed distress-message variant model. |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No urgency-message payload policy. |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::b95d7bb1cb409bca` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No urgency addressing/frequency policy. |
 | `icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2` | `EMERGENCY-1`; `ControllerInterventionPolicy` | No controller-side lost-contact aircraft-assistance and relay workflow. |
 | `icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e` | `EMERGENCY-1`; `ControllerInterventionPolicy` | No controller-side lost-contact inter-station assistance and relay workflow. |
 | `icao9432-extracted::communications_failure_9_5_en::75055714e70d4560` | `EMERGENCY-1`; `ClearanceTimingPolicy` | No ATC-originated blind non-clearance workflow after failed station attempts while the aircraft is believed listening. |
@@ -84,6 +82,10 @@ distress communication, and emergency phraseology/order work.
 | `icao9432-extracted::distress_urgency_intro_9_1_en::cb12c2f9b97c64b7` | `covered-green configured emergency initial-frequency policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; distress and urgency calls initially use the frequency in use under configured current-frequency policy. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::06f7a72397c325ac` | `covered-green configured distress interference-suppression branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; active distress traffic suppresses superfluous uninvolved transmissions under explicit policy. |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d` | `covered-green configured urgency interference-suppression branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; active urgency traffic suppresses superfluous other-station transmissions under explicit policy. |
+| `icao9432-extracted::distress_messages_9_2_en::27a450fa3bfcbc0a` | `covered-green configured distress-message addressing policy branch` | `Icao9432EmergencyMessagePolicySourceBackedTest`; configured policy selects the current station or responsible-area station without claiming rendered wording. |
+| `icao9432-extracted::distress_messages_9_2_en::94e94be0c800c982` | `covered-green configured relayed-distress payload-variation policy branch` | `Icao9432EmergencyMessagePolicySourceBackedTest`; relayed distress payload variation requires a clearly stated circumstance in structured evidence. |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8` | `covered-green configured urgency-message payload policy branch` | `Icao9432EmergencyMessagePolicySourceBackedTest`; urgency payload policy rejects missing required elements and allows omission of non-required elements. |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::b95d7bb1cb409bca` | `covered-green configured urgency addressing and frequency policy branch` | `Icao9432EmergencyMessagePolicySourceBackedTest`; urgency calls use the frequency in use and current or responsible-area station under explicit policy. |
 | `icao9432-extracted::communications_failure_9_5_en::f05016444e2b8808` | `covered-green structured communications-failure alternate-frequency branch` | `Icao9432CommunicationsFailureSourceBackedTest`; typed failed designated-frequency contact selects another route-appropriate frequency. |
 | `icao9432-extracted::communications_failure_9_5_en::fcb3a49672165b4f` | `covered-green structured communications-failure alternate-contact branch` | `Icao9432CommunicationsFailureSourceBackedTest`; after alternate-frequency contact fails, the model selects other aircraft or stations on route-appropriate frequencies. |
 | `icao9432-extracted::communications_failure_9_5_en::bc9bb12804033b07` | `split: structured blind-transmission mode/repetition branch covered-green; rendered TRANSMITTING BLIND prefix remains phraseology-later` | `Icao9432CommunicationsFailureSourceBackedTest`; failed-contact blind-transmission mode repeats the intended message twice. Rendered prefix wording remains `PHRASE-1`. |

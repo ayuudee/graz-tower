@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T20:05:42.975181Z",
+  "depends_on": [
+    "fn-73-icao-9432-emergency-1f-message.1"
+  ],
+  "epic": "fn-73-icao-9432-emergency-1f-message",
+  "id": "fn-73-icao-9432-emergency-1f-message.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-73-icao-9432-emergency-1f-message.2.md",
+  "status": "todo",
+  "title": "Implement emergency message policy source-backed evidence",
+  "updated_at": "2026-09-18T20:05:42.975283Z"
+}

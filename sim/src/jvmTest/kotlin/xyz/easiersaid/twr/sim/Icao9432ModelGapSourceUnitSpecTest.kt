@@ -14,10 +14,6 @@ class Icao9432ModelGapSourceUnitSpecTest {
         "icao9432-extracted::distress_urgency_intro_9_1_en::9907744b4723d14c",
         "icao9432-extracted::distress_urgency_intro_9_1_en::bf04647e26f9c018",
         "icao9432-extracted::distress_messages_9_2_en::f0e99a4c08ea0cb3",
-        "icao9432-extracted::distress_messages_9_2_en::27a450fa3bfcbc0a",
-        "icao9432-extracted::distress_messages_9_2_en::94e94be0c800c982",
-        "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8",
-        "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::b95d7bb1cb409bca",
     )
 
     private val chunk08AssistanceRelayTerminationRefs: List<SourceUnitRef> = chunk08Refs(
@@ -67,6 +63,10 @@ class Icao9432ModelGapSourceUnitSpecTest {
         "icao9432-extracted::distress_urgency_intro_9_1_en::cb12c2f9b97c64b7",
         "icao9432-extracted::distress_urgency_intro_9_1_en::06f7a72397c325ac",
         "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d",
+        "icao9432-extracted::distress_messages_9_2_en::27a450fa3bfcbc0a",
+        "icao9432-extracted::distress_messages_9_2_en::94e94be0c800c982",
+        "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8",
+        "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::b95d7bb1cb409bca",
         "icao9432-extracted::communications_failure_9_5_en::f05016444e2b8808",
         "icao9432-extracted::communications_failure_9_5_en::fcb3a49672165b4f",
         "icao9432-extracted::communications_failure_9_5_en::975a63151706f68f",
@@ -772,27 +772,27 @@ class Icao9432ModelGapSourceUnitSpecTest {
     }
 
     @Test
-    fun `emergency message payload source units report missing rendered emergency message structure`() {
+    fun `emergency message phraseology source units report missing rendered emergency message structure`() {
         sourceUnitSpec("icao9432-emergency-message-payload-model-gaps") {
-            title("Emergency message content and addressing claims require emergency payload and rendering")
+            title("Emergency message phraseology claims require rendered emergency wording and order")
             sourceUnits(chunk08EmergencyMessagePhraseologyRefs)
             domain("message-kind", setOf("distress", "urgency", "relay"))
-            domain("payload", setOf("station-id-condition-intention-position-level-heading", "partial"))
-            domain("rendering", setOf("mayday-panpan-prefix", "ordered-elements", "not-rendered"))
+            domain("rendered-prefix", setOf("mayday-panpan-repeated", "not-rendered"))
+            domain("rendered-order", setOf("ordered-elements", "not-rendered"))
 
             partition(
-                name = "distress message carries ordered elements and MAYDAY classification",
+                name = "emergency message wording and element order are rendered",
                 parameters = mapOf(
                     "message-kind" to "distress",
-                    "payload" to "station-id-condition-intention-position-level-heading",
-                    "rendering" to "mayday-panpan-prefix",
+                    "rendered-prefix" to "mayday-panpan-repeated",
+                    "rendered-order" to "ordered-elements",
                 ),
             ) {
-                hit("emergency-message-payload-and-rendering-required")
+                hit("emergency-message-phraseology-rendering-required")
                 modelGap(
-                    "The sim has no emergency-message payload, distress/urgency addressing policy, " +
-                        "non-distressed relay variant, urgency element-selection policy, or rendered MAYDAY/" +
-                        "PAN PAN and ordered emergency-message phraseology.",
+                    "The sim has structured emergency-message payload and policy evidence, but no rendered " +
+                        "MAYDAY/PAN PAN repetition, emergency context/time-pressure phraseology adaptation, " +
+                        "or ordered emergency-message wording.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()
