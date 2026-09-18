@@ -5,7 +5,6 @@ import kotlin.test.assertEquals
 
 class Icao9432ModelGapSourceUnitSpecTest {
     private val chunk08DistressUrgencyClassificationRefs: List<SourceUnitRef> = chunk08Refs(
-        "icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98",
         "icao9432-extracted::distress_urgency_intro_9_1_en::13d1c2accd0f7a73",
         "icao9432-extracted::distress_urgency_intro_9_1_en::c30159856a1a5e7a",
     )
@@ -73,6 +72,7 @@ class Icao9432ModelGapSourceUnitSpecTest {
         "icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2",
         "icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e",
         "icao9432-extracted::communications_failure_9_5_en::75055714e70d4560",
+        "icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98",
     )
 
     private val chunk08GapSpecRefGroups: List<List<SourceUnitRef>> =
@@ -748,8 +748,8 @@ class Icao9432ModelGapSourceUnitSpecTest {
         sourceUnitSpec("icao9432-emergency-classification-model-gaps") {
             title("Distress and urgency classification claims require typed emergency condition state")
             sourceUnits(chunk08DistressUrgencyClassificationRefs)
-            domain("condition-kind", setOf("distress", "urgency", "safety-doubt"))
-            domain("assistance-need", setOf("immediate", "not-immediate", "pilot-requests-assistance"))
+            domain("condition-kind", setOf("annex-10-conformance", "speech-quality"))
+            domain("assistance-need", setOf("immediate", "not-immediate"))
             domain("speech-quality", setOf("slow-distinct", "not-rendered"))
 
             partition(
@@ -762,8 +762,7 @@ class Icao9432ModelGapSourceUnitSpecTest {
             ) {
                 hit("typed-emergency-condition-required")
                 modelGap(
-                    "The sim has no typed distress or urgency condition, no pilot safety-doubt trigger, " +
-                        "no Annex 10 emergency-procedure conformance model, and no rendered speech-quality " +
+                    "The sim has no Annex 10 emergency-procedure conformance model, and no rendered speech-quality " +
                         "evidence for slow and distinct emergency calls.",
                 )
             }

@@ -7,10 +7,10 @@ failure.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` / split structured branch | 39 |
+| `covered-green` / split structured branch | 40 |
 | `covered-red` | 0 |
 | `model-gap` | 2 |
-| `model-gap` + `policy-blocked` | 1 |
+| `model-gap` + `policy-blocked` | 0 |
 | `model-gap` + `phraseology-later` | 4 |
 
 Chunk 08 now has narrow structured fn-68 emergency evidence for distress versus
@@ -28,9 +28,11 @@ distress-message variation, urgency-message payload selection, and urgency
 addressing/frequency policy. fn-74 adds structured projection evidence for
 controller-side lost-contact route-aircraft relay, inter-station relay, and
 ATC-originated non-clearance blind transmission after failed relay attempts
-with believed-listening evidence. It still has no emergency-descent specific-
-instruction necessity policy, Annex 10 conformance model, any-means distress
-communication model, or rendered emergency phraseology/order.
+with believed-listening evidence. fn-75 adds structured projection evidence
+for pilot safety-doubt assistance seeking under explicit policy. It still has
+split residual facets for emergency-descent specific-instruction necessity
+policy and any-means distress communication, and standalone executable gaps for
+Annex 10 conformance and rendered emergency phraseology/order.
 Ordinary VFR, go-around, or routine radio traces are not emergency-compliance
 evidence.
 
@@ -47,7 +49,7 @@ evidence.
 | `icao9432-extracted::distress_urgency_intro_9_1_en::24f94381ed9e8ce1` | `covered-green configured emergency frequency-continuity policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::2fee92c222323e6a` | `covered-green structured alternate emergency frequency branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest` |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::82ee7048517d8478` | `covered-green configured assistance-content policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy` |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98` | `covered-green configured pilot safety-doubt assistance branch` | `Icao9432PilotSafetyDoubtSourceBackedTest`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::8e9f7818b91d08c3` | `covered-green structured intercepted-distress relay branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::cb12c2f9b97c64b7` | `covered-green configured emergency initial-frequency policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::06f7a72397c325ac` | `covered-green configured distress interference-suppression branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy` |
@@ -91,7 +93,7 @@ evidence.
   the registry with `lifecycle.state = accepted`. Source text was checked
   against `research/txt/icao9432-extracted.txt` in Chapter 9.
 - Focused verification:
-  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432EmergencyClassificationPayloadSourceBackedTest' --tests '*.Icao9432EmergencyPrioritySilenceSourceBackedTest' --tests '*.Icao9432EmergencyDescentSourceBackedTest' --tests '*.Icao9432CommunicationsFailureSourceBackedTest' --tests '*.Icao9432EmergencyAssistanceRelaySourceBackedTest' --tests '*.Icao9432EmergencyMessagePolicySourceBackedTest' --tests '*.Icao9432ControllerLostContactSourceBackedTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
+  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432EmergencyClassificationPayloadSourceBackedTest' --tests '*.Icao9432EmergencyPrioritySilenceSourceBackedTest' --tests '*.Icao9432EmergencyDescentSourceBackedTest' --tests '*.Icao9432CommunicationsFailureSourceBackedTest' --tests '*.Icao9432EmergencyAssistanceRelaySourceBackedTest' --tests '*.Icao9432EmergencyMessagePolicySourceBackedTest' --tests '*.Icao9432ControllerLostContactSourceBackedTest' --tests '*.Icao9432PilotSafetyDoubtSourceBackedTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
 - Full verification:
   `./gradlew-nix :sim:jvmTest`;
   `./gradlew-nix detekt`;
@@ -110,16 +112,18 @@ evidence.
   frequency-policy, and suppression projections; fn-73 adds closed local
   emergency message addressing and payload-policy projections; fn-74 adds
   closed local controller lost-contact relay and non-clearance blind-
-  transmission projections.
+  transmission projections; fn-75 adds a closed local pilot safety-doubt
+  assistance projection.
 - Test architecture: source-backed tests cover the narrow structured branches;
   expected-gap specs still decompose residual `EMERGENCY-1` into missing
   surfaces and include an exact-union guard for all 46 refs.
 - Impact: no controller, pilot, sim scheduler, phraseology rendering, SSR, or
-  policy behaviour was changed. fn-69, fn-70, fn-71, fn-72, fn-73, and fn-74 are
+  policy behaviour was changed. fn-69, fn-70, fn-71, fn-72, fn-73, fn-74, and fn-75 are
   structured projection evidence, not production radio queue preemption,
   production emergency descent conflict-resolution behavior, production
   communications-failure workflow, global emergency assistance scheduling, or
-  rendered emergency message phraseology.
+  rendered emergency message phraseology. fn-75 does not add a production pilot
+  emergency decision engine or complete safety-doubt taxonomy.
 - Operational correctness: ICAO 9432 Chapter 9 emergency and communications-
   failure obligations remain distinct from ordinary radio, VFR, and go-around
   traces.

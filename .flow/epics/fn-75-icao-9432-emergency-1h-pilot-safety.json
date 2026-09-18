@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-75-icao-9432-emergency-1h-pilot-safety-doubt",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-18T20:41:01.788312Z",
+  "created_at": "2026-09-18T20:33:08.762763Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-75-icao-9432-emergency-1h-pilot-safety",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-18T20:36:00.819044Z",
+  "spec_path": ".flow/specs/fn-75-icao-9432-emergency-1h-pilot-safety.md",
+  "status": "done",
+  "title": "ICAO 9432 EMERGENCY-1H pilot safety-doubt assistance trigger",
+  "updated_at": "2026-09-18T20:41:06.826592Z"
+}

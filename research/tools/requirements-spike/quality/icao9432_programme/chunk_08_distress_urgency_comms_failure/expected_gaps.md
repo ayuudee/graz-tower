@@ -9,9 +9,9 @@ marked covered-green with the current model/evidence surface.
 
 | Source-unit state | Units |
 |---|---:|
-| `covered-green` / split structured branch | 39 |
+| `covered-green` / split structured branch | 40 |
 | `model-gap` | 2 |
-| `model-gap` + `policy-blocked` | 1 |
+| `model-gap` + `policy-blocked` | 0 |
 | `model-gap` + `phraseology-later` | 4 |
 | `phraseology-later` | 0 |
 
@@ -28,9 +28,11 @@ source-backed coverage. fn-73 moved emergency message addressing, relayed
 distress-message variation, urgency-message payload selection, and urgency
 addressing/frequency policy branches to source-backed coverage. fn-74 moved
 controller-side lost-contact relay and non-clearance blind-
-transmission branches to source-backed coverage. `EMERGENCY-1` remains the
-dominant blocker for emergency-descent specific-instruction necessity policy,
-Annex 10 conformance, any-means distress communication, and emergency
+transmission branches to source-backed coverage. fn-75 moved pilot
+safety-doubt assistance seeking under explicit policy to source-backed
+coverage. `EMERGENCY-1` remains the dominant blocker for split residual facets
+around emergency-descent specific-instruction necessity policy and any-means
+distress communication, plus standalone Annex 10 conformance and emergency
 phraseology/order work.
 
 ## Model Gaps
@@ -42,9 +44,9 @@ phraseology/order work.
 
 ## Model Gaps With Policy
 
-| Source unit | Blocker | Reason |
-|---|---|---|
-| `icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No pilot safety-doubt trigger. |
+No standalone chunk-08 source units remain in this bucket. Split covered rows
+still document residual policy facets where only part of the source unit is
+covered.
 
 ## Model Gaps With Phraseology
 
@@ -77,6 +79,7 @@ phraseology/order work.
 | `icao9432-extracted::distress_urgency_intro_9_1_en::2fee92c222323e6a` | `covered-green structured alternate emergency frequency branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; emergency communications can select another frequency when typed policy marks it necessary or desirable for assistance. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::24f94381ed9e8ce1` | `covered-green configured emergency frequency-continuity policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; configured policy keeps distress communications on the current frequency unless another frequency better assists. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::82ee7048517d8478` | `covered-green configured assistance-content policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; replying station assistance carries configured advice, information, and instruction content. |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98` | `covered-green configured pilot safety-doubt assistance branch` | `Icao9432PilotSafetyDoubtSourceBackedTest`; pilot safety doubt plus explicit policy yields an assistance request without claiming rendered phraseology or complete safety-doubt taxonomy. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::8e9f7818b91d08c3` | `covered-green structured intercepted-distress relay branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; intercepting aircraft can acknowledge and broadcast unacknowledged distress. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::cb12c2f9b97c64b7` | `covered-green configured emergency initial-frequency policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; distress and urgency calls initially use the frequency in use under configured current-frequency policy. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::06f7a72397c325ac` | `covered-green configured distress interference-suppression branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; active distress traffic suppresses superfluous uninvolved transmissions under explicit policy. |

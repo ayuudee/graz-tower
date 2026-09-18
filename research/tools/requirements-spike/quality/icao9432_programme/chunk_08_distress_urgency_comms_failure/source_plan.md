@@ -27,9 +27,10 @@ classification, emergency priority, emergency radio-silence discipline,
 emergency-descent structured branches, and communications-failure structured
 branches, plus local structured evidence for assistance actors, intercepted
 distress relay, emergency frequency policy, and distress/urgency interference
-suppression, emergency message addressing/payload policy, and controller-side
-lost-contact relay / non-clearance blind-transmission workflow. They still do
-not model any-means distress communication, production emergency-descent
+suppression, emergency message addressing/payload policy, controller-side
+lost-contact relay / non-clearance blind-transmission workflow, and pilot
+safety-doubt assistance seeking under explicit policy. They still do not model
+complete any-means distress communication, production emergency-descent
 conflict resolution, Annex 10 conformance, rendered emergency phraseology/order,
 or production radio queue preemption. Ordinary radio or VFR scenario traces must
 not be reused as emergency-compliance evidence.
@@ -47,7 +48,7 @@ not be reused as emergency-compliance evidence.
 | `icao9432-extracted::distress_urgency_intro_9_1_en::24f94381ed9e8ce1` | Distress communications normally continue on current frequency until a better frequency helps. | `needs-sim-model` | `covered-green configured emergency frequency-continuity policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy`; configured policy keeps the current frequency unless another frequency better assists. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::2fee92c222323e6a` | Other communication frequencies may be used if necessary or desirable. | `needs-sim-model` | `covered-green structured alternate emergency frequency branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; emergency traffic can select another frequency when typed policy marks it necessary or desirable for assistance. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::82ee7048517d8478` | Replying station should provide advice, information, and instructions needed to assist. | `needs-sim-model` | `covered-green configured assistance-content policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy`; replying-station assistance carries configured advice, information, and instruction content. |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98` | Pilots should seek assistance when flight safety is in doubt. | `needs-sim-model` | `model-gap` + `policy-blocked` | `EMERGENCY-1`; `OperationalGuidancePolicy`; no pilot safety-doubt trigger. |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98` | Pilots should seek assistance when flight safety is in doubt. | `needs-sim-model` | `covered-green configured pilot safety-doubt assistance branch` | `Icao9432PilotSafetyDoubtSourceBackedTest`; `OperationalGuidancePolicy`; pilot safety doubt plus explicit policy yields an assistance request without claiming rendered phraseology or complete safety-doubt taxonomy. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::8e9f7818b91d08c3` | Intercepting aircraft may acknowledge and broadcast unacknowledged distress. | `needs-sim-model` | `covered-green structured intercepted-distress relay branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy`; intercepting aircraft can acknowledge and broadcast unacknowledged distress. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::cb12c2f9b97c64b7` | Distress/urgency call normally uses the frequency in use. | `needs-sim-model` | `covered-green configured emergency initial-frequency policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy`; distress and urgency calls initially use the frequency in use under configured current-frequency policy. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::06f7a72397c325ac` | Superfluous transmissions may distract an already busy pilot. | `needs-sim-model` | `covered-green configured distress interference-suppression branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy`; active distress traffic suppresses superfluous uninvolved transmissions under explicit policy. |
@@ -107,9 +108,11 @@ not be reused as emergency-compliance evidence.
    - fn-74 covers controller lost-contact route-aircraft relay,
      inter-station relay, and ATC-originated non-clearance blind transmission
      as structured projection evidence;
-   - expected-gap specs keep rendered emergency phraseology/order,
-     any-means distress communication, emergency-descent specific-instruction
-     necessity, and Annex 10 conformance visibly blocked.
+   - fn-75 covers pilot safety-doubt assistance seeking under explicit policy;
+   - expected-gap specs keep rendered emergency phraseology/order and Annex 10
+     conformance visibly blocked, while split rows continue documenting
+     any-means distress communication and emergency-descent
+     specific-instruction necessity facets.
 2. A chunk-level exact-union guard proves that source refs cited by chunk 08
    source specs exactly equal
    `ICAO9432.DistressUrgencyCommsFailure.Chunk08Items`.
@@ -119,7 +122,7 @@ not be reused as emergency-compliance evidence.
 
 ## Review Considerations
 
-- FP / type safety: fn-68, fn-69, fn-70, fn-71, fn-72, fn-73, and fn-74 use closed local
+- FP / type safety: fn-68, fn-69, fn-70, fn-71, fn-72, fn-73, fn-74, and fn-75 use closed local
   source-unit projections over existing production concepts where possible, not
   new global evidence payloads. Future emergency support should introduce typed
   emergency/radio-failure concepts rather than overloading ordinary radio
