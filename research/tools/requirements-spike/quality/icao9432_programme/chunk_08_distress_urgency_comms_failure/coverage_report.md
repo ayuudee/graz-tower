@@ -7,10 +7,10 @@ failure.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` / split structured branch | 24 |
+| `covered-green` / split structured branch | 32 |
 | `covered-red` | 0 |
-| `model-gap` | 4 |
-| `model-gap` + `policy-blocked` | 14 |
+| `model-gap` | 2 |
+| `model-gap` + `policy-blocked` | 8 |
 | `model-gap` + `phraseology-later` | 4 |
 
 Chunk 08 now has narrow structured fn-68 emergency evidence for distress versus
@@ -20,12 +20,15 @@ discipline, fn-70 structured projection evidence for emergency descent
 safeguarding/warning/position-questioning branches, and fn-71 structured
 projection evidence for communications-failure route-appropriate alternate
 contacts, blind-transmission scheduling payloads, SSR 7600/7700 distinction,
-and blind-clearance prohibition/exception handling. It still has no emergency
-assistance/relay actors, emergency-descent specific-instruction necessity
-policy, controller-side lost-contact relay workflow, ATC-originated blind
-non-clearance workflow, Annex 10 conformance model, emergency interference
-suppression policy, or rendered emergency phraseology/order. Ordinary VFR,
-go-around, or routine radio traces are not emergency-compliance evidence.
+blind-clearance prohibition/exception handling, and fn-72 structured projection
+evidence for emergency assistance actors, intercepted-distress relay, emergency
+frequency policy, and distress/urgency interference suppression. It still has
+no emergency message addressing/payload policy, emergency-descent specific-
+instruction necessity policy, controller-side lost-contact relay workflow,
+ATC-originated blind non-clearance workflow, Annex 10 conformance model, any-
+means distress communication model, or rendered emergency phraseology/order.
+Ordinary VFR, go-around, or routine radio traces are not emergency-compliance
+evidence.
 
 ## Coverage Table
 
@@ -36,14 +39,14 @@ go-around, or routine radio traces are not emergency-compliance evidence.
 | `icao9432-extracted::distress_urgency_intro_9_1_en::3b1079aa56df2ce6` | `covered-green structured emergency-priority projection branch` | `Icao9432EmergencyPrioritySilenceSourceBackedTest` |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::1a20cd48e58a5693` | `covered-green structured emergency-priority projection branch` | `Icao9432EmergencyPrioritySilenceSourceBackedTest` |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::7d35c042421b5b03` | `covered-green structured emergency-frequency discipline projection branch` | `Icao9432EmergencyPrioritySilenceSourceBackedTest` |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::9c34a1b8d6d623fa` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1` |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::24f94381ed9e8ce1` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::2fee92c222323e6a` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1` |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::82ee7048517d8478` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::9c34a1b8d6d623fa` | `covered-green structured emergency assistance actor branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest` |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::24f94381ed9e8ce1` | `covered-green configured emergency frequency-continuity policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy` |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::2fee92c222323e6a` | `covered-green structured alternate emergency frequency branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest` |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::82ee7048517d8478` | `covered-green configured assistance-content policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::87b67820c6092a98` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::8e9f7818b91d08c3` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::cb12c2f9b97c64b7` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
-| `icao9432-extracted::distress_urgency_intro_9_1_en::06f7a72397c325ac` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::8e9f7818b91d08c3` | `covered-green structured intercepted-distress relay branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy` |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::cb12c2f9b97c64b7` | `covered-green configured emergency initial-frequency policy branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy` |
+| `icao9432-extracted::distress_urgency_intro_9_1_en::06f7a72397c325ac` | `covered-green configured distress interference-suppression branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::13d1c2accd0f7a73` | `model-gap` + `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `PHRASE-1` |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::c30159856a1a5e7a` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1` |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::9907744b4723d14c` | `model-gap` + `phraseology-later` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `PHRASE-1` |
@@ -59,7 +62,7 @@ go-around, or routine radio traces are not emergency-compliance evidence.
 | `icao9432-extracted::distress_messages_9_2_en::c20024dad1b7144e` | `covered-green structured silence-termination branch` | `Icao9432EmergencyPrioritySilenceSourceBackedTest` |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::b95d7bb1cb409bca` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
-| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `EMERGENCY-1`; `OperationalGuidancePolicy` |
+| `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d` | `covered-green configured urgency interference-suppression branch` | `Icao9432EmergencyAssistanceRelaySourceBackedTest`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c` | `covered-green structured emergency-descent safeguarding projection branch` | `Icao9432EmergencyDescentSourceBackedTest` |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e` | `split: structured emergency-descent warning projection branch covered-green; specific-instruction necessity policy remains model-gap + policy-blocked` | `Icao9432EmergencyDescentSourceBackedTest`; `OperationalGuidancePolicy` |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13` | `covered-green structured emergency-descent position-question branch` | `Icao9432EmergencyDescentSourceBackedTest` |
@@ -84,7 +87,7 @@ go-around, or routine radio traces are not emergency-compliance evidence.
   the registry with `lifecycle.state = accepted`. Source text was checked
   against `research/txt/icao9432-extracted.txt` in Chapter 9.
 - Focused verification:
-  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432EmergencyClassificationPayloadSourceBackedTest' --tests '*.Icao9432EmergencyPrioritySilenceSourceBackedTest' --tests '*.Icao9432EmergencyDescentSourceBackedTest' --tests '*.Icao9432CommunicationsFailureSourceBackedTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
+  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432EmergencyClassificationPayloadSourceBackedTest' --tests '*.Icao9432EmergencyPrioritySilenceSourceBackedTest' --tests '*.Icao9432EmergencyDescentSourceBackedTest' --tests '*.Icao9432CommunicationsFailureSourceBackedTest' --tests '*.Icao9432EmergencyAssistanceRelaySourceBackedTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest' --tests '*.EvidenceSourceCatalogTest'`.
 - Full verification:
   `./gradlew-nix :sim:jvmTest`;
   `./gradlew-nix detekt`;
@@ -99,15 +102,16 @@ go-around, or routine radio traces are not emergency-compliance evidence.
   closed local emergency radio-discipline projection derived from production
   `EmergencyType`; fn-71 adds closed local communications-failure projection
   types for contact attempts, blind-transmission payloads, SSR code selection,
-  and blind-clearance policy.
+  and blind-clearance policy; fn-72 adds closed local assistance, relay,
+  frequency-policy, and suppression projections.
 - Test architecture: source-backed tests cover the narrow structured branches;
   expected-gap specs still decompose residual `EMERGENCY-1` into missing
   surfaces and include an exact-union guard for all 46 refs.
 - Impact: no controller, pilot, sim scheduler, phraseology rendering, SSR, or
-  policy behaviour was changed. fn-69, fn-70, and fn-71 are structured
+  policy behaviour was changed. fn-69, fn-70, fn-71, and fn-72 are structured
   projection evidence, not production radio queue preemption, production
-  emergency descent conflict-resolution behavior, or production communications-
-  failure workflow.
+  emergency descent conflict-resolution behavior, production communications-
+  failure workflow, or global emergency assistance scheduling.
 - Operational correctness: ICAO 9432 Chapter 9 emergency and communications-
   failure obligations remain distinct from ordinary radio, VFR, and go-around
   traces.

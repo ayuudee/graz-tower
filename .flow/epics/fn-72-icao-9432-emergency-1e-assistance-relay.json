@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-72-icao-9432-emergency-1e-assistance-relay",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-18T16:45:50.423247Z",
+  "created_at": "2026-09-18T16:27:16.068725Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-72-icao-9432-emergency-1e-assistance-relay",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-18T16:31:50.681207Z",
+  "spec_path": ".flow/specs/fn-72-icao-9432-emergency-1e-assistance-relay.md",
+  "status": "done",
+  "title": "ICAO 9432 EMERGENCY-1E assistance relay and frequency policy",
+  "updated_at": "2026-09-18T16:45:50.556253Z"
+}
