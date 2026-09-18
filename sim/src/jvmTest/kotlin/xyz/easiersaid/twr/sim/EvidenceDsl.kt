@@ -1105,6 +1105,48 @@ class AuditRenderedPhraseologySubject internal constructor(
             failReason = "Missing rendered stop-immediately phraseology for ${aircraftId.value}",
         )
 
+    fun takeOffWordOnlyInTakeoffClearanceAcrossSupportedTemplates(): EvidenceAuditOutcome {
+        val candidates = facts.filter { fact ->
+            val payload = fact.payload as? EvidenceFactPayload.RenderedPhraseology ?: return@filter false
+            payload.aircraftId == aircraftId && payload.template in supportedControllerPhraseologyTemplates
+        }
+        val observedTemplates = candidates
+            .map { fact -> (fact.payload as EvidenceFactPayload.RenderedPhraseology).template }
+            .toSet()
+        val missingTemplates = supportedControllerPhraseologyTemplates - observedTemplates
+        if (missingTemplates.isNotEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing supported rendered controller phraseology templates: $missingTemplates",
+                evidence = candidates.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedPhraseology
+                    "${payload.template}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
+        candidates.forEach { fact -> activate(fact.id) }
+        val violations = candidates.filter { fact ->
+            val payload = fact.payload as EvidenceFactPayload.RenderedPhraseology
+            payload.template != RenderedPhraseologyTemplate.TakeoffClearance &&
+                PhraseologyToken.TakeOff in payload.tokens
+        }
+        return if (violations.isEmpty()) {
+            EvidenceAuditOutcome.Pass(
+                candidates.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedPhraseology
+                    "${payload.template}:takeoff-token-ok@${fact.provenance.sequence.value}"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "TAKE OFF token appeared outside take-off clearance phraseology",
+                evidence = violations.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedPhraseology
+                    "${payload.template}:${payload.tokens}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
+    }
+
     private fun phraseologyOutcome(
         template: RenderedPhraseologyTemplate,
         expectedObligationKinds: Set<PhraseologyObligationKind>,
@@ -1142,6 +1184,15 @@ class AuditRenderedPhraseologySubject internal constructor(
     }
 
     private companion object {
+        val supportedControllerPhraseologyTemplates: Set<RenderedPhraseologyTemplate> =
+            setOf(
+                RenderedPhraseologyTemplate.ContactFrequencyInstruction,
+                RenderedPhraseologyTemplate.LineUpAndWaitInstruction,
+                RenderedPhraseologyTemplate.TakeoffClearance,
+                RenderedPhraseologyTemplate.TouchAndGoClearance,
+                RenderedPhraseologyTemplate.StopImmediatelyInstruction,
+            )
+
         val renderedClearanceObligations: Set<PhraseologyObligationKind> =
             setOf(
                 PhraseologyObligationKind.OrderedPhrase,

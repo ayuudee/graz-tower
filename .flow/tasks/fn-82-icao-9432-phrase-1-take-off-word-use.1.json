@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T21:49:36.458480Z",
+  "depends_on": [],
+  "epic": "fn-82-icao-9432-phrase-1-take-off-word-use",
+  "id": "fn-82-icao-9432-phrase-1-take-off-word-use.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-82-icao-9432-phrase-1-take-off-word-use.1.md",
+  "status": "todo",
+  "title": "Implement source-mapped take-off word-use phraseology evidence",
+  "updated_at": "2026-09-18T21:53:30.587282Z"
+}

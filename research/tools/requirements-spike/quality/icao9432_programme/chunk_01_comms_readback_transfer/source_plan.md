@@ -13,9 +13,10 @@ Source: `classification.csv` rows with `chunk_id = chunk-01-comms-readback-trans
 | `candidate-test` | 9 |
 | `expected-gap` | 1 |
 | `not-applicable` | 1 |
-| `phraseology-later` | 5 |
+| `phraseology-later` | 4 |
 | `policy-blocked` | 2 |
 | `rendered-phraseology` | 1 |
+| `split: supported rendered controller templates covered; cancellation wording phraseology-later` | 1 |
 | `split: supported rendered readbacks covered; remaining templates phraseology-later` | 1 |
 
 ## Unit Plan
@@ -33,7 +34,7 @@ Source: `classification.csv` rows with `chunk_id = chunk-01-comms-readback-trans
 | `icao9432-extracted::readback_2_8_3_en::4b6ece953649da07` | `readback_2_8_3_en` | Other clearances or instructions, including conditional clearances, shall be read back or acknowledged in a manner to clearly indicate that they ha... | `candidate-test` | `none` | Author protocolEvidence source-mapped test if current DSL can express readback/hearback semantic evidence. |
 | `icao9432-extracted::readback_2_8_3_en::58594a8ee6243296` | `readback_2_8_3_en` | ATC route clearances shall always be read back. | `candidate-test` | `none` | Author protocolEvidence source-mapped test if current DSL can express readback/hearback semantic evidence. |
 | `icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2` | `readback_2_8_3_en` | Controllers should pass a clearance slowly and clearly, avoid passing clearances during complicated taxiing, and on no occasion should a clearance ... | `expected-gap` | `FN33-MODEL-1` | Record expected gap for FN33-MODEL-1 with accepted source id and quote. |
-| `icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649` | `readback_2_8_3_en` | The words 'TAKE OFF' are used only when an aircraft is cleared for take-off, or when canceling a take-off clearance; at other times, the word 'DEPA... | `phraseology-later` | `PHRASE-1` | Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology. |
+| `icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649` | `readback_2_8_3_en` | The words 'TAKE OFF' are used only when an aircraft is cleared for take-off, or when canceling a take-off clearance; at other times, the word 'DEPA... | `split: supported rendered controller templates covered; cancellation wording phraseology-later` | `PHRASE-1` | fn-82 proves `TAKE OFF` token use is restricted to `TakeoffClearance` across supported rendered controller templates. Take-off-clearance cancellation wording and unsupported templates remain blocked. |
 | `icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9` | `readback_2_8_3_en` | An ATC route clearance is not an instruction to take off or enter an active runway. | `phraseology-later` | `PHRASE-1` | Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::17e1dfdf4ce57253` | `readback_continuation_2_8_3_7_to_2_8_3_10_en` | The controller shall listen to the read-back to ascertain that the clearance or instruction has been correctly acknowledged by the flight crew. | `candidate-test` | `none` | Author protocolEvidence source-mapped test if current DSL can express readback/hearback semantic evidence. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71` | `readback_continuation_2_8_3_7_to_2_8_3_10_en` | An aircraft should terminate the read-back by its call sign. | `split: supported rendered readbacks covered; remaining templates phraseology-later` | `PHRASE-1` | fn-81 proves `LineUpReadback` and `FrequencyReadback` rendered pilot readback facts terminate with the aircraft callsign token. Unsupported readback templates remain blocked on PHRASE-1. |
@@ -61,7 +62,7 @@ Source: `classification.csv` rows with `chunk_id = chunk-01-comms-readback-trans
 - `icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510` -> `phraseology-later` via `PHRASE-1`: When a ground station wishes to broadcast information, the message should be prefaced by the call "ALL STATIONS".
 - `icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726` -> `policy-blocked` via `POLICY-1`: Whenever possible, controllers should pass a route clearance to an aircraft before start-up.
 - `icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2` -> `expected-gap` via `FN33-MODEL-1`: Controllers should pass a clearance slowly and clearly, avoid passing clearances during complicated taxiing, and on no occasion should a clearance be passed when the pilot is engaged in line up or take-off manoeuvres.
-- `icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649` -> `phraseology-later` via `PHRASE-1`: The words 'TAKE OFF' are used only when an aircraft is cleared for take-off, or when canceling a take-off clearance; at other times, the word 'DEPARTURE' or 'AIRBORNE' is used.
+- `icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649` -> `split: supported rendered controller templates covered; cancellation wording phraseology-later` via `PHRASE-1`: fn-82 covers supported rendered controller templates; take-off-clearance cancellation wording remains unmodelled.
 - `icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9` -> `phraseology-later` via `PHRASE-1`: An ATC route clearance is not an instruction to take off or enter an active runway.
 - `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71` -> `split: supported rendered readbacks covered; remaining templates phraseology-later` via `PHRASE-1`: fn-81 covers current `LineUpReadback` and `FrequencyReadback` rendered templates; unsupported templates remain phraseology-later.
 - `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::ce25c18f1b44a6a8` -> `not-applicable` via `none`: See: APPENDIX 1 DIFFERENCES FROM ICAO RADIOTELEPHONY PROCEDURES

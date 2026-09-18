@@ -10,8 +10,9 @@ Chunk: ICAO 9432 communications, transfer, and readback.
 | `covered-red` | 0 |
 | `expected-gap` | 0 |
 | `not-applicable` | 1 |
-| `phraseology-later` | 5 |
+| `phraseology-later` | 4 |
 | `policy-blocked` | 2 |
+| `split: supported rendered controller templates covered; cancellation wording phraseology-later` | 1 |
 | `split: supported rendered readbacks covered; remaining templates phraseology-later` | 1 |
 
 Closed initially at `fn-48-icao-9432-chunk-01-drive-expected-gap`
@@ -23,6 +24,9 @@ that produces reception-doubt evidence resolved by pilot `SayAgain`.
 fn-81 partially closes the readback-termination phraseology row for the
 currently supported rendered pilot readback templates (`LineUpReadback` and
 `FrequencyReadback`); other readback templates remain PHRASE-1.
+fn-82 partially closes the TAKE OFF word-use row for supported rendered
+controller templates; take-off-clearance cancellation wording and unsupported
+templates remain PHRASE-1.
 
 Focused verification run:
 
@@ -65,7 +69,7 @@ test-environment concern, not as a chunk closure blocker.
 | `icao9432-extracted::readback_2_8_3_en::4b6ece953649da07` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ReadbackEvidenceTest.kt` | Other clearances or instructions, including conditional clearances, shall be read back or acknowledged in a manner to... |
 | `icao9432-extracted::readback_2_8_3_en::58594a8ee6243296` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ReadbackEvidenceTest.kt` | ATC route clearances shall always be read back. |
 | `icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ClearancePacingEvidenceTest.kt` (via new `EvidenceAuditOutcome.Advisory` leaf) | Controllers should pass a clearance slowly and clearly, avoid passing clearances during complicated taxiing, and on n... |
-| `icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649` | `phraseology-later` | `PHRASE-1` | The words 'TAKE OFF' are used only when an aircraft is cleared for take-off, or when canceling a take-off clearance; ... |
+| `icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649` | `split: supported rendered controller templates covered; cancellation wording phraseology-later` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432PhraseologyEvidenceTest.kt`; `PHRASE-1` for cancellation wording and unsupported templates | The words 'TAKE OFF' are used only when an aircraft is cleared for take-off, or when canceling a take-off clearance; ... |
 | `icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9` | `phraseology-later` | `PHRASE-1` | An ATC route clearance is not an instruction to take off or enter an active runway. |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::17e1dfdf4ce57253` | `covered-green` | `controller/src/commonTest/kotlin/xyz/easiersaid/twr/controller/requirements/Icao9432ReadbackConformanceSpec.kt` | The controller shall listen to the read-back to ascertain that the clearance or instruction has been correctly acknow... |
 | `icao9432-extracted::readback_continuation_2_8_3_7_to_2_8_3_10_en::4c808d67d281ff71` | `split: supported rendered readbacks covered; remaining templates phraseology-later` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432PhraseologyEvidenceTest.kt` (`LineUpReadback`, `FrequencyReadback`); `PHRASE-1` for unsupported templates | An aircraft should terminate the read-back by its call sign. |
@@ -88,12 +92,13 @@ test-environment concern, not as a chunk closure blocker.
   (`readback_2_8_3_en::36e6ad16cffe8726`). Tracked in `.plan`.
 - `PHRASE-1`: PARTIALLY CLOSED by fn-78 for the
   `transfer_communications_2_8_2_en::96720e821bf926cc` CONTACT
-  frequency-change phraseology row and by fn-81 for the supported rendered
-  readback-termination templates (`LineUpReadback`, `FrequencyReadback`).
+  frequency-change phraseology row, by fn-81 for the supported rendered
+  readback-termination templates (`LineUpReadback`, `FrequencyReadback`), and
+  by fn-82 for supported rendered controller-template TAKE OFF word-use.
   Still cross-chunk infrastructure; covers ALL STATIONS, full callsign, TAKE
-  OFF word-use (`readback_2_8_3_en::f06dfa1cefd2d649`), unsupported readback
-  templates, unit-only CONTACT variants, MONITOR, WHEN PASSING conditionals,
-  and other phraseology units. Tracked in `.plan`.
+  OFF cancellation wording, unsupported readback/controller templates,
+  unit-only CONTACT variants, MONITOR, WHEN PASSING conditionals, and other
+  phraseology units. Tracked in `.plan`.
 - `FN33-MODEL-1`: PARTIALLY CLOSED. The §2.8.3.2 advisory-pacing
   source unit (`readback_2_8_3_en::ac9111d240cfd2c2`) landed
   `covered-green` at fn-48 via the new
@@ -103,9 +108,9 @@ test-environment concern, not as a chunk closure blocker.
   source units the `.plan` paragraph references — route-clearance
   timing (`readback_2_8_3_en::36e6ad16cffe8726`, now classified
   `policy-blocked` against POLICY-1) and TAKE OFF phraseology
-  (`readback_2_8_3_en::f06dfa1cefd2d649`, classified
-  `phraseology-later` against PHRASE-1) — remain
-  `blocked_by_model_gap` and the `.plan` paragraph stays as a
+  (`readback_2_8_3_en::f06dfa1cefd2d649`, now split by fn-82:
+  supported rendered controller templates covered; cancellation wording and
+  unsupported templates remain PHRASE-1) — keep the `.plan` paragraph as a
   partial-closure record, not deleted.
 - `FN44-GAP-1`: CLOSED `covered-green` at fn-48 via existing
   `ContactFrequency` controller emission in LOWG circuit + new
@@ -129,7 +134,8 @@ test-environment concern, not as a chunk closure blocker.
   reception-doubt (COMMS-1 covered-green), clearance pacing
   (FN33-MODEL-1 covered-green Advisory), rendered CONTACT frequency-change
   phraseology (fn-78), and supported rendered readback-termination templates
-  (fn-81). Remaining phraseology, policy, and the two remaining FN33-MODEL-1
+  (fn-81), and supported rendered controller-template TAKE OFF word-use
+  (fn-82). Remaining phraseology, policy, and the two remaining FN33-MODEL-1
   source units stay blocked.
 - Impact: fn-50 adds final reception-quality observations and a minimal
   non-cognitive pilot `SayAgain` recovery path for stepped-on controller

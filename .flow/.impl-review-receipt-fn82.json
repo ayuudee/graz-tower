@@ -1,0 +1,16 @@
+{
+  "type": "impl_review",
+  "id": "fn-82-icao-9432-phrase-1-take-off-word-use.1",
+  "mode": "codex",
+  "base": "HEAD~1",
+  "verdict": "SHIP",
+  "session_id": "01a0b685-f86c-71a1-a54b-bd7c7b279c3d",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T21:59:38.679416Z",
+  "review": "No blocking findings in the updated implementation. The selector rejects incomplete template coverage and prohibited tokens, including violations mixed with valid facts. The source-mapped test uses the specified real/synthetic evidence split, and the corrected coverage handoff preserves the remaining gaps.\n\nReview was limited to the supplied content; recorded test results were not independently rerun.\n\nClassification counts: 0 introduced, 0 pre_existing.\n\n<verdict>SHIP</verdict>\n",
+  "focus": "Review fn-82 TAKE OFF word-use evidence after docs fix. Pay special attention to overclaiming ICAO 9432 \u00a72.8.3.3, cancellation exception honesty, all-supported-template non-vacuity, DSL negative coverage, fact-combination integrity, catalog validation inclusion, docs/manifest split honesty, and absence of runtime behavior changes.",
+  "introduced_count": 0,
+  "pre_existing_count": 0
+}

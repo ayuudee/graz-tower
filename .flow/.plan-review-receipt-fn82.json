@@ -1,0 +1,12 @@
+{
+  "type": "plan_review",
+  "id": "fn-82-icao-9432-phrase-1-take-off-word-use",
+  "mode": "codex",
+  "verdict": "SHIP",
+  "session_id": "01a0b67f-c131-7d53-8760-2eb0c0095069",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T21:53:15.135189Z",
+  "review": "- **Severity:** Minor\n- **Location:** Epic Approach #6; task Acceptance #2.\n- **Problem:** The planned successful evidence case does not verify the new DSL assertion\u2019s rejection behavior. Running existing `EvidenceDslTest` tests alone would not establish that missing templates or prohibited tokens actually fail.\n- **Suggestion:** Explicitly add focused negative cases for empty evidence, a missing required template, and `TakeOff` on a non-`TakeoffClearance` fact. Include a violation alongside valid facts to verify every supplied fact is checked.\n\nNo blocking issues found. The epic and task consistently require real LOWG evidence for runway/frequency templates and synthetic evidence only for `StopImmediately`. Cancellation, unsupported templates, and the emergency trigger retain explicit coverage boundaries.\n\nReview is limited to the supplied specifications; renderer and fixture feasibility could not be independently verified from the embedded context.\n\n<verdict>SHIP</verdict>\n"
+}

@@ -10,6 +10,7 @@ import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedForTakeoffReadback
 import xyz.easiersaid.twr.protocol.ControllerId
+import xyz.easiersaid.twr.protocol.Frequency
 import xyz.easiersaid.twr.protocol.LineUpAndWait
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RoleName
@@ -169,6 +170,55 @@ class EvidenceDslTest {
     }
 
     @Test
+    fun `takeoff word-use selector fails on missing or violating supported rendered templates`() {
+        val aircraft = AircraftId("OE-ABC")
+        val validPayloads = supportedControllerPhraseologyPayloads(aircraft)
+
+        val emptyReport = renderedTakeOffWordUseReport(
+            scenarioId = "takeoff-word-empty",
+            aircraft = aircraft,
+            payloads = emptyList(),
+        )
+        val missingTemplateReport = renderedTakeOffWordUseReport(
+            scenarioId = "takeoff-word-missing-template",
+            aircraft = aircraft,
+            payloads = validPayloads.dropLast(1),
+        )
+        val violatingPayload = renderedPhraseologyPayload(
+            aircraft = aircraft,
+            template = RenderedPhraseologyTemplate.ContactFrequencyInstruction,
+            tokens = listOf(
+                PhraseologyToken.AircraftCallsign(aircraft),
+                PhraseologyToken.Contact,
+                PhraseologyToken.TakeOff,
+            ),
+            text = "OE-ABC CONTACT TAKE-OFF",
+        )
+        val violatingReport = renderedTakeOffWordUseReport(
+            scenarioId = "takeoff-word-violating-template",
+            aircraft = aircraft,
+            payloads = listOf(violatingPayload),
+        )
+        val mixedReport = renderedTakeOffWordUseReport(
+            scenarioId = "takeoff-word-mixed",
+            aircraft = aircraft,
+            payloads = validPayloads + violatingPayload,
+        )
+        val validReport = renderedTakeOffWordUseReport(
+            scenarioId = "takeoff-word-valid",
+            aircraft = aircraft,
+            payloads = validPayloads,
+        )
+
+        assertTrue(emptyReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(missingTemplateReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(violatingReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(mixedReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(validReport.results.single().outcome is EvidenceAuditOutcome.Pass)
+        assertTrue(validReport.results.single().activationFactIds.isNotEmpty())
+    }
+
+    @Test
     fun `operationalPolicy selector requires explicit configured branch and scope`() {
         val scope = OperationalPolicyScope.AerodromeRunway(
             aerodrome = AerodromeId("LOWG"),
@@ -312,5 +362,91 @@ class EvidenceDslTest {
             ),
             tokens = tokens,
             text = RenderedPhraseText(text),
+        )
+
+    private fun renderedTakeOffWordUseReport(
+        scenarioId: String,
+        aircraft: AircraftId,
+        payloads: List<EvidenceFactPayload.RenderedPhraseology>,
+    ): EvidenceAuditReport =
+        simEvidence(scenarioId) {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = scenarioId,
+                    payloads = payloads,
+                )
+            }
+            invariant("takeoff word use") {
+                expect { renderedPhraseology(aircraft).takeOffWordOnlyInTakeoffClearanceAcrossSupportedTemplates() }
+            }
+        }
+
+    private fun supportedControllerPhraseologyPayloads(
+        aircraft: AircraftId,
+    ): List<EvidenceFactPayload.RenderedPhraseology> =
+        listOf(
+            renderedPhraseologyPayload(
+                aircraft = aircraft,
+                template = RenderedPhraseologyTemplate.ContactFrequencyInstruction,
+                tokens = listOf(
+                    PhraseologyToken.AircraftCallsign(aircraft),
+                    PhraseologyToken.Contact,
+                    PhraseologyToken.UnitName("TOWER"),
+                    PhraseologyToken.FrequencyValue(Frequency.unsafe("118.200")),
+                ),
+                text = "OE-ABC CONTACT TOWER 118.200",
+            ),
+            renderedPhraseologyPayload(
+                aircraft = aircraft,
+                template = RenderedPhraseologyTemplate.LineUpAndWaitInstruction,
+                tokens = listOf(
+                    PhraseologyToken.AircraftCallsign(aircraft),
+                    PhraseologyToken.Runway,
+                    PhraseologyToken.RunwayDesignator(RunwayId("16C")),
+                    PhraseologyToken.Line,
+                    PhraseologyToken.Up,
+                    PhraseologyToken.And,
+                    PhraseologyToken.Wait,
+                ),
+                text = "OE-ABC RUNWAY 16C LINE UP AND WAIT",
+            ),
+            renderedPhraseologyPayload(
+                aircraft = aircraft,
+                template = RenderedPhraseologyTemplate.TakeoffClearance,
+                tokens = listOf(
+                    PhraseologyToken.AircraftCallsign(aircraft),
+                    PhraseologyToken.Runway,
+                    PhraseologyToken.RunwayDesignator(RunwayId("16C")),
+                    PhraseologyToken.Cleared,
+                    PhraseologyToken.For,
+                    PhraseologyToken.TakeOff,
+                ),
+                text = "OE-ABC RUNWAY 16C CLEARED FOR TAKE-OFF",
+            ),
+            renderedPhraseologyPayload(
+                aircraft = aircraft,
+                template = RenderedPhraseologyTemplate.TouchAndGoClearance,
+                tokens = listOf(
+                    PhraseologyToken.AircraftCallsign(aircraft),
+                    PhraseologyToken.Cleared,
+                    PhraseologyToken.Touch,
+                    PhraseologyToken.And,
+                    PhraseologyToken.Go,
+                ),
+                text = "OE-ABC CLEARED TOUCH AND GO",
+            ),
+            renderedPhraseologyPayload(
+                aircraft = aircraft,
+                template = RenderedPhraseologyTemplate.StopImmediatelyInstruction,
+                tokens = listOf(
+                    PhraseologyToken.AircraftCallsign(aircraft),
+                    PhraseologyToken.Stop,
+                    PhraseologyToken.Immediately,
+                    PhraseologyToken.AircraftCallsign(aircraft),
+                    PhraseologyToken.Stop,
+                    PhraseologyToken.Immediately,
+                ),
+                text = "OE-ABC STOP IMMEDIATELY OE-ABC STOP IMMEDIATELY",
+            ),
         )
 }

@@ -125,6 +125,12 @@ object ICAO9432 {
             claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
         )
 
+        val TakeOffWordUse: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649",
+            title = "ICAO Doc 9432 Fourth Edition 2007 §2.8.3.3 TAKE OFF word-use restriction",
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
+        )
+
         val RequiredItems: Set<EvidenceSourceRef> =
             setOf(
                 RunwayOperationsRequiredReadback,
@@ -135,6 +141,9 @@ object ICAO9432 {
 
         val AdvisoryItems: Set<EvidenceSourceRef> =
             setOf(ClearancePacingAdvisory)
+
+        val PhraseologyItems: Set<EvidenceSourceRef> =
+            setOf(TakeOffWordUse)
     }
 
     object ReadbackContinuation {
@@ -794,9 +803,10 @@ object EvidenceGaps {
 
 object EvidenceSourceCatalog {
     val All: Set<EvidenceSourceRef> =
-        ICAO9432.Communications.RequiredProcedures +
+            ICAO9432.Communications.RequiredProcedures +
             ICAO9432.Readback.RequiredItems +
             ICAO9432.Readback.AdvisoryItems +
+            ICAO9432.Readback.PhraseologyItems +
             ICAO9432.ReadbackContinuation.PhraseologyItems +
             ICAO9432.Taxi.HoldingPointLimit +
             ICAO9432.Taxi.Chunk03AuditItems +

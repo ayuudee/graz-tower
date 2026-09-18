@@ -87,6 +87,39 @@ class Icao9432PhraseologyEvidenceTest {
     }
 
     @Test
+    fun `supported rendered controller phraseology restricts TAKE OFF wording to takeoff clearance`() {
+        val aircraft = AircraftId("OE-ABC")
+
+        val report = simEvidence("icao9432-rendered-takeoff-word-use") {
+            observe {
+                combinedEvidenceFactSet(
+                    scenarioId = "icao9432-rendered-takeoff-word-use",
+                    EvidenceFactAdapters.lowgCircuitTraining(
+                        scenarioId = "icao9432-rendered-takeoff-word-use-lowg",
+                        outcomes = listOf(CircuitOutcome.TouchAndGo, CircuitOutcome.FullStop),
+                        untilMinutes = 45,
+                    ),
+                    EvidenceFactAdapters.fromTransmissionRecords(
+                        scenarioId = "icao9432-rendered-takeoff-word-use-stop",
+                        records = listOf(stopImmediatelyRecord(aircraft)),
+                    ),
+                )
+            }
+            source("TAKE OFF word appears only in take-off clearance on supported rendered templates") {
+                cites(ICAO9432.Readback.TakeOffWordUse)
+                sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §2.8.3.3")
+                sample("coverage-scope", "supported rendered controller templates only")
+                sample("cancellation-wording", "not modelled")
+                expect {
+                    renderedPhraseology(aircraft).takeOffWordOnlyInTakeoffClearanceAcrossSupportedTemplates()
+                }
+            }
+        }
+
+        report.assertNoFailures()
+    }
+
+    @Test
     fun `synthetic stop-immediately instruction renders repeated ICAO 9432 phraseology`() {
         val aircraft = AircraftId("FASTAIR 345")
         val output = ControllerOutput.Instruct.fromEmergencyPolicy(
@@ -217,5 +250,56 @@ class Icao9432PhraseologyEvidenceTest {
         }
 
         report.assertNoFailures()
+    }
+
+    private fun stopImmediatelyRecord(
+        aircraft: AircraftId,
+    ): TransmissionRecord {
+        val output = ControllerOutput.Instruct.fromEmergencyPolicy(
+            instruction = StopImmediately(aircraft),
+            urgency = Urgency.SAFETY,
+            trace = DecisionTrace("TEST-STOP", "test stop-immediately phraseology", emptyList()),
+            doctrine = "ICAO Doc 9432 §4.5.11",
+        )
+        return TransmissionRecord(
+            transmissionId = TransmissionId(80),
+            time = SimTime.ZERO,
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(2),
+            speaker = SpeakerRef.Controller(ControllerId("LOWG_TWR")),
+            receiver = ReceiverRef.Pilot(aircraft),
+            utterance = Utterance.FromController(output),
+        )
+    }
+
+    private fun combinedEvidenceFactSet(
+        scenarioId: String,
+        vararg sets: EvidenceFactSet,
+    ): EvidenceFactSet {
+        val facts = sets
+            .flatMap { set -> set.orderedFacts() }
+            .mapIndexed { index, fact ->
+                val extractionPath = EvidenceExtractionPath("combined[$index].${fact.provenance.extractionPath.value}")
+                fact.copy(
+                    id = FactId(
+                        listOf(
+                            scenarioId,
+                            fact.provenance.origin.label,
+                            index.toString().padStart(6, '0'),
+                            fact.payload.kind.name,
+                            extractionPath.value,
+                        ).joinToString(separator = "::"),
+                    ),
+                    provenance = fact.provenance.copy(
+                        scenarioId = scenarioId,
+                        sequence = EvidenceSequence(index),
+                        extractionPath = extractionPath,
+                    ),
+                )
+            }
+        return EvidenceFactSet(
+            scenarioId = scenarioId,
+            facts = facts,
+            diagnostic = sets.joinToString(prefix = "Combined evidence: ") { set -> set.diagnostic },
+        )
     }
 }
