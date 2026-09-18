@@ -9,20 +9,23 @@ marked covered-green with the current model/evidence surface.
 
 | Source-unit state | Units |
 |---|---:|
-| `covered-green` / split structured branch | 13 |
-| `model-gap` | 12 |
+| `covered-green` / split structured branch | 24 |
+| `model-gap` | 4 |
 | `model-gap` + `policy-blocked` | 14 |
-| `model-gap` + `phraseology-later` | 7 |
+| `model-gap` + `phraseology-later` | 4 |
 | `phraseology-later` | 0 |
 
 fn-68 moved the narrow structured emergency-classification and distress-message
 payload branches to source-backed coverage. fn-69 moved the narrow structured
 emergency-priority and radio-silence projection branches to source-backed
 coverage. fn-70 moved the narrow emergency-descent safeguarding, warning, and
-position-question projection branches to source-backed coverage. `EMERGENCY-1`
-remains the dominant blocker for assistance, relay, emergency-descent
-specific-instruction necessity policy, communications failure, SSR, emergency
-interference policy, and emergency phraseology/order work.
+position-question projection branches to source-backed coverage. fn-71 moved
+structured communications-failure contact routing, blind-transmission payload,
+SSR-code, and blind-clearance policy branches to source-backed coverage.
+`EMERGENCY-1` remains the dominant blocker for assistance, relay, emergency-
+descent specific-instruction necessity policy, controller-side lost-contact
+workflow, Annex 10 conformance, emergency interference policy, and emergency
+phraseology/order work.
 
 ## Model Gaps
 
@@ -31,14 +34,6 @@ interference policy, and emergency phraseology/order work.
 | `icao9432-extracted::distress_urgency_intro_9_1_en::9c34a1b8d6d623fa` | `EMERGENCY-1` | No other-station/other-aircraft emergency assistance actor. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::2fee92c222323e6a` | `EMERGENCY-1` | No alternate emergency frequency selection model. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::c30159856a1a5e7a` | `EMERGENCY-1` | No Annex 10 emergency-procedure conformance model. |
-| `icao9432-extracted::distress_messages_9_2_en::4b37e039e7eb8afa` | `EMERGENCY-1` | No distress assistance model or SSR 7700 emergency state. |
-| `icao9432-extracted::communications_failure_9_5_en::f05016444e2b8808` | `EMERGENCY-1` | No communications-failure frequency-search model. |
-| `icao9432-extracted::communications_failure_9_5_en::fcb3a49672165b4f` | `EMERGENCY-1` | No route-based alternate station/aircraft contact model. |
-| `icao9432-extracted::communications_failure_9_5_en::975a63151706f68f` | `EMERGENCY-1` | No blind-message repetition scheduler. |
-| `icao9432-extracted::communications_failure_9_5_en::045c2e33f59f5ede` | `EMERGENCY-1` | No scheduled blind-report timing state. |
-| `icao9432-extracted::communications_failure_9_5_en::7900c606e05e509b` | `EMERGENCY-1` | No communications-failure continuation-intention payload. |
-| `icao9432-extracted::communications_failure_9_5_en::91e7d233bf3b64ff` | `EMERGENCY-1` | No radio-failure SSR 7600 state. |
-| `icao9432-extracted::communications_failure_9_5_en::b73dda299970c2f3` | `EMERGENCY-1` | No blind-clearance prohibition and originator-request exception model. |
 | `icao9432-extracted::communications_failure_9_5_en::c1c14fab53a608c6` | `EMERGENCY-1` | No Annex 10 communications-failure conformance model. |
 
 ## Model Gaps With Policy
@@ -56,9 +51,9 @@ interference policy, and emergency phraseology/order work.
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::1de475a788206cc8` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No urgency-message payload policy. |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::b95d7bb1cb409bca` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No urgency addressing/frequency policy. |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::5df94af7a64c3f5d` | `EMERGENCY-1`; `OperationalGuidancePolicy` | No urgency-interference suppression policy. |
-| `icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2` | `EMERGENCY-1`; `ControllerInterventionPolicy` | No lost-contact aircraft-assistance and relay workflow. |
-| `icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e` | `EMERGENCY-1`; `ControllerInterventionPolicy` | No lost-contact inter-station assistance and relay workflow. |
-| `icao9432-extracted::communications_failure_9_5_en::75055714e70d4560` | `EMERGENCY-1`; `ClearanceTimingPolicy` | No controller blind-transmission policy or clearance exclusion. |
+| `icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2` | `EMERGENCY-1`; `ControllerInterventionPolicy` | No controller-side lost-contact aircraft-assistance and relay workflow. |
+| `icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e` | `EMERGENCY-1`; `ControllerInterventionPolicy` | No controller-side lost-contact inter-station assistance and relay workflow. |
+| `icao9432-extracted::communications_failure_9_5_en::75055714e70d4560` | `EMERGENCY-1`; `ClearanceTimingPolicy` | No ATC-originated blind non-clearance workflow after failed station attempts while the aircraft is believed listening. |
 
 ## Model Gaps With Phraseology
 
@@ -68,9 +63,6 @@ interference policy, and emergency phraseology/order work.
 | `icao9432-extracted::distress_urgency_intro_9_1_en::9907744b4723d14c` | `EMERGENCY-1`; `PHRASE-1` | No emergency context/time-pressure phraseology adaptation model. |
 | `icao9432-extracted::distress_urgency_intro_9_1_en::bf04647e26f9c018` | `EMERGENCY-1`; `PHRASE-1` | No rendered initial emergency call with repeated MAYDAY/PAN PAN. |
 | `icao9432-extracted::distress_messages_9_2_en::f0e99a4c08ea0cb3` | `EMERGENCY-1`; `PHRASE-1` | No rendered distress-message element order. |
-| `icao9432-extracted::communications_failure_9_5_en::bc9bb12804033b07` | `EMERGENCY-1`; `PHRASE-1` | No blind-transmission mode or rendered TRANSMITTING BLIND prefix. |
-| `icao9432-extracted::communications_failure_9_5_en::abbc376a430003b0` | `EMERGENCY-1`; `PHRASE-1` | No blind-transmission addressee policy/rendering. |
-| `icao9432-extracted::communications_failure_9_5_en::78c73a75fab644f4` | `EMERGENCY-1`; `PHRASE-1` | No receiver-failure mode or rendered TRANSMITTING BLIND DUE RECEIVER FAILURE prefix. |
 
 ## Covered Or Split Rows
 
@@ -89,3 +81,14 @@ interference policy, and emergency phraseology/order work.
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c` | `covered-green structured emergency-descent safeguarding projection branch` | `Icao9432EmergencyDescentSourceBackedTest`; typed emergency descent announcement activates safeguarding for affected traffic and resets all derived state after resolution. Production conflict resolution remains out of scope. |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e` | `split: structured emergency-descent warning projection branch covered-green; specific-instruction necessity policy remains model-gap + policy-blocked` | `Icao9432EmergencyDescentSourceBackedTest`; emergency descent announcement emits general warning action for affected traffic. Necessity policy for follow-up specific instructions remains `OperationalGuidancePolicy`. |
 | `icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13` | `covered-green structured emergency-descent position-question branch` | `Icao9432EmergencyDescentSourceBackedTest`; uncertain emergency descent position supports a controller position-question branch, while known position does not. |
+| `icao9432-extracted::distress_messages_9_2_en::4b37e039e7eb8afa` | `split: structured distress SSR 7700 branch covered-green; distress assistance/any-means branch remains model-gap` | `Icao9432CommunicationsFailureSourceBackedTest`; distress with SSR equipment can select code 7700. Station assistance and any-means communication behavior remain out of scope. |
+| `icao9432-extracted::communications_failure_9_5_en::f05016444e2b8808` | `covered-green structured communications-failure alternate-frequency branch` | `Icao9432CommunicationsFailureSourceBackedTest`; typed failed designated-frequency contact selects another route-appropriate frequency. |
+| `icao9432-extracted::communications_failure_9_5_en::fcb3a49672165b4f` | `covered-green structured communications-failure alternate-contact branch` | `Icao9432CommunicationsFailureSourceBackedTest`; after alternate-frequency contact fails, the model selects other aircraft or stations on route-appropriate frequencies. |
+| `icao9432-extracted::communications_failure_9_5_en::bc9bb12804033b07` | `split: structured blind-transmission mode/repetition branch covered-green; rendered TRANSMITTING BLIND prefix remains phraseology-later` | `Icao9432CommunicationsFailureSourceBackedTest`; failed-contact blind-transmission mode repeats the intended message twice. Rendered prefix wording remains `PHRASE-1`. |
+| `icao9432-extracted::communications_failure_9_5_en::abbc376a430003b0` | `split: structured blind-transmission addressee branch covered-green; rendered addressee phraseology remains phraseology-later` | `Icao9432CommunicationsFailureSourceBackedTest`; blind-transmission metadata carries explicit addressees. Necessity policy and rendered wording remain out of scope. |
+| `icao9432-extracted::communications_failure_9_5_en::975a63151706f68f` | `covered-green structured blind-message repetition branch` | `Icao9432CommunicationsFailureSourceBackedTest`; intended message is scheduled with a complete repetition. |
+| `icao9432-extracted::communications_failure_9_5_en::045c2e33f59f5ede` | `covered-green structured blind next-transmission-time branch` | `Icao9432CommunicationsFailureSourceBackedTest`; receiver-failure blind transmission carries the next intended transmission time. |
+| `icao9432-extracted::communications_failure_9_5_en::7900c606e05e509b` | `covered-green structured communications-failure continuation-intention branch` | `Icao9432CommunicationsFailureSourceBackedTest`; continuation intention is present only under ATC/advisory service context. |
+| `icao9432-extracted::communications_failure_9_5_en::78c73a75fab644f4` | `split: structured receiver-failure blind-transmission branch covered-green; rendered receiver-failure prefix remains phraseology-later` | `Icao9432CommunicationsFailureSourceBackedTest`; receiver-failure blind mode is distinct from failed-contact blind mode. Rendered prefix wording remains `PHRASE-1`. |
+| `icao9432-extracted::communications_failure_9_5_en::91e7d233bf3b64ff` | `covered-green structured radio-failure SSR 7600 branch` | `Icao9432CommunicationsFailureSourceBackedTest`; communications failure with SSR equipment selects code 7600, distinct from distress SSR 7700. |
+| `icao9432-extracted::communications_failure_9_5_en::b73dda299970c2f3` | `covered-green structured blind-clearance prohibition/exception branch` | `Icao9432CommunicationsFailureSourceBackedTest`; blind ATC clearances are rejected unless the clearance originator explicitly requests blind transmission. |

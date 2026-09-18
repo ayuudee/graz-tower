@@ -1,0 +1,16 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T16:05:29.830984Z",
+  "depends_on": [
+    "fn-71-icao-9432-emergency-1d-communications.1"
+  ],
+  "epic": "fn-71-icao-9432-emergency-1d-communications",
+  "id": "fn-71-icao-9432-emergency-1d-communications.2",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-71-icao-9432-emergency-1d-communications.2.md",
+  "status": "todo",
+  "title": "Implement communications failure evidence",
+  "updated_at": "2026-09-18T16:05:29.831116Z"
+}

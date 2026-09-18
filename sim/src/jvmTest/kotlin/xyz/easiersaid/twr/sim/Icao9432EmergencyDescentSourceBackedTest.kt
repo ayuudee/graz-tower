@@ -67,6 +67,7 @@ class Icao9432EmergencyDescentSourceBackedTest {
         check(resolved.emergencyAircraftId == null)
         check(resolved.affectedTraffic.isEmpty())
         check(resolved.safeguardActions.isEmpty())
+        check(resolved.positionQuestion == null)
     }
 
     @Test

@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T16:05:29.809896Z",
+  "depends_on": [],
+  "epic": "fn-71-icao-9432-emergency-1d-communications",
+  "id": "fn-71-icao-9432-emergency-1d-communications.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-71-icao-9432-emergency-1d-communications.1.md",
+  "status": "todo",
+  "title": "Build communications failure movement manifest",
+  "updated_at": "2026-09-18T16:05:29.810028Z"
+}

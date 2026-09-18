@@ -37,26 +37,23 @@ class Icao9432ModelGapSourceUnitSpecTest {
 
     private val chunk08EmergencyDescentRefs: List<SourceUnitRef> = emptyList()
 
+    private val chunk08EmergencyDescentPolicyRefs: List<SourceUnitRef> = chunk08Refs(
+        "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e",
+    )
+
     private val chunk08CommsFailureRoutingRefs: List<SourceUnitRef> = chunk08Refs(
-        "icao9432-extracted::communications_failure_9_5_en::f05016444e2b8808",
-        "icao9432-extracted::communications_failure_9_5_en::fcb3a49672165b4f",
         "icao9432-extracted::communications_failure_9_5_en::bb66a050093251c2",
         "icao9432-extracted::communications_failure_9_5_en::24c806b040f4ef5e",
         "icao9432-extracted::communications_failure_9_5_en::75055714e70d4560",
     )
 
-    private val chunk08BlindTransmissionRefs: List<SourceUnitRef> = chunk08Refs(
+    private val chunk08BlindTransmissionPhraseologyRefs: List<SourceUnitRef> = chunk08Refs(
         "icao9432-extracted::communications_failure_9_5_en::bc9bb12804033b07",
         "icao9432-extracted::communications_failure_9_5_en::abbc376a430003b0",
-        "icao9432-extracted::communications_failure_9_5_en::975a63151706f68f",
-        "icao9432-extracted::communications_failure_9_5_en::045c2e33f59f5ede",
-        "icao9432-extracted::communications_failure_9_5_en::7900c606e05e509b",
         "icao9432-extracted::communications_failure_9_5_en::78c73a75fab644f4",
     )
 
     private val chunk08SsrAndBlindClearanceRefs: List<SourceUnitRef> = chunk08Refs(
-        "icao9432-extracted::communications_failure_9_5_en::91e7d233bf3b64ff",
-        "icao9432-extracted::communications_failure_9_5_en::b73dda299970c2f3",
         "icao9432-extracted::communications_failure_9_5_en::c1c14fab53a608c6",
     )
 
@@ -72,8 +69,14 @@ class Icao9432ModelGapSourceUnitSpecTest {
         "icao9432-extracted::distress_messages_9_2_en::ed898005cd1a4da5",
         "icao9432-extracted::distress_messages_9_2_en::c20024dad1b7144e",
         "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::082f9668292ed82c",
-        "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::c71568b00fb1535e",
         "icao9432-extracted::urgency_emergency_descent_9_3_to_9_4_en::ca0c243491ff5d13",
+        "icao9432-extracted::communications_failure_9_5_en::f05016444e2b8808",
+        "icao9432-extracted::communications_failure_9_5_en::fcb3a49672165b4f",
+        "icao9432-extracted::communications_failure_9_5_en::975a63151706f68f",
+        "icao9432-extracted::communications_failure_9_5_en::045c2e33f59f5ede",
+        "icao9432-extracted::communications_failure_9_5_en::7900c606e05e509b",
+        "icao9432-extracted::communications_failure_9_5_en::91e7d233bf3b64ff",
+        "icao9432-extracted::communications_failure_9_5_en::b73dda299970c2f3",
     )
 
     private val chunk08GapSpecRefGroups: List<List<SourceUnitRef>> =
@@ -83,8 +86,9 @@ class Icao9432ModelGapSourceUnitSpecTest {
             chunk08EmergencyMessagePhraseologyRefs,
             chunk08AssistanceRelayTerminationRefs,
             chunk08EmergencyDescentRefs,
+            chunk08EmergencyDescentPolicyRefs,
             chunk08CommsFailureRoutingRefs,
-            chunk08BlindTransmissionRefs,
+            chunk08BlindTransmissionPhraseologyRefs,
             chunk08SsrAndBlindClearanceRefs,
             chunk08CoveredOrSplitRefs,
         )
@@ -845,8 +849,34 @@ class Icao9432ModelGapSourceUnitSpecTest {
                 hit("emergency-assistance-and-relay-required")
                 modelGap(
                     "The sim has no non-addressed emergency assistance actor, intercepted-distress relay " +
-                        "state, emergency frequency-continuity or alternate-frequency decision, SSR 7700 " +
-                        "distress assistance model, or emergency relay workflow.",
+                        "state, emergency frequency-continuity or alternate-frequency decision, distress " +
+                        "assistance workflow, any-means communication model, or emergency relay workflow.",
+                )
+            }
+        }.assertSatisfied().assertHasModelGap()
+    }
+
+    @Test
+    fun `emergency descent specific instruction source unit reports missing necessity policy`() {
+        sourceUnitSpec("icao9432-emergency-descent-specific-instruction-policy-gap") {
+            title("Emergency descent specific-instruction claims require necessity policy")
+            sourceUnits(chunk08EmergencyDescentPolicyRefs)
+            domain("controller-action", setOf("general-warning", "specific-instruction"))
+            domain("necessity", setOf("necessary", "not-necessary"))
+            domain("policy", setOf("operational-guidance-policy"))
+
+            partition(
+                name = "specific instructions are necessary after emergency descent warning",
+                parameters = mapOf(
+                    "controller-action" to "specific-instruction",
+                    "necessity" to "necessary",
+                    "policy" to "operational-guidance-policy",
+                ),
+            ) {
+                hit("emergency-descent-specific-instruction-necessity-policy-required")
+                modelGap(
+                    "The sim has structured emergency-descent safeguarding and general-warning evidence, " +
+                        "but no policy evidence deciding when follow-up specific instructions are necessary.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()
@@ -855,79 +885,78 @@ class Icao9432ModelGapSourceUnitSpecTest {
     @Test
     fun `communications failure routing source units report missing lost contact workflow`() {
         sourceUnitSpec("icao9432-comms-failure-routing-model-gaps") {
-            title("Communications-failure routing claims require lost-contact frequency search and relay workflow")
+            title("Communications-failure relay and controller blind-transmission claims require lost-contact workflow")
             sourceUnits(chunk08CommsFailureRoutingRefs)
-            domain("contact-attempt", setOf("designated-frequency", "alternate-frequency", "other-aircraft", "other-station"))
-            domain("route-context", setOf("route-appropriate-frequency", "not-modelled"))
+            domain("actor", setOf("route-aircraft", "other-station", "ground-station"))
+            domain("contact-result", setOf("unable-contact-aircraft", "aircraft-believed-listening"))
             domain("station-action", setOf("request-relay", "blind-transmit-non-clearance"))
 
             partition(
-                name = "failed contact escalates through alternate frequencies and relay actors",
+                name = "failed station contact escalates to relay request or non-clearance blind transmission",
                 parameters = mapOf(
-                    "contact-attempt" to "alternate-frequency",
-                    "route-context" to "route-appropriate-frequency",
+                    "actor" to "ground-station",
+                    "contact-result" to "unable-contact-aircraft",
                     "station-action" to "request-relay",
                 ),
             ) {
                 hit("lost-contact-routing-and-relay-required")
                 modelGap(
-                    "The sim has no communications-failure state, route-appropriate frequency search, " +
-                        "other-aircraft or other-station contact workflow, lost-contact relay request, " +
-                        "or controller blind-transmission policy excluding ATC clearances.",
+                    "The sim has no controller-side lost-contact workflow for asking route aircraft or " +
+                        "other stations to call/relay, and no ATC-originated blind non-clearance workflow " +
+                        "after failed station attempts while the aircraft is believed listening.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()
     }
 
     @Test
-    fun `blind transmission source units report missing blind procedure scheduler and phraseology`() {
-        sourceUnitSpec("icao9432-blind-transmission-procedure-model-gaps") {
-            title("Blind transmission claims require blind radio mode, repetition, scheduling, and rendering")
-            sourceUnits(chunk08BlindTransmissionRefs)
-            domain("failure-mode", setOf("unable-contact", "receiver-failure"))
-            domain("blind-message", setOf("twice-transmitted", "complete-repetition", "addressee-included"))
-            domain("schedule", setOf("next-intended-transmission", "pic-continuation-intention"))
+    fun `blind transmission phraseology source units report missing rendered wording`() {
+        sourceUnitSpec("icao9432-blind-transmission-phraseology-model-gaps") {
+            title("Blind transmission split rows require rendered blind phraseology")
+            sourceUnits(chunk08BlindTransmissionPhraseologyRefs)
+            domain("failure-mode", setOf("failed-contact", "receiver-failure"))
+            domain("rendering", setOf("transmitting-blind-prefix", "receiver-failure-prefix", "addressee-wording"))
+            domain("structured-branch", setOf("covered", "not-rendered"))
 
             partition(
-                name = "blind receiver-failure reports are scheduled and rendered",
+                name = "blind transmission prefixes and addressees are rendered",
                 parameters = mapOf(
                     "failure-mode" to "receiver-failure",
-                    "blind-message" to "twice-transmitted",
-                    "schedule" to "next-intended-transmission",
+                    "rendering" to "receiver-failure-prefix",
+                    "structured-branch" to "not-rendered",
                 ),
             ) {
-                hit("blind-transmission-scheduler-and-rendering-required")
+                hit("blind-transmission-rendered-phraseology-required")
                 modelGap(
-                    "The sim has no blind-transmission mode, rendered TRANSMITTING BLIND or receiver-" +
-                        "failure prefix, addressee inclusion policy, complete-repetition scheduler, next-" +
-                        "transmission timing state, or communications-failure continuation-intention payload.",
+                    "The sim has structured blind-transmission mode, repetition, addressee, schedule, and " +
+                        "continuation-intention evidence, but no rendered TRANSMITTING BLIND, addressee, " +
+                        "or receiver-failure phraseology evidence.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()
     }
 
     @Test
-    fun `ssr and blind clearance source units report missing emergency code and clearance prohibition`() {
+    fun `annex ten communications failure source unit reports missing conformance model`() {
         sourceUnitSpec("icao9432-ssr-blind-clearance-model-gaps") {
-            title("SSR and blind-clearance claims require radio-failure code state and clearance prohibition")
+            title("Annex 10 communications-failure claims require a conformance model")
             sourceUnits(chunk08SsrAndBlindClearanceRefs)
-            domain("surveillance-code", setOf("7600-radio-failure", "annex10-general-rules"))
-            domain("blind-clearance", setOf("prohibited", "originator-request-exception"))
-            domain("equipment-state", setOf("ssr-equipped", "not-modelled"))
+            domain("external-standard", setOf("annex-10-volume-ii"))
+            domain("communications-failure-procedure", setOf("general-rules"))
+            domain("coverage-surface", setOf("local-projection", "annex-conformance"))
 
             partition(
-                name = "radio failure selects 7600 and blind clearances stay prohibited",
+                name = "local communications-failure projection does not prove Annex 10 conformance",
                 parameters = mapOf(
-                    "surveillance-code" to "7600-radio-failure",
-                    "blind-clearance" to "prohibited",
-                    "equipment-state" to "ssr-equipped",
+                    "external-standard" to "annex-10-volume-ii",
+                    "communications-failure-procedure" to "general-rules",
+                    "coverage-surface" to "annex-conformance",
                 ),
             ) {
-                hit("ssr-code-and-blind-clearance-prohibition-required")
+                hit("annex-ten-communications-failure-conformance-required")
                 modelGap(
-                    "The sim has no radio-failure SSR 7600 state, no Annex 10 communications-failure " +
-                        "conformance model, and no blind-clearance prohibition with originator-request " +
-                        "exception.",
+                    "The local communications-failure projection covers selected ICAO 9432 structured " +
+                        "branches but does not model or assert Annex 10 Volume II conformance.",
                 )
             }
         }.assertSatisfied().assertHasModelGap()
