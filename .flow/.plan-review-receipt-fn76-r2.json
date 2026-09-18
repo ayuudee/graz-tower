@@ -1,0 +1,12 @@
+{
+  "type": "plan_review",
+  "id": "fn-76-icao-9432-phrase-1-runway-number",
+  "mode": "codex",
+  "verdict": "SHIP",
+  "session_id": "01a0b645-9411-73c0-b239-82321bd2b7cd",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T20:47:06.816059Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b645-9411-73c0-b239-82321bd2b7cd\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"No blocking issues found. The epic and task specs line up cleanly: the source ref, catalog inclusion, source-backed sim evidence, explicit branch-declaration limitation, chunk 04 doc count changes, manifest, and \u201cdo not move `13264...`\u201d constraint are all represented consistently.\\n\\nA couple of FYI implementation watchpoints, not plan blockers:\\n\\n- The new test will need `RunwayId` imported in `Icao9432PhraseologyEvidenceTest`.\\n- Be explicit in the test source comment/name that `several-runways-in-use=true` and `confusion-risk=true` are declared sample scope, because the DSL\u2019s `sample(...)` API does not encode that distinction structurally.\\n- If adding the phraseology ref to `Chunk04ScenarioItems` feels semantically off, renaming/splitting that aggregate could be cleaner, but the requested catalog path is feasible as-is.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":52687,\"cached_input_tokens\":9600,\"cache_write_input_tokens\":0,\"output_tokens\":714,\"reasoning_output_tokens\":516}}\n"
+}

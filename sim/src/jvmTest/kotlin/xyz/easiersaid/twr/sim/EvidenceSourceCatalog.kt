@@ -187,8 +187,14 @@ object ICAO9432 {
             claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
         )
 
+        val RunwayNumberInTakeoffClearance: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef",
+            title = "Take-off clearance states runway number where confusion is possible",
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
+        )
+
         val Chunk04ScenarioItems: Set<EvidenceSourceRef> =
-            setOf(TowerTransferAtHoldingPosition)
+            setOf(TowerTransferAtHoldingPosition, RunwayNumberInTakeoffClearance)
     }
 
     object FinalApproachLanding {

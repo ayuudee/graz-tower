@@ -1,0 +1,14 @@
+{
+  "assignee": null,
+  "claim_note": "",
+  "claimed_at": null,
+  "created_at": "2026-09-18T20:45:15.530292Z",
+  "depends_on": [],
+  "epic": "fn-76-icao-9432-phrase-1-runway-number",
+  "id": "fn-76-icao-9432-phrase-1-runway-number.1",
+  "priority": null,
+  "spec_path": ".flow/tasks/fn-76-icao-9432-phrase-1-runway-number.1.md",
+  "status": "todo",
+  "title": "Close ICAO 9432 \u00a74.5.8 rendered runway-number takeoff clearance row",
+  "updated_at": "2026-09-18T20:49:12.262511Z"
+}

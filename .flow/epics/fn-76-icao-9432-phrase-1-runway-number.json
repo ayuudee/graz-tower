@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-76-icao-9432-phrase-1-runway-number",
+  "completion_review_status": "ship",
+  "completion_reviewed_at": "2026-09-18T20:53:35.701989Z",
+  "created_at": "2026-09-18T20:44:54.747122Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-76-icao-9432-phrase-1-runway-number",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-18T20:47:12.458693Z",
+  "spec_path": ".flow/specs/fn-76-icao-9432-phrase-1-runway-number.md",
+  "status": "done",
+  "title": "ICAO 9432 PHRASE-1 runway-number takeoff clearance evidence",
+  "updated_at": "2026-09-18T20:53:35.813826Z"
+}

@@ -1,0 +1,14 @@
+{
+  "type": "impl_review",
+  "id": "fn-76-icao-9432-phrase-1-runway-number.1",
+  "mode": "codex",
+  "base": "HEAD~1",
+  "verdict": "SHIP",
+  "session_id": "01a0b64a-9150-7a63-a34c-4cddc9c22f84",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-18T20:52:31.531601Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0b64a-9150-7a63-a34c-4cddc9c22f84\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"No blocking issues found.\\n\\nThe changeset matches the spec: the new typed source ref is catalogued and validated, the sim evidence test uses the LOWG trace with declared branch samples and typed `RunwayId(\\\"16C\\\")` phraseology assertion, and the docs/manifest consistently keep `13264a6ac6d529c3` as support-only while moving only `8af22...`.\\n\\nSuppressed findings: none.  \\nClassification counts: 0 introduced, 0 pre_existing.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":66294,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":632,\"reasoning_output_tokens\":516}}\n",
+  "focus": "source-mapped-evidence,phraseology,programme-docs,no-overclaim"
+}

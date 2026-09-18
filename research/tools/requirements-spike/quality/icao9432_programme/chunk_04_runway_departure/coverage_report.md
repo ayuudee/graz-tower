@@ -6,11 +6,11 @@ Chunk: ICAO 9432 runway entry, line-up, and take-off.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 1 |
+| `covered-green` | 2 |
 | `covered-red` | 0 |
 | `model-gap` | 1 |
 | `policy-blocked` | 9 |
-| `phraseology-later` | 8 |
+| `phraseology-later` | 7 |
 
 Chunk 04 now has one configured-policy green row: the LOWG separate
 GROUND/TOWER departure branch is explicitly bound to transfer at the holding
@@ -19,6 +19,12 @@ ICAO 9432 §4.5.1 says "usually", so other service shapes remain policy
 questions. fn-61 adds renderer support for take-off clearance wording, but the
 `13264a6ac6d529c3` source unit remains support-only / review-only rather than
 standalone covered-green.
+
+fn-76 adds a declared-branch rendered phraseology green row for ICAO 9432
+§4.5.8: where several runways are in use and pilot confusion is possible, the
+rendered take-off clearance evidence contains `RUNWAY` plus the active runway
+designator. This does not add a typed operational activation model for detecting
+runway-confusion risk; the branch is declared in the source-backed test samples.
 
 ## Coverage Table
 
@@ -42,7 +48,7 @@ standalone covered-green.
 | `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6b5a0d8b27525cbd` | `phraseology-later` | `PHRASE-1` | Stop-immediately instruction and callsign repeated during take-off roll. |
 | `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::6bee6c63069d8250` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `POLICY-1` | Take-off clearance cancellation may be necessary due traffic / long departure. |
 | `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::81490161201eb712` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `POLICY-1` | It may be necessary to quickly free runway for landing traffic. |
-| `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef` | `phraseology-later` | `PHRASE-1` | Runway number should be stated in take-off clearance where confusion is possible. |
+| `icao9432-extracted::takeoff_procedures_4_5_8_to_4_5_12_en::8af22eb8d9795cef` | `covered-green` declared-branch rendered phraseology | `Icao9432PhraseologyEvidenceTest`; `RenderedPhraseologyTrace` | Runway number should be stated in take-off clearance where confusion is possible. |
 
 ## Verification
 
