@@ -22,6 +22,7 @@ data class EvidenceSourceRecord(
 enum class EvidenceSourceClaimScope {
     StructuralProtocol,
     StructuralEvidenceVocabulary,
+    SyntheticRenderedPhraseologyExample,
     ScenarioBehavior,
     TypedInstructionTraceOnly,
     RenderedPhraseologyTrace,
@@ -431,6 +432,12 @@ object ICAO9432 {
             claimScope = EvidenceSourceClaimScope.StructuralEvidenceVocabulary,
         )
 
+        val ExamplePhraseology: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::7b81f87f5c2b4d75",
+            title = "Essential aerodrome information example phraseology",
+            claimScope = EvidenceSourceClaimScope.SyntheticRenderedPhraseologyExample,
+        )
+
         val OtherPertinentInformation: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::essential_aerodrome_information_4_10_en::c92651071a9c009e",
             title = "Essential aerodrome information includes other pertinent information",
@@ -449,6 +456,7 @@ object ICAO9432 {
                 OtherTemporaryHazards,
                 LightingSystemFailure,
                 SnowSlushOrIce,
+                ExamplePhraseology,
                 OtherPertinentInformation,
             )
     }

@@ -197,6 +197,7 @@ private fun EvidenceAuditResult.applicability(): String =
     when (claimKind) {
         EvidenceClaimKind.StructuralProtocolRequirement -> "structural-protocol"
         EvidenceClaimKind.StructuralEvidenceVocabulary -> "structural-evidence-vocabulary"
+        EvidenceClaimKind.SyntheticRenderedPhraseologyExample -> "synthetic-rendered-phraseology-example"
         EvidenceClaimKind.SimObservedSourceBehaviour -> "sim-observed-source"
         EvidenceClaimKind.GoldenProjectBehaviour -> "project-golden"
         EvidenceClaimKind.Regression -> "project-regression"
@@ -209,8 +210,23 @@ private fun EvidenceAuditResult.activationStatus(): String =
         activationFactIds.isNotEmpty() -> "activated"
         outcome is EvidenceAuditOutcome.ExpectedGap -> "typed-gap"
         outcome is EvidenceAuditOutcome.Vacuous -> "vacuous"
-        sources.isNotEmpty() && claimKind == EvidenceClaimKind.SimObservedSourceBehaviour -> "missing"
+        sources.isNotEmpty() && claimKind.requiresActivatedEvidenceFacts() -> "missing"
         else -> "not-required"
+    }
+
+private fun EvidenceClaimKind.requiresActivatedEvidenceFacts(): Boolean =
+    when (this) {
+        EvidenceClaimKind.StructuralEvidenceVocabulary,
+        EvidenceClaimKind.SyntheticRenderedPhraseologyExample,
+        EvidenceClaimKind.SimObservedSourceBehaviour,
+        -> true
+
+        EvidenceClaimKind.StructuralProtocolRequirement,
+        EvidenceClaimKind.GoldenProjectBehaviour,
+        EvidenceClaimKind.Regression,
+        EvidenceClaimKind.Invariant,
+        EvidenceClaimKind.ExpectedModelProjectionGap,
+        -> false
     }
 
 private fun EvidenceAuditResult.adequacy(): String =
@@ -222,5 +238,6 @@ private fun EvidenceAuditResult.adequacy(): String =
         activationFactIds.isNotEmpty() -> "activated-facts-present"
         claimKind == EvidenceClaimKind.StructuralProtocolRequirement -> "structural-only"
         claimKind == EvidenceClaimKind.StructuralEvidenceVocabulary -> "structural-vocabulary"
+        claimKind == EvidenceClaimKind.SyntheticRenderedPhraseologyExample -> "synthetic-rendered-example"
         else -> "not-source-backed"
     }

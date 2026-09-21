@@ -76,6 +76,7 @@ class EvidenceReportWriterTest {
         assertEquals("9432", generated.getValue("seed").jsonPrimitive.content)
         assertNotNull(generated["sampleIndex"])
         assertNotNull(generated["partition"])
+        assertEquals("not-required", protocolCase.getValue("activation").jsonPrimitive.content)
     }
 
     @Test
@@ -98,6 +99,11 @@ class EvidenceReportWriterTest {
                 cites(ICAO9432.Taxi.HoldingPointLimit)
                 expect { pass("bad source case") }
             }
+
+            sourceRenderedExample("missing synthetic activation") {
+                cites(ICAO9432.AerodromeInformation.ExamplePhraseology)
+                expect { pass("bad synthetic source case") }
+            }
         }
 
         val files = EvidenceReportWriter.write(gapReport, outputDir)
@@ -105,6 +111,8 @@ class EvidenceReportWriterTest {
             .jsonObject.getValue("cases").jsonArray.map { element -> element.jsonObject }
         val gapCase = cases.first { case -> case.getValue("caseId").jsonPrimitive.content == "expected aerodrome information gap" }
         val missingActivation = cases.first { case -> case.getValue("caseId").jsonPrimitive.content == "missing activation" }
+        val missingSyntheticActivation =
+            cases.first { case -> case.getValue("caseId").jsonPrimitive.content == "missing synthetic activation" }
 
         assertEquals("expected_gap", gapCase.getValue("outcome").jsonPrimitive.content)
         assertEquals("typed-gap", gapCase.getValue("activation").jsonPrimitive.content)
@@ -114,5 +122,7 @@ class EvidenceReportWriterTest {
         )
         assertEquals("fail", missingActivation.getValue("outcome").jsonPrimitive.content)
         assertEquals("missing", missingActivation.getValue("activation").jsonPrimitive.content)
+        assertEquals("fail", missingSyntheticActivation.getValue("outcome").jsonPrimitive.content)
+        assertEquals("missing", missingSyntheticActivation.getValue("activation").jsonPrimitive.content)
     }
 }

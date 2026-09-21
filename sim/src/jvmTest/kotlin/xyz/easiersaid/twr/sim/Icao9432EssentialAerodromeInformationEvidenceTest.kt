@@ -2,6 +2,8 @@ package xyz.easiersaid.twr.sim
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.RunwayId
 
 class Icao9432EssentialAerodromeInformationEvidenceTest {
     @Test
@@ -157,6 +159,76 @@ class Icao9432EssentialAerodromeInformationEvidenceTest {
         report.assertNoFailures()
         assertEquals(
             setOf(EvidenceClaimKind.StructuralEvidenceVocabulary),
+            report.results.map { result -> result.claimKind }.toSet(),
+        )
+    }
+
+    @Test
+    fun `synthetic rendered essential aerodrome information examples cover ICAO 9432 section 4_10 phraseology`() {
+        val report = simEvidence("icao9432-essential-aerodrome-information-example-phraseology") {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = "icao9432-essential-aerodrome-information-example-phraseology",
+                    payloads = listOf(
+                        EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology(
+                            template = RenderedEssentialAerodromeInformationPhraseologyTemplate
+                                .CautionConstructionWorkAdjacentToGate,
+                            tokens = listOf(
+                                EssentialAerodromeInformationPhraseologyToken
+                                    .AircraftCallsign(AircraftId("FASTAIR 345")),
+                                EssentialAerodromeInformationPhraseologyToken.Caution,
+                                EssentialAerodromeInformationPhraseologyToken.ConstructionWork,
+                                EssentialAerodromeInformationPhraseologyToken.AdjacentTo,
+                                EssentialAerodromeInformationPhraseologyToken.Gate("37"),
+                            ),
+                            text = RenderedPhraseText(
+                                "FASTAIR 345 CAUTION CONSTRUCTION WORK ADJACENT TO GATE 37",
+                            ),
+                        ),
+                        EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology(
+                            template = RenderedEssentialAerodromeInformationPhraseologyTemplate
+                                .CentreLineTaxiwayLightingUnserviceable,
+                            tokens = listOf(
+                                EssentialAerodromeInformationPhraseologyToken.CentreLine,
+                                EssentialAerodromeInformationPhraseologyToken.TaxiwayLighting,
+                                EssentialAerodromeInformationPhraseologyToken.Unserviceable,
+                            ),
+                            text = RenderedPhraseText("CENTRE LINE TAXIWAY LIGHTING UNSERVICEABLE"),
+                        ),
+                        EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology(
+                            template = RenderedEssentialAerodromeInformationPhraseologyTemplate.RunwayConditionReport,
+                            tokens = listOf(
+                                EssentialAerodromeInformationPhraseologyToken.RunwayConditions,
+                                EssentialAerodromeInformationPhraseologyToken.RunwayDesignator(RunwayId("09")),
+                                EssentialAerodromeInformationPhraseologyToken.AvailableWidth,
+                                EssentialAerodromeInformationPhraseologyToken.WidthMetres(32),
+                                EssentialAerodromeInformationPhraseologyToken.CoveredWithThinPatchesOfIce,
+                                EssentialAerodromeInformationPhraseologyToken.BrakingActionPoor,
+                            ),
+                            text = RenderedPhraseText(
+                                "RUNWAY CONDITIONS 09: AVAILABLE WIDTH 32 METRES, " +
+                                    "COVERED WITH THIN PATCHES OF ICE, BRAKING ACTION POOR",
+                            ),
+                        ),
+                    ),
+                    origin = EvidenceFactOrigin.SyntheticProjection,
+                    diagnostic = "Synthetic rendered example phraseology facts; not live controller projection",
+                )
+            }
+
+            sourceRenderedExample("essential-information-example-phraseology") {
+                cites(ICAO9432.AerodromeInformation.ExamplePhraseology)
+                sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §4.10")
+                sample("claim-scope", "synthetic rendered example phraseology")
+                expect {
+                    essentialAerodromeInformationPhraseology().exampleBlock()
+                }
+            }
+        }
+
+        report.assertNoFailures()
+        assertEquals(
+            setOf(EvidenceClaimKind.SyntheticRenderedPhraseologyExample),
             report.results.map { result -> result.claimKind }.toSet(),
         )
     }

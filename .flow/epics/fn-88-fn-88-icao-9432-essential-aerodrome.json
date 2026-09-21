@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-88-fn-88-icao-9432-essential-aerodrome",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
+  "created_at": "2026-09-21T13:51:33.714515Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-88-fn-88-icao-9432-essential-aerodrome",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-21T13:55:00.151866Z",
+  "spec_path": ".flow/specs/fn-88-fn-88-icao-9432-essential-aerodrome.md",
+  "status": "done",
+  "title": "fn-88 ICAO 9432 essential aerodrome information example phraseology",
+  "updated_at": "2026-09-21T14:09:24.685741Z"
+}

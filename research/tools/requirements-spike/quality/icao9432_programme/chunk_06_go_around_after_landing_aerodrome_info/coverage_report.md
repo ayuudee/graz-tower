@@ -9,20 +9,22 @@ information.
 |---|---:|
 | `covered-green` | 4 |
 | `covered-structural` | 8 |
+| `covered-synthetic rendered example phraseology` | 1 |
 | `covered-red` | 0 |
 | `model-gap` | 1 |
 | `model-gap` + `policy-blocked` | 3 |
 | `policy-blocked` | 3 |
 | `split residual` | 0 |
-| `phraseology-later` | 1 |
+| `phraseology-later` | 0 |
 
 The covered-green source units are the VFR go-around default, the rendered
 after-landing first-right / contact-ground wording branch, the rendered
 after-landing runway-vacated / taxi-to-stand wording branch, and the rendered
 after-landing helicopter air-taxi wording branch. The
 essential-aerodrome-information category/definition rows are covered only as
-structural evidence vocabulary. They do not claim live sim projection, timing,
-receipt, omission policy, open pertinence, or rendered phraseology coverage.
+structural evidence vocabulary. The §4.10 example phraseology row is covered
+only as synthetic rendered-example evidence. These rows do not claim live sim
+projection, timing, receipt, omission policy, or open pertinence.
 
 ## Coverage Table
 
@@ -43,7 +45,7 @@ receipt, omission policy, open pertinence, or rendered phraseology coverage.
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::502221a46fcc2879` | `covered-structural` | `Icao9432EssentialAerodromeInformationEvidenceTest`; structural evidence vocabulary | Essential aerodrome information includes rough or broken movement-area surfaces. |
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::66196c8442372a96` | `covered-structural` | `Icao9432EssentialAerodromeInformationEvidenceTest`; structural evidence vocabulary | Essential aerodrome information includes construction or maintenance work on or adjacent to the movement area. |
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::736cc42a00337fee` | `covered-structural` | `Icao9432EssentialAerodromeInformationEvidenceTest`; structural evidence vocabulary | Essential aerodrome information includes snow banks or drifts adjacent to movement areas. |
-| `icao9432-extracted::essential_aerodrome_information_4_10_en::7b81f87f5c2b4d75` | `phraseology-later` | `PHRASE-1` | Example essential-aerodrome-information phraseology. |
+| `icao9432-extracted::essential_aerodrome_information_4_10_en::7b81f87f5c2b4d75` | `covered-synthetic rendered example phraseology` | `Icao9432EssentialAerodromeInformationEvidenceTest` | Synthetic rendered-example evidence covers the three ICAO §4.10 example strings for construction caution, taxiway lighting unserviceability, and runway conditions. |
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::9b6c9dbc2af2b5b0` | `covered-structural` | `Icao9432EssentialAerodromeInformationEvidenceTest`; structural evidence vocabulary | Essential aerodrome information includes other temporary hazards, including parked aircraft and birds on the ground or in the air. |
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::a531dea421075380` | `covered-structural` | `Icao9432EssentialAerodromeInformationEvidenceTest`; structural evidence vocabulary | Essential aerodrome information includes failure or irregular operation of aerodrome lighting systems. |
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::c874e24413f4cdee` | `covered-structural` | `Icao9432EssentialAerodromeInformationEvidenceTest`; structural evidence vocabulary | Essential aerodrome information includes snow, slush, or ice on runway, taxiway, or apron. |
@@ -57,10 +59,10 @@ receipt, omission policy, open pertinence, or rendered phraseology coverage.
   by line wrapping, list-item splitting, or multi-line phraseology examples in
   the extracted text.
 - Verification commands:
-  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432PhraseologyEvidenceTest' --tests '*.EvidenceDslTest' --tests '*.EvidenceFactsTest' --tests '*.EvidenceSourceCatalogTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest'`.
+  `./gradlew-nix :sim:jvmTest --tests '*.Icao9432EssentialAerodromeInformationEvidenceTest' --tests '*.EvidenceDslTest' --tests '*.EvidenceSourceCatalogTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest'`.
   `./gradlew-nix detekt`.
   `./gradlew-nix :protocol:allTests :core:allTests :sim:jvmTest`.
-  `scripts/ralph/flowctl validate --epic fn-87-icao-9432-after-landing-helicopter-air --json`.
+  `scripts/ralph/flowctl validate --epic fn-88-fn-88-icao-9432-essential-aerodrome --json`.
   `git diff --check`.
 
 ## Review Considerations

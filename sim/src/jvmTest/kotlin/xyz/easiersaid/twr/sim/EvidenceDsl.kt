@@ -38,6 +38,7 @@ import xyz.easiersaid.twr.protocol.requiredReadbackAtoms
 enum class EvidenceClaimKind {
     StructuralProtocolRequirement,
     StructuralEvidenceVocabulary,
+    SyntheticRenderedPhraseologyExample,
     SimObservedSourceBehaviour,
     GoldenProjectBehaviour,
     Regression,
@@ -212,6 +213,15 @@ class SimEvidenceBuilder internal constructor(
         build: AuditEvidenceCaseBuilder.() -> Unit,
     ) {
         cases += AuditEvidenceCaseBuilder(id = id, claimKind = EvidenceClaimKind.StructuralEvidenceVocabulary)
+            .apply(build)
+            .toCase(requireSources = true)
+    }
+
+    fun sourceRenderedExample(
+        id: String,
+        build: AuditEvidenceCaseBuilder.() -> Unit,
+    ) {
+        cases += AuditEvidenceCaseBuilder(id = id, claimKind = EvidenceClaimKind.SyntheticRenderedPhraseologyExample)
             .apply(build)
             .toCase(requireSources = true)
     }
@@ -455,6 +465,12 @@ class EvidenceExpectContext internal constructor(
 
     fun essentialAerodromeInformation(): AuditEssentialAerodromeInformationSubject =
         AuditEssentialAerodromeInformationSubject(
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
+
+    fun essentialAerodromeInformationPhraseology(): AuditEssentialAerodromeInformationPhraseologySubject =
+        AuditEssentialAerodromeInformationPhraseologySubject(
             facts = facts.orderedFacts(),
             activate = { factId -> activated += factId },
         )
@@ -734,6 +750,91 @@ class AuditEssentialAerodromeInformationSubject internal constructor(
         }
     }
 }
+
+class AuditEssentialAerodromeInformationPhraseologySubject internal constructor(
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun exampleBlock(): EvidenceAuditOutcome {
+        val phraseologyFacts = facts.filter { fact ->
+            fact.payload is EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology
+        }
+        if (phraseologyFacts.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing rendered essential-aerodrome-information example phraseology",
+                evidence = emptyList(),
+            )
+        }
+        phraseologyFacts.forEach { fact -> activate(fact.id) }
+        return if (phraseologyFacts.map { fact -> fact.payload }.toList() == expectedPayloads) {
+            EvidenceAuditOutcome.Pass(
+                phraseologyFacts.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology
+                    "${payload.template}:${payload.text.value}@${fact.provenance.sequence.value}"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Rendered essential-aerodrome-information examples did not match the exact source block",
+                evidence = phraseologyFacts.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology
+                    "${payload.template}:${payload.tokens}:${payload.text.value}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
+    }
+
+    private companion object {
+        val expectedPayloads: List<EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology> =
+            listOf(
+                essentialCautionConstructionWorkExample(),
+                essentialCentreLineLightingUnserviceableExample(),
+                essentialRunwayConditionExample(),
+            )
+    }
+}
+
+fun essentialCautionConstructionWorkExample(): EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology =
+    EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology(
+        template = RenderedEssentialAerodromeInformationPhraseologyTemplate.CautionConstructionWorkAdjacentToGate,
+        tokens = listOf(
+            EssentialAerodromeInformationPhraseologyToken.AircraftCallsign(AircraftId("FASTAIR 345")),
+            EssentialAerodromeInformationPhraseologyToken.Caution,
+            EssentialAerodromeInformationPhraseologyToken.ConstructionWork,
+            EssentialAerodromeInformationPhraseologyToken.AdjacentTo,
+            EssentialAerodromeInformationPhraseologyToken.Gate("37"),
+        ),
+        text = RenderedPhraseText("FASTAIR 345 CAUTION CONSTRUCTION WORK ADJACENT TO GATE 37"),
+    )
+
+fun essentialCentreLineLightingUnserviceableExample():
+    EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology =
+    EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology(
+        template = RenderedEssentialAerodromeInformationPhraseologyTemplate.CentreLineTaxiwayLightingUnserviceable,
+        tokens = listOf(
+            EssentialAerodromeInformationPhraseologyToken.CentreLine,
+            EssentialAerodromeInformationPhraseologyToken.TaxiwayLighting,
+            EssentialAerodromeInformationPhraseologyToken.Unserviceable,
+        ),
+        text = RenderedPhraseText("CENTRE LINE TAXIWAY LIGHTING UNSERVICEABLE"),
+    )
+
+fun essentialRunwayConditionExample(): EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology =
+    EvidenceFactPayload.RenderedEssentialAerodromeInformationPhraseology(
+        template = RenderedEssentialAerodromeInformationPhraseologyTemplate.RunwayConditionReport,
+        tokens = listOf(
+            EssentialAerodromeInformationPhraseologyToken.RunwayConditions,
+            EssentialAerodromeInformationPhraseologyToken.RunwayDesignator(RunwayId("09")),
+            EssentialAerodromeInformationPhraseologyToken.AvailableWidth,
+            EssentialAerodromeInformationPhraseologyToken.WidthMetres(32),
+            EssentialAerodromeInformationPhraseologyToken.CoveredWithThinPatchesOfIce,
+            EssentialAerodromeInformationPhraseologyToken.BrakingActionPoor,
+        ),
+        text = RenderedPhraseText(
+            "RUNWAY CONDITIONS 09: AVAILABLE WIDTH 32 METRES, " +
+                "COVERED WITH THIN PATCHES OF ICE, BRAKING ACTION POOR",
+        ),
+    )
 
 /**
  * Audit selector over [EvidenceFactPayload.FrequencyTransfer] facts filtered

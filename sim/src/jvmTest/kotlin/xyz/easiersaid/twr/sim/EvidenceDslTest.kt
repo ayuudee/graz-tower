@@ -1278,6 +1278,58 @@ class EvidenceDslTest {
         assertTrue(report.results[1].activationFactIds.isNotEmpty())
     }
 
+    @Test
+    fun `essentialAerodromeInformationPhraseology selector matches exact synthetic example block`() {
+        val expected = listOf(
+            essentialCautionConstructionWorkExample(),
+            essentialCentreLineLightingUnserviceableExample(),
+            essentialRunwayConditionExample(),
+        )
+        val unrelated = essentialInformationPayload(
+            category = EssentialAerodromeInformationCategory.WaterOnMovementArea,
+            domain = EssentialAerodromeInformationDomain.MovementArea,
+            facets = setOf(EssentialAerodromeInformationFacet.Runway),
+            detail = "standing water on RWY 16C",
+        )
+
+        val passReport = essentialPhraseologyReport(
+            scenarioId = "essential-phraseology-pass",
+            payloads = listOf(unrelated) + expected,
+        )
+        assertTrue(passReport.results.single().outcome is EvidenceAuditOutcome.Pass)
+        assertEquals(3, passReport.results.single().activationFactIds.size)
+
+        val failingCases = listOf(
+            "absent" to emptyList(),
+            "missing-example" to expected.take(2),
+            "wrong-order" to listOf(expected[1], expected[0], expected[2]),
+            "wrong-template" to listOf(
+                expected[0].copy(template = RenderedEssentialAerodromeInformationPhraseologyTemplate.RunwayConditionReport),
+                expected[1],
+                expected[2],
+            ),
+            "wrong-text" to listOf(
+                expected[0].copy(text = RenderedPhraseText("FASTAIR 345 CAUTION WORK ADJACENT TO GATE 37")),
+                expected[1],
+                expected[2],
+            ),
+            "malformed-tokens" to listOf(
+                expected[0].copy(tokens = expected[0].tokens.dropLast(1)),
+                expected[1],
+                expected[2],
+            ),
+            "extra-duplicate" to (expected + expected[0]),
+        )
+
+        failingCases.forEach { (scenario, payloads) ->
+            val report = essentialPhraseologyReport(
+                scenarioId = "essential-phraseology-$scenario",
+                payloads = payloads,
+            )
+            assertTrue(report.results.single().outcome is EvidenceAuditOutcome.Fail, scenario)
+        }
+    }
+
     private fun essentialInformationPayload(
         category: EssentialAerodromeInformationCategory,
         domain: EssentialAerodromeInformationDomain,
@@ -1291,6 +1343,22 @@ class EvidenceDslTest {
             safetyRelevance = EssentialAerodromeInformationSafetyRelevance.NecessaryForSafeOperation,
             detail = AerodromeInformationDetail(detail),
         )
+
+    private fun essentialPhraseologyReport(
+        scenarioId: String,
+        payloads: List<EvidenceFactPayload>,
+    ): EvidenceAuditReport =
+        simEvidence(scenarioId) {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = scenarioId,
+                    payloads = payloads,
+                )
+            }
+            invariant("essential aerodrome information phraseology") {
+                expect { essentialAerodromeInformationPhraseology().exampleBlock() }
+            }
+        }
 
     private fun renderedPhraseologyPayload(
         aircraft: AircraftId,

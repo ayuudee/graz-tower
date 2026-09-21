@@ -25,6 +25,7 @@ import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.Request
 import xyz.easiersaid.twr.protocol.RequestFrequencyChange
 import xyz.easiersaid.twr.protocol.RoleName
+import xyz.easiersaid.twr.protocol.RunwayId
 import xyz.easiersaid.twr.protocol.SayAgain
 import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimTime
@@ -152,6 +153,18 @@ sealed interface EvidenceFactPayload {
         }
 
         override val kind: EvidenceFactKind = EvidenceFactKind.EssentialAerodromeInformation
+    }
+
+    data class RenderedEssentialAerodromeInformationPhraseology(
+        val template: RenderedEssentialAerodromeInformationPhraseologyTemplate,
+        val tokens: List<EssentialAerodromeInformationPhraseologyToken>,
+        val text: RenderedPhraseText,
+    ) : EvidenceFactPayload {
+        init {
+            require(tokens.isNotEmpty()) { "rendered essential aerodrome information must carry tokens" }
+        }
+
+        override val kind: EvidenceFactKind = EvidenceFactKind.RenderedEssentialAerodromeInformationPhraseology
     }
 
     data class CriticalPhaseWindow(
@@ -383,6 +396,7 @@ enum class EvidenceFactKind {
     AircraftSummary,
     AerodromeInformation,
     EssentialAerodromeInformation,
+    RenderedEssentialAerodromeInformationPhraseology,
     CriticalPhaseWindow,
     CriticalPhaseTransmission,
     FrequencyTransfer,
@@ -464,6 +478,29 @@ enum class EssentialAerodromeInformationFacet {
 
 enum class EssentialAerodromeInformationSafetyRelevance {
     NecessaryForSafeOperation,
+}
+
+enum class RenderedEssentialAerodromeInformationPhraseologyTemplate {
+    CautionConstructionWorkAdjacentToGate,
+    CentreLineTaxiwayLightingUnserviceable,
+    RunwayConditionReport,
+}
+
+sealed interface EssentialAerodromeInformationPhraseologyToken {
+    data class AircraftCallsign(val aircraftId: AircraftId) : EssentialAerodromeInformationPhraseologyToken
+    data class Gate(val value: String) : EssentialAerodromeInformationPhraseologyToken
+    data class RunwayDesignator(val runway: RunwayId) : EssentialAerodromeInformationPhraseologyToken
+    data class WidthMetres(val metres: Int) : EssentialAerodromeInformationPhraseologyToken
+    data object Caution : EssentialAerodromeInformationPhraseologyToken
+    data object ConstructionWork : EssentialAerodromeInformationPhraseologyToken
+    data object AdjacentTo : EssentialAerodromeInformationPhraseologyToken
+    data object CentreLine : EssentialAerodromeInformationPhraseologyToken
+    data object TaxiwayLighting : EssentialAerodromeInformationPhraseologyToken
+    data object Unserviceable : EssentialAerodromeInformationPhraseologyToken
+    data object RunwayConditions : EssentialAerodromeInformationPhraseologyToken
+    data object AvailableWidth : EssentialAerodromeInformationPhraseologyToken
+    data object CoveredWithThinPatchesOfIce : EssentialAerodromeInformationPhraseologyToken
+    data object BrakingActionPoor : EssentialAerodromeInformationPhraseologyToken
 }
 
 data class AerodromeInformationDetail(
