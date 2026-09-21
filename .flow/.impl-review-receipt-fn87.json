@@ -1,0 +1,16 @@
+{
+  "type": "impl_review",
+  "id": "fn-87-icao-9432-after-landing-helicopter-air.1",
+  "mode": "codex",
+  "base": "origin/main",
+  "verdict": "NEEDS_WORK",
+  "session_id": "01a0c432-ce01-7402-805c-f19c2b3d6081",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-21T13:42:04.907703Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0c432-ce01-7402-805c-f19c2b3d6081\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"I\u2019ll treat this strictly as a review of the embedded diff, per the review packet. I\u2019m walking the changed phraseology path from renderer to evidence selector to source catalog/docs, and I\u2019ll only block on issues introduced by this changeset.\"}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_1\",\"type\":\"agent_message\",\"text\":\"- **Severity**: Minor\\n- **Confidence**: 100\\n- **Classification**: introduced\\n- **File:Line**: `research/tools/requirements-spike/quality/icao9432_programme/chunk_06_go_around_after_landing_aerodrome_info/expected_gaps.md:17`\\n- **Problem**: The expected-gaps ledger still says `phraseology-later` has 2 units, and the summary still lists \u201chelicopter air-taxi phraseology\u201d as a remaining gap even though this changeset removes that row and marks `203b53733da22603` covered elsewhere. This violates the task\u2019s requirement that chunk docs be updated consistently.\\n- **Suggestion**: Change the summary count to 1 and remove \u201chelicopter air-taxi phraseology\u201d from the remaining-gaps sentence around lines 21-24.\\n\\n## Pre-existing issues (not blocking this verdict)\\n\\nNone.\\n\\nClassification counts: 1 introduced, 0 pre_existing.\\n\\n<verdict>NEEDS_WORK</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":131175,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":3384,\"reasoning_output_tokens\":3106}}\n",
+  "focus": "Review fn-87 helicopter air-taxi rendered phraseology coverage for ICAO 9432 \u00a74.9, including renderer narrowness, exact text/token selector evidence, source catalog/docs consistency, and regressions to existing phraseology selectors.",
+  "introduced_count": 1,
+  "pre_existing_count": 0
+}

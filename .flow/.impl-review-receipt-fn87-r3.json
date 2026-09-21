@@ -1,0 +1,14 @@
+{
+  "type": "impl_review",
+  "id": "fn-87-icao-9432-after-landing-helicopter-air.1",
+  "mode": "codex",
+  "base": "origin/main",
+  "verdict": "SHIP",
+  "session_id": "01a0c439-d158-73f3-9818-9c4d41231c8d",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-21T13:48:55.323964Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0c439-d158-73f3-9818-9c4d41231c8d\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"No blocking introduced issues found.\\n\\nThe implementation matches the fn-87 scope: narrow `AirTaxiTo` rendering, distinct controller/readback templates, exact text/token/obligation checks, adjacent same-aircraft selector behavior, unsupported variant evidence, catalog/docs/manifest updates, and the completion-review gaps appear fixed in the embedded files.\\n\\n## Pre-existing issues (not blocking this verdict)\\n\\nNone.\\n\\nSuppressed findings: none.\\n\\nClassification counts: 0 introduced, 0 pre_existing.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":136080,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":627,\"reasoning_output_tokens\":516}}\n",
+  "focus": "Review amended fn-87 after completion-review fixes: helicopter air-taxi rendered phraseology, adapter unsupported evidence test, docs consistency, and no regressions to existing phraseology selectors."
+}

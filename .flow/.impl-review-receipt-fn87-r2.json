@@ -1,0 +1,14 @@
+{
+  "type": "impl_review",
+  "id": "fn-87-icao-9432-after-landing-helicopter-air.1",
+  "mode": "codex",
+  "base": "origin/main",
+  "verdict": "SHIP",
+  "session_id": "01a0c434-358a-7543-a356-c2596b3ed8cd",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-21T13:42:48.002579Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0c434-358a-7543-a356-c2596b3ed8cd\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"No blocking introduced issues found.\\n\\n## Pre-existing Issues (Not Blocking This Verdict)\\n\\nNone.\\n\\nSuppressed findings: none.\\nClassification counts: 0 introduced, 0 pre_existing.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":131883,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":567,\"reasoning_output_tokens\":516}}\n",
+  "focus": "Review amended fn-87 helicopter air-taxi rendered phraseology coverage for ICAO 9432 \u00a74.9, including renderer narrowness, exact text/token selector evidence, source catalog/docs consistency, and regressions to existing phraseology selectors."
+}

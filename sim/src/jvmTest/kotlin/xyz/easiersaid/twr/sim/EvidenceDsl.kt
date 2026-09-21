@@ -1229,6 +1229,7 @@ class AuditRenderedPhraseologySubject internal constructor(
             setOf(
                 RenderedPhraseologyTemplate.ContactFrequencyInstruction,
                 RenderedPhraseologyTemplate.AfterLandingVacateViaInstruction,
+                RenderedPhraseologyTemplate.AirTaxiToInstruction,
                 RenderedPhraseologyTemplate.LineUpAndWaitInstruction,
                 RenderedPhraseologyTemplate.TakeoffClearance,
                 RenderedPhraseologyTemplate.TouchAndGoClearance,
@@ -1285,6 +1286,14 @@ class AuditRenderedPilotReadbackPhraseologySubject internal constructor(
             expectedTokens = routeTokens(destination = destination, via = via) +
                 PhraseologyToken.AircraftCallsign(aircraftId),
             failReason = "Missing rendered taxi-route readback phraseology for ${aircraftId.value} to ${destination.value}",
+        )
+
+    fun airTaxiRouteReadback(): EvidenceAuditOutcome =
+        readbackPhraseologyOutcome(
+            template = RenderedPhraseologyTemplate.AirTaxiRouteReadback,
+            expectedObligationKinds = readbackObligations,
+            expectedTokens = airTaxiRouteReadbackTokens(aircraftId),
+            failReason = "Missing rendered air-taxi route readback phraseology for ${aircraftId.value}",
         )
 
     fun lineUpReadbackTerminatesWithCallsign(): EvidenceAuditOutcome =
@@ -1565,6 +1574,53 @@ class AuditAfterLandingPhraseologySubject internal constructor(
         }
     }
 
+    fun helicopterAirTaxiToStandExchange(): EvidenceAuditOutcome {
+        val instructionFacts = renderedController(RenderedPhraseologyTemplate.AirTaxiToInstruction)
+        val readbackFacts = renderedReadbacks(RenderedPhraseologyTemplate.AirTaxiRouteReadback)
+        val consultedFacts = instructionFacts + readbackFacts
+        if (instructionFacts.isEmpty() || readbackFacts.isEmpty()) {
+            consultedFacts.forEach { fact -> activate(fact.id) }
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing rendered after-landing helicopter air-taxi phraseology for ${aircraftId.value}",
+                evidence = airTaxiExchangeDiagnostics(instructionFacts, readbackFacts),
+            )
+        }
+
+        val malformed = consultedFacts.filterNot { fact -> fact.hasValidAirTaxiExchangeShape() }
+        val projection = renderedControllerAndReadbackProjection()
+        val matching = projection.windowed(AirTaxiExchangeFactCount).firstOrNull { window ->
+            window[0].isExpectedAirTaxiInstruction() &&
+                window[1].isExpectedAirTaxiReadback()
+        }
+
+        return if (matching == null) {
+            consultedFacts.forEach { fact -> activate(fact.id) }
+            val reason = if (malformed.isNotEmpty()) {
+                "Malformed rendered after-landing helicopter air-taxi phraseology for ${aircraftId.value}"
+            } else {
+                "Rendered after-landing helicopter air-taxi phraseology did not appear as adjacent instruction/readback facts"
+            }
+            EvidenceAuditOutcome.Fail(
+                reason = reason,
+                evidence = airTaxiExchangeDiagnostics(instructionFacts, readbackFacts),
+            )
+        } else {
+            matching.forEach { fact -> activate(fact.id) }
+            EvidenceAuditOutcome.Pass(
+                matching.map { fact ->
+                    val payload = fact.payload
+                    when (payload) {
+                        is EvidenceFactPayload.RenderedPhraseology ->
+                            "${payload.template}:${payload.text.value}@${fact.provenance.sequence.value}"
+                        is EvidenceFactPayload.RenderedPilotReadbackPhraseology ->
+                            "${payload.template}:${payload.text.value}@${fact.provenance.sequence.value}"
+                        else -> "${payload.kind}@${fact.provenance.sequence.value}"
+                    }
+                },
+            )
+        }
+    }
+
     private fun renderedController(template: RenderedPhraseologyTemplate): List<EvidenceFact> =
         facts.filter { fact ->
             val payload = fact.payload as? EvidenceFactPayload.RenderedPhraseology ?: return@filter false
@@ -1626,6 +1682,25 @@ class AuditAfterLandingPhraseologySubject internal constructor(
             payload.text == RenderedPhraseText("FIRST RIGHT ${frequency.mhz} ${aircraftId.value}")
     }
 
+    private fun EvidenceFact.hasValidAirTaxiExchangeShape(): Boolean =
+        isExpectedAirTaxiInstruction() || isExpectedAirTaxiReadback()
+
+    private fun EvidenceFact.isExpectedAirTaxiInstruction(): Boolean {
+        val payload = payload as? EvidenceFactPayload.RenderedPhraseology ?: return false
+        return payload.template == RenderedPhraseologyTemplate.AirTaxiToInstruction &&
+            payload.obligationKinds.containsAll(readbackInstructionObligations) &&
+            payload.tokens == airTaxiInstructionTokens(aircraftId) &&
+            payload.text == RenderedPhraseText("${aircraftId.value} AIR-TAXI TO HELICOPTER STAND")
+    }
+
+    private fun EvidenceFact.isExpectedAirTaxiReadback(): Boolean {
+        val payload = payload as? EvidenceFactPayload.RenderedPilotReadbackPhraseology ?: return false
+        return payload.template == RenderedPhraseologyTemplate.AirTaxiRouteReadback &&
+            payload.obligationKinds.containsAll(readbackObligations) &&
+            payload.tokens == airTaxiRouteReadbackTokens(aircraftId) &&
+            payload.text == RenderedPhraseText("AIR-TAXI TO HELICOPTER STAND ${aircraftId.value}")
+    }
+
     private fun firstRightInstructionTokens(): List<PhraseologyToken> =
         listOf(
             PhraseologyToken.AircraftCallsign(aircraftId),
@@ -1642,6 +1717,15 @@ class AuditAfterLandingPhraseologySubject internal constructor(
             PhraseologyToken.Right,
             PhraseologyToken.FrequencyValue(frequency),
             PhraseologyToken.AircraftCallsign(aircraftId),
+        )
+
+    private fun airTaxiExchangeDiagnostics(
+        instructionFacts: List<EvidenceFact>,
+        readbackFacts: List<EvidenceFact>,
+    ): List<String> =
+        listOf(
+            "airTaxi=${instructionFacts.map { fact -> (fact.payload as EvidenceFactPayload.RenderedPhraseology).tokens }}",
+            "airTaxiReadback=${readbackFacts.map { fact -> (fact.payload as EvidenceFactPayload.RenderedPilotReadbackPhraseology).tokens }}",
         )
 
     private fun firstRightExchangeDiagnostics(
@@ -1675,6 +1759,7 @@ class AuditAfterLandingPhraseologySubject internal constructor(
 
     private companion object {
         const val FirstRightExchangeFactCount = 3
+        const val AirTaxiExchangeFactCount = 2
 
         val readbackInstructionObligations: Set<PhraseologyObligationKind> =
             setOf(
@@ -1835,6 +1920,8 @@ class AuditRenderedVehicleDriverPhraseologySubject internal constructor(
             RenderedPhraseologyTemplate.VehicleTowRequest -> hasVehicleTowRequestShape()
             RenderedPhraseologyTemplate.AfterLandingVacateViaInstruction,
             RenderedPhraseologyTemplate.FirstRightFrequencyReadback,
+            RenderedPhraseologyTemplate.AirTaxiToInstruction,
+            RenderedPhraseologyTemplate.AirTaxiRouteReadback,
             RenderedPhraseologyTemplate.ContactFrequencyInstruction,
             RenderedPhraseologyTemplate.FrequencyReadback,
             RenderedPhraseologyTemplate.TaxiToStandInstruction,
@@ -1983,6 +2070,22 @@ private fun routeTokens(
         listOf(PhraseologyToken.PointName(destination), PhraseologyToken.Via) +
             via.map(PhraseologyToken::PointName)
     }
+
+internal fun airTaxiInstructionTokens(aircraftId: AircraftId): List<PhraseologyToken> =
+    listOf(
+        PhraseologyToken.AircraftCallsign(aircraftId),
+        PhraseologyToken.AirTaxi,
+        PhraseologyToken.To,
+        PhraseologyToken.PointName(HelicopterStandPoint),
+    )
+
+internal fun airTaxiRouteReadbackTokens(aircraftId: AircraftId): List<PhraseologyToken> =
+    listOf(
+        PhraseologyToken.AirTaxi,
+        PhraseologyToken.To,
+        PhraseologyToken.PointName(HelicopterStandPoint),
+        PhraseologyToken.AircraftCallsign(aircraftId),
+    )
 
 private fun EvidenceFactPayload.RenderedPhraseology.taxiRoute(): RenderedTaxiRoute? {
     if (template != RenderedPhraseologyTemplate.TaxiToStandInstruction) return null

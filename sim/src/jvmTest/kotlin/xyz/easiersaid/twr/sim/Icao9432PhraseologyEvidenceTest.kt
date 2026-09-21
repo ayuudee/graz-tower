@@ -10,6 +10,7 @@ import xyz.easiersaid.twr.controller.observe.OutstandingCoordination
 import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
 import xyz.easiersaid.twr.protocol.AircraftId
+import xyz.easiersaid.twr.protocol.AirTaxiTo
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.Frequency
@@ -24,6 +25,7 @@ import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.SimpleElement
 import xyz.easiersaid.twr.protocol.StopImmediately
+import xyz.easiersaid.twr.protocol.TaxiRouteReadback
 import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.protocol.VacateReadback
 import xyz.easiersaid.twr.sim.testing.TransmissionRecord
@@ -118,6 +120,7 @@ class Icao9432PhraseologyEvidenceTest {
                         records = listOf(
                             stopImmediatelyRecord(aircraft),
                             firstRightWhenVacatedRecord(aircraft),
+                            airTaxiToHelicopterStandRecord(aircraft),
                         ),
                     ),
                 )
@@ -419,6 +422,36 @@ class Icao9432PhraseologyEvidenceTest {
         kotlin.test.assertTrue(report.results.single().activationFactIds.isEmpty())
     }
 
+    @Test
+    fun `synthetic helicopter air-taxi branch renders ICAO 9432 wording`() {
+        val aircraft = AircraftId("G-HELI")
+
+        val report = simEvidence("icao9432-rendered-after-landing-helicopter-air-taxi") {
+            observe {
+                EvidenceFactAdapters.fromTransmissionRecords(
+                    scenarioId = "icao9432-rendered-after-landing-helicopter-air-taxi",
+                    records = listOf(
+                        airTaxiToHelicopterStandRecord(aircraft),
+                        airTaxiToHelicopterStandReadbackRecord(aircraft),
+                    ),
+                )
+            }
+            source("after-landing helicopter air-taxi rendered exchange") {
+                cites(ICAO9432.AfterLanding.HelicopterAirTaxiToStandWording)
+                sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §4.9")
+                sample("controller-branch", "G-HELI AIR-TAXI TO HELICOPTER STAND")
+                sample("pilot-readback", "AIR-TAXI TO HELICOPTER STAND, G-HELI")
+                sample("why-synthetic", "current LOWG production trace has no helicopter air-taxi movement")
+                sample("production-renderer-path", "AirTaxiTo and TaxiRouteReadback rendered through EvidenceFactAdapters.fromTransmissionRecords")
+                expect {
+                    afterLandingPhraseology(aircraft).helicopterAirTaxiToStandExchange()
+                }
+            }
+        }
+
+        report.assertNoFailures()
+    }
+
     private fun stopImmediatelyRecord(
         aircraft: AircraftId,
     ): TransmissionRecord {
@@ -507,6 +540,54 @@ class Icao9432PhraseologyEvidenceTest {
             utterance = Utterance.FromController(output),
         )
     }
+
+    private fun airTaxiToHelicopterStandRecord(
+        aircraft: AircraftId,
+    ): TransmissionRecord {
+        val instruction = AirTaxiTo(
+            target = aircraft,
+            destination = HelicopterStandPoint,
+        )
+        val output = ControllerOutput.Instruct.fromCoordinationReissue(
+            coordination = OutstandingCoordination(
+                aircraft = aircraft,
+                dispatch = Dispatch.Direct(instruction),
+                certificationEvidence = NonEmptyList(
+                    CertificationEvidence.RuntimeChecked(
+                        checkId = "synthetic-icao9432-air-taxi-phraseology",
+                        summary = "Synthetic ICAO 9432 §4.9 helicopter air-taxi phraseology branch",
+                    ),
+                    emptyList(),
+                ),
+                expectedReadback = setOf(TaxiRouteReadback(HelicopterStandPoint)),
+                issuedAt = SimTime.ZERO,
+            ),
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("TEST-AIR-TAXI", "test helicopter air-taxi phraseology", emptyList()),
+        )
+        return TransmissionRecord(
+            transmissionId = TransmissionId(97),
+            time = SimTime.ZERO,
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(2),
+            speaker = SpeakerRef.Controller(ControllerId("GEORGETOWN_TWR")),
+            receiver = ReceiverRef.Pilot(aircraft),
+            utterance = Utterance.FromController(output),
+        )
+    }
+
+    private fun airTaxiToHelicopterStandReadbackRecord(
+        aircraft: AircraftId,
+    ): TransmissionRecord =
+        TransmissionRecord(
+            transmissionId = TransmissionId(98),
+            time = SimTime.ZERO + SimDuration.ofSeconds(3),
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(5),
+            speaker = SpeakerRef.Pilot(aircraft),
+            receiver = ReceiverRef.Controller(ControllerId("GEORGETOWN_TWR")),
+            utterance = Utterance.FromPilot(
+                Readback(listOf(SimpleElement(TaxiRouteReadback(HelicopterStandPoint)))),
+            ),
+        )
 
     private fun unsupportedWhenAbleFirstRightRecord(
         aircraft: AircraftId,

@@ -1,0 +1,12 @@
+{
+  "type": "plan_review",
+  "id": "fn-87-icao-9432-after-landing-helicopter-air",
+  "mode": "codex",
+  "verdict": "SHIP",
+  "session_id": "01a0c42a-f22d-7da2-a00e-b7748a19e83f",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-21T13:32:43.314677Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0c42a-f22d-7da2-a00e-b7748a19e83f\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"No blocking issues found.\\n\\nThe epic and task spec line up well: the scope is narrow, the selector requirements are explicit, unsupported typed-valid variants remain loud, and the tests cover the high-risk surfaces: text, template, tokens, obligations, aircraft, order, adjacency, and ordinary taxi rejection.\\n\\nA few implementation watchpoints, but not plan blockers:\\n\\n- Adding `AirTaxiRouteReadback` will touch every exhaustive `RenderedPhraseologyTemplate` consumer. The plan already calls this out, especially vehicle phraseology rejection and supported-template sets.\\n- The point display helper needs to stay phraseology-local so `PointId(\\\"HELICOPTER_STAND\\\")` identity is not normalized anywhere structural.\\n- The selector should activate malformed consulted facts on failure, matching the existing selector style, so source-case failures remain diagnostic rather than getting replaced by generic \u201cdid not activate\u201d failures.\\n\\nProtected-path filter: dropped 0 findings\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":74120,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":716,\"reasoning_output_tokens\":516}}\n"
+}

@@ -14,14 +14,14 @@ honestly be marked covered-green with the current model/evidence surface.
 | `model-gap` + `policy-blocked` | 3 |
 | `policy-blocked` | 3 |
 | split residual | 0 |
-| `phraseology-later` | 2 |
+| `phraseology-later` | 1 |
 
 The VFR traffic-circuit continuation row and the essential-information category
 rows now have structural evidence-vocabulary coverage. The after-landing
-first-right / contact-ground and runway-vacated / taxi-to-stand rendered
-wording branches are covered. Timing, omission, open pertinence,
-essential-aerodrome-information phraseology, helicopter air-taxi phraseology,
-live sim projection, and IFR missed-approach rows remain gaps.
+first-right / contact-ground, runway-vacated / taxi-to-stand, and helicopter
+air-taxi rendered wording branches are covered. Timing, omission, open
+pertinence, essential-aerodrome-information phraseology, live sim projection,
+and IFR missed-approach rows remain gaps.
 
 ## Covered-Structural Essential-Information Vocabulary
 
@@ -69,5 +69,4 @@ through typed rendered phraseology evidence.
 
 | Source unit | Blocker | Reason |
 |---|---|---|
-| `icao9432-extracted::after_landing_4_9_en::203b53733da22603` | `PHRASE-1` | Requires rendered helicopter air-taxi phraseology. |
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::7b81f87f5c2b4d75` | `PHRASE-1` | Requires rendered essential-aerodrome-information example phraseology. |

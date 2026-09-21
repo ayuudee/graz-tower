@@ -7,18 +7,19 @@ information.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 3 |
+| `covered-green` | 4 |
 | `covered-structural` | 8 |
 | `covered-red` | 0 |
 | `model-gap` | 1 |
 | `model-gap` + `policy-blocked` | 3 |
 | `policy-blocked` | 3 |
 | `split residual` | 0 |
-| `phraseology-later` | 2 |
+| `phraseology-later` | 1 |
 
 The covered-green source units are the VFR go-around default, the rendered
-after-landing first-right / contact-ground wording branch, and the rendered
-after-landing runway-vacated / taxi-to-stand wording branch. The
+after-landing first-right / contact-ground wording branch, the rendered
+after-landing runway-vacated / taxi-to-stand wording branch, and the rendered
+after-landing helicopter air-taxi wording branch. The
 essential-aerodrome-information category/definition rows are covered only as
 structural evidence vocabulary. They do not claim live sim projection, timing,
 receipt, omission policy, open pertinence, or rendered phraseology coverage.
@@ -30,7 +31,7 @@ receipt, omission policy, open pertinence, or rendered phraseology coverage.
 | `icao9432-extracted::go_around_4_8_en::43c33a8e74b02873` | `model-gap` | `Icao9432ModelGapSourceUnitSpecTest` | Instrument approach go-around defaults to the missed approach procedure unless instructed otherwise. |
 | `icao9432-extracted::go_around_4_8_en::6c8993a0519d5d64` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `OperationalGuidancePolicy` | Transmissions to aircraft going around should be brief and kept to a minimum. |
 | `icao9432-extracted::go_around_4_8_en::c3581d40a48406bb` | `covered-green` | `Icao9432Chunk06GoAroundEvidenceTest` | VFR aircraft continues in the normal traffic circuit unless instructed otherwise. |
-| `icao9432-extracted::after_landing_4_9_en::203b53733da22603` | `phraseology-later` | `PHRASE-1` | Air-taxi to helicopter stand example phraseology. |
+| `icao9432-extracted::after_landing_4_9_en::203b53733da22603` | `covered-green rendered helicopter air-taxi phraseology` | `Icao9432PhraseologyEvidenceTest` | Synthetic ICAO 9432 example renders `G-HELI AIR-TAXI TO HELICOPTER STAND` and `AIR-TAXI TO HELICOPTER STAND G-HELI` through typed transmission records. |
 | `icao9432-extracted::after_landing_4_9_en::4a512226eec962cb` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `POLICY-1` | Pilot remains on tower frequency until runway vacated unless otherwise advised. |
 | `icao9432-extracted::after_landing_4_9_en::5d742dc66caa1790` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `ClearanceTimingPolicy` | Controller should not issue taxi instructions until landing roll completed unless absolutely necessary. |
 | `icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3` | `covered-green rendered first-right/contact-ground phraseology` | `Icao9432PhraseologyEvidenceTest` | Synthetic ICAO 9432 example renders `TAKE FIRST RIGHT WHEN VACATED`, `CONTACT GROUND 118.350`, and `FIRST RIGHT 118.350 FASTAIR 345` through typed transmission records. |
@@ -59,7 +60,7 @@ receipt, omission policy, open pertinence, or rendered phraseology coverage.
   `./gradlew-nix :sim:jvmTest --tests '*.Icao9432PhraseologyEvidenceTest' --tests '*.EvidenceDslTest' --tests '*.EvidenceFactsTest' --tests '*.EvidenceSourceCatalogTest' --tests '*.Icao9432ModelGapSourceUnitSpecTest'`.
   `./gradlew-nix detekt`.
   `./gradlew-nix :protocol:allTests :core:allTests :sim:jvmTest`.
-  `scripts/ralph/flowctl validate --epic fn-84-icao-9432-phrase-1-after-landing --json`.
+  `scripts/ralph/flowctl validate --epic fn-87-icao-9432-after-landing-helicopter-air --json`.
   `git diff --check`.
 
 ## Review Considerations
@@ -73,7 +74,9 @@ receipt, omission policy, open pertinence, or rendered phraseology coverage.
   trace with `GoingAround -> post-GA Downwind -> ClearedToLand -> RunwayVacated`.
   The after-landing runway-vacated / taxi-to-stand row is proven by rendered
   phraseology facts in strict `RUNWAY VACATED -> TAXI TO STAND -> readback`
-  order. The first-right / contact-ground row is proven by a synthetic typed
+  order. The helicopter air-taxi row is proven by a synthetic typed ICAO
+  example trace in strict `AIR-TAXI TO HELICOPTER STAND -> readback` order.
+  The first-right / contact-ground row is proven by a synthetic typed
   ICAO example trace in strict `TAKE FIRST RIGHT WHEN VACATED -> CONTACT
   GROUND -> FIRST RIGHT + frequency readback` order, while unsupported
   vacating/readback variants remain explicit unsupported evidence.

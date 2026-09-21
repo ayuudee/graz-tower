@@ -1,0 +1,18 @@
+{
+  "branch_name": "fn-87-icao-9432-after-landing-helicopter-air",
+  "completion_review_status": "unknown",
+  "completion_reviewed_at": null,
+  "created_at": "2026-09-21T13:20:31.595658Z",
+  "default_impl": null,
+  "default_review": null,
+  "default_sync": null,
+  "depends_on_epics": [],
+  "id": "fn-87-icao-9432-after-landing-helicopter-air",
+  "next_task": 1,
+  "plan_review_status": "ship",
+  "plan_reviewed_at": "2026-09-21T13:32:49.603643Z",
+  "spec_path": ".flow/specs/fn-87-icao-9432-after-landing-helicopter-air.md",
+  "status": "done",
+  "title": "ICAO 9432 after-landing helicopter air-taxi phraseology",
+  "updated_at": "2026-09-21T13:49:56.708154Z"
+}

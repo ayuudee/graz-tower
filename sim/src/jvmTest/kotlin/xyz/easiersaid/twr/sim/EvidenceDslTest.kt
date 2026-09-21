@@ -1,13 +1,20 @@
 package xyz.easiersaid.twr.sim
 
+import arrow.core.NonEmptyList
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
+import xyz.easiersaid.twr.controller.ControllerOutput
+import xyz.easiersaid.twr.controller.DecisionTrace
+import xyz.easiersaid.twr.controller.bdi.Dispatch
+import xyz.easiersaid.twr.controller.certify.CertificationEvidence
+import xyz.easiersaid.twr.controller.observe.OutstandingCoordination
 import xyz.easiersaid.twr.pilot.CircuitOutcome
 import xyz.easiersaid.twr.protocol.AerodromeId
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.AircraftType
+import xyz.easiersaid.twr.protocol.AirTaxiTo
 import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedForTakeoffReadback
@@ -21,11 +28,16 @@ import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RoleName
+import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.SimpleElement
 import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
+import xyz.easiersaid.twr.protocol.TaxiRouteReadback
+import xyz.easiersaid.twr.protocol.Urgency
 import xyz.easiersaid.twr.protocol.VacateReadback
 import xyz.easiersaid.twr.protocol.WhenAbleCondition
+import xyz.easiersaid.twr.sim.testing.TransmissionRecord
 
 class EvidenceDslTest {
     @Test
@@ -676,6 +688,185 @@ class EvidenceDslTest {
     }
 
     @Test
+    fun `air-taxi renderer supports only helicopter stand branch and preserves ordinary route readbacks`() {
+        val aircraft = AircraftId("G-HELI")
+
+        val supportedController = renderControllerPhraseology(
+            airTaxiControllerOutput(AirTaxiTo(aircraft, HelicopterStandPoint)),
+        )
+        assertTrue(supportedController is ControllerPhraseologyRenderResult.Rendered)
+        assertEquals(RenderedPhraseologyTemplate.AirTaxiToInstruction, supportedController.phraseology.template)
+        assertEquals("G-HELI AIR-TAXI TO HELICOPTER STAND", supportedController.phraseology.text.value)
+
+        val supportedReadback = renderPilotReadbackPhraseology(
+            aircraftId = aircraft,
+            readback = Readback(listOf(SimpleElement(TaxiRouteReadback(HelicopterStandPoint)))),
+        )
+        assertTrue(supportedReadback is PilotReadbackPhraseologyRenderResult.Rendered)
+        assertEquals(RenderedPhraseologyTemplate.AirTaxiRouteReadback, supportedReadback.phraseology.template)
+        assertEquals("AIR-TAXI TO HELICOPTER STAND G-HELI", supportedReadback.phraseology.text.value)
+
+        val ordinaryReadback = renderPilotReadbackPhraseology(
+            aircraftId = aircraft,
+            readback = Readback(listOf(SimpleElement(TaxiRouteReadback(PointId("STAND-27"))))),
+        )
+        assertTrue(ordinaryReadback is PilotReadbackPhraseologyRenderResult.Rendered)
+        assertEquals(RenderedPhraseologyTemplate.TaxiRouteReadback, ordinaryReadback.phraseology.template)
+
+        val unsupportedControllerVariants = listOf(
+            AirTaxiTo(aircraft, PointId("STAND-27")),
+            AirTaxiTo(aircraft, HelicopterStandPoint, via = listOf(PointId("ALPHA"))),
+        )
+        unsupportedControllerVariants.forEach { instruction ->
+            val result = renderControllerPhraseology(
+                airTaxiControllerOutput(instruction),
+            )
+            assertTrue(result is ControllerPhraseologyRenderResult.UnsupportedInstruction)
+        }
+    }
+
+    @Test
+    fun `air-taxi adapter keeps unsupported controller variants explicit`() {
+        val aircraft = AircraftId("G-HELI")
+        val unsupportedDestination = AirTaxiTo(aircraft, PointId("STAND-27"))
+        val unsupportedVia = AirTaxiTo(aircraft, HelicopterStandPoint, via = listOf(PointId("ALPHA")))
+
+        val facts = EvidenceFactAdapters.fromTransmissionRecords(
+            scenarioId = "air-taxi-unsupported-adapter",
+            records = listOf(
+                airTaxiControllerRecord(TransmissionId(400), unsupportedDestination),
+                airTaxiControllerRecord(TransmissionId(401), unsupportedVia),
+            ),
+        )
+        val unsupported = facts.orderedFacts().mapNotNull { fact ->
+            fact.payload as? EvidenceFactPayload.UnsupportedRenderedPhraseology
+        }
+
+        assertEquals(2, unsupported.size)
+        assertEquals(setOf(unsupportedDestination, unsupportedVia), unsupported.map { payload -> payload.instruction }.toSet())
+        assertTrue(
+            facts.orderedFacts().none { fact ->
+                val payload = fact.payload as? EvidenceFactPayload.RenderedPhraseology ?: return@none false
+                payload.template == RenderedPhraseologyTemplate.AirTaxiToInstruction
+            },
+        )
+    }
+
+    @Test
+    fun `helicopter air-taxi selector requires exact adjacent instruction and readback`() {
+        val aircraft = AircraftId("G-HELI")
+
+        val passReport = airTaxiExchangeReport(
+            scenarioId = "air-taxi-exchange-pass",
+            aircraft = aircraft,
+            payloads = airTaxiExchangePayloads(aircraft),
+        )
+        assertTrue(passReport.results.single().outcome is EvidenceAuditOutcome.Pass)
+        assertTrue(passReport.results.single().activationFactIds.isNotEmpty())
+
+        val failingCases = listOf(
+            "wrong-order" to listOf(airTaxiReadbackPayload(aircraft), airTaxiInstructionPayload(aircraft)),
+            "wrong-aircraft" to airTaxiExchangePayloads(AircraftId("OTHER")),
+            "ordinary-taxi" to listOf(
+                renderedPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.TaxiToStandInstruction,
+                    obligationKinds = readbackInstructionObligationKinds,
+                    tokens = listOf(
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                        PhraseologyToken.Taxi,
+                        PhraseologyToken.To,
+                        PhraseologyToken.PointName(HelicopterStandPoint),
+                    ),
+                    text = "G-HELI TAXI TO HELICOPTER STAND",
+                ),
+                renderedPilotReadbackPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.TaxiRouteReadback,
+                    tokens = listOf(
+                        PhraseologyToken.PointName(HelicopterStandPoint),
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                    ),
+                    text = "HELICOPTER STAND G-HELI",
+                ),
+            ),
+            "wrong-controller-text" to listOf(
+                airTaxiInstructionPayload(aircraft).copy(text = RenderedPhraseText("G-HELI AIR TAXI TO HELICOPTER STAND")),
+                airTaxiReadbackPayload(aircraft),
+            ),
+            "wrong-readback-text" to listOf(
+                airTaxiInstructionPayload(aircraft),
+                airTaxiReadbackPayload(aircraft).copy(text = RenderedPhraseText("HELICOPTER STAND G-HELI")),
+            ),
+            "missing-obligation" to listOf(
+                airTaxiInstructionPayload(aircraft).copy(
+                    obligationKinds = setOf(PhraseologyObligationKind.OrderedPhrase),
+                ),
+                airTaxiReadbackPayload(aircraft),
+            ),
+            "wrong-template" to listOf(
+                airTaxiInstructionPayload(aircraft).copy(template = RenderedPhraseologyTemplate.TaxiToStandInstruction),
+                airTaxiReadbackPayload(aircraft),
+            ),
+            "malformed-controller-tokens" to listOf(
+                airTaxiInstructionPayload(aircraft).copy(
+                    tokens = listOf(
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                        PhraseologyToken.Taxi,
+                        PhraseologyToken.To,
+                        PhraseologyToken.PointName(HelicopterStandPoint),
+                    ),
+                ),
+                airTaxiReadbackPayload(aircraft),
+            ),
+            "malformed-readback-tokens" to listOf(
+                airTaxiInstructionPayload(aircraft),
+                airTaxiReadbackPayload(aircraft).copy(
+                    tokens = listOf(
+                        PhraseologyToken.PointName(HelicopterStandPoint),
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                    ),
+                ),
+            ),
+            "mismatched-readback-destination" to listOf(
+                airTaxiInstructionPayload(aircraft),
+                renderedPilotReadbackPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.TaxiRouteReadback,
+                    tokens = listOf(
+                        PhraseologyToken.PointName(PointId("STAND-27")),
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                    ),
+                    text = "STAND-27 G-HELI",
+                ),
+            ),
+            "intervening-phraseology" to listOf(
+                airTaxiInstructionPayload(aircraft),
+                renderedPilotReadbackPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.FrequencyReadback,
+                    tokens = listOf(
+                        PhraseologyToken.FrequencyValue(Frequency.unsafe("118.350")),
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                    ),
+                    text = "118.350 G-HELI",
+                ),
+                airTaxiReadbackPayload(aircraft),
+            ),
+            "standalone-readback" to listOf(airTaxiReadbackPayload(aircraft)),
+        )
+
+        failingCases.forEach { (scenario, payloads) ->
+            val report = airTaxiExchangeReport(
+                scenarioId = "air-taxi-exchange-$scenario",
+                aircraft = aircraft,
+                payloads = payloads,
+            )
+            assertTrue(report.results.single().outcome is EvidenceAuditOutcome.Fail, scenario)
+        }
+    }
+
+    @Test
     fun `renderedPilotReportPhraseology selectors require exact final and long-final tokens`() {
         val aircraft = AircraftId("OE-ABC")
         val facts = EvidenceFactAdapters.fromProjectedPayloads(
@@ -1122,6 +1313,40 @@ class EvidenceDslTest {
             text = RenderedPhraseText(text),
         )
 
+    private fun airTaxiControllerOutput(
+        instruction: AirTaxiTo,
+    ): ControllerOutput.Instruct =
+        ControllerOutput.Instruct.fromCoordinationReissue(
+            coordination = OutstandingCoordination(
+                aircraft = instruction.target,
+                dispatch = Dispatch.Direct(instruction),
+                certificationEvidence = NonEmptyList(
+                    CertificationEvidence.RuntimeChecked(
+                        checkId = "synthetic-icao9432-air-taxi-phraseology",
+                        summary = "Synthetic ICAO 9432 §4.9 air-taxi phraseology branch",
+                    ),
+                    emptyList(),
+                ),
+                expectedReadback = setOf(TaxiRouteReadback(instruction.destination, instruction.via)),
+                issuedAt = SimTime.ZERO,
+            ),
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("TEST-AIR-TAXI", "test air-taxi phraseology", emptyList()),
+        )
+
+    private fun airTaxiControllerRecord(
+        transmissionId: TransmissionId,
+        instruction: AirTaxiTo,
+    ): TransmissionRecord =
+        TransmissionRecord(
+            transmissionId = transmissionId,
+            time = SimTime.ZERO,
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(2),
+            speaker = SpeakerRef.Controller(ControllerId("GEORGETOWN_TWR")),
+            receiver = ReceiverRef.Pilot(instruction.target),
+            utterance = Utterance.FromController(airTaxiControllerOutput(instruction)),
+        )
+
     private fun renderedPilotReportPhraseologyPayload(
         aircraft: AircraftId,
         template: RenderedPhraseologyTemplate,
@@ -1362,6 +1587,13 @@ class EvidenceDslTest {
             ),
             renderedPhraseologyPayload(
                 aircraft = aircraft,
+                template = RenderedPhraseologyTemplate.AirTaxiToInstruction,
+                obligationKinds = readbackInstructionObligationKinds,
+                tokens = airTaxiInstructionTokens(aircraft),
+                text = "${aircraft.value} AIR-TAXI TO HELICOPTER STAND",
+            ),
+            renderedPhraseologyPayload(
+                aircraft = aircraft,
                 template = RenderedPhraseologyTemplate.TaxiToStandInstruction,
                 obligationKinds = setOf(
                     PhraseologyObligationKind.OrderedPhrase,
@@ -1376,6 +1608,49 @@ class EvidenceDslTest {
                 ),
                 text = "OE-ABC TAXI TO STAND-1",
             ),
+        )
+
+    private fun airTaxiExchangeReport(
+        scenarioId: String,
+        aircraft: AircraftId,
+        payloads: List<EvidenceFactPayload>,
+    ): EvidenceAuditReport =
+        simEvidence(scenarioId) {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = scenarioId,
+                    payloads = payloads,
+                )
+            }
+            invariant("helicopter air-taxi exchange") {
+                expect { afterLandingPhraseology(aircraft).helicopterAirTaxiToStandExchange() }
+            }
+        }
+
+    private fun airTaxiExchangePayloads(
+        aircraft: AircraftId,
+    ): List<EvidenceFactPayload> =
+        listOf(airTaxiInstructionPayload(aircraft), airTaxiReadbackPayload(aircraft))
+
+    private fun airTaxiInstructionPayload(
+        aircraft: AircraftId,
+    ): EvidenceFactPayload.RenderedPhraseology =
+        renderedPhraseologyPayload(
+            aircraft = aircraft,
+            template = RenderedPhraseologyTemplate.AirTaxiToInstruction,
+            obligationKinds = readbackInstructionObligationKinds,
+            tokens = airTaxiInstructionTokens(aircraft),
+            text = "${aircraft.value} AIR-TAXI TO HELICOPTER STAND",
+        )
+
+    private fun airTaxiReadbackPayload(
+        aircraft: AircraftId,
+    ): EvidenceFactPayload.RenderedPilotReadbackPhraseology =
+        renderedPilotReadbackPhraseologyPayload(
+            aircraft = aircraft,
+            template = RenderedPhraseologyTemplate.AirTaxiRouteReadback,
+            tokens = airTaxiRouteReadbackTokens(aircraft),
+            text = "AIR-TAXI TO HELICOPTER STAND ${aircraft.value}",
         )
 
     private fun firstRightExchangeReport(
@@ -1463,5 +1738,12 @@ class EvidenceDslTest {
                 PhraseologyToken.AircraftCallsign(aircraft),
             ),
             text = "FIRST RIGHT ${frequency.mhz} ${aircraft.value}",
+        )
+
+    private val readbackInstructionObligationKinds: Set<PhraseologyObligationKind> =
+        setOf(
+            PhraseologyObligationKind.OrderedPhrase,
+            PhraseologyObligationKind.SemanticSlot,
+            PhraseologyObligationKind.Readback,
         )
 }

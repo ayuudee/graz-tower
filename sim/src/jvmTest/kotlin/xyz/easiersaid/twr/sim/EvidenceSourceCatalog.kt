@@ -319,6 +319,12 @@ object ICAO9432 {
             claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
         )
 
+        val HelicopterAirTaxiToStandWording: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::after_landing_4_9_en::203b53733da22603",
+            title = "Helicopter AIR-TAXI TO HELICOPTER STAND rendered phraseology",
+            claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
+        )
+
         val RemainTowerFrequencyUntilRunwayVacated: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::after_landing_4_9_en::4a512226eec962cb",
             title = "Pilot remains on tower frequency until runway vacated unless otherwise advised",
@@ -335,7 +341,7 @@ object ICAO9432 {
             setOf(RemainTowerFrequencyUntilRunwayVacated, TaxiInstructionsAfterLandingRoll)
 
         val PhraseologyItems: Set<EvidenceSourceRef> =
-            setOf(FirstRightContactGroundWording, RunwayVacatedTaxiToStandWording)
+            setOf(FirstRightContactGroundWording, RunwayVacatedTaxiToStandWording, HelicopterAirTaxiToStandWording)
     }
 
     object TransferCommunications {

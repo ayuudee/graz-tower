@@ -189,10 +189,12 @@ enum class RenderedPhraseologyTemplate {
     ContactFrequencyInstruction,
     FrequencyReadback,
     StopImmediatelyInstruction,
+    AirTaxiToInstruction,
     FinalReport,
     LongFinalReport,
     TaxiToStandInstruction,
     TaxiRouteReadback,
+    AirTaxiRouteReadback,
     RunwayVacatedReport,
     VehicleInitialCall,
     VehicleTowRequest,
@@ -234,6 +236,7 @@ sealed interface PhraseologyToken {
     data object Go : PhraseologyToken
     data object Final : PhraseologyToken
     data object Long : PhraseologyToken
+    data object AirTaxi : PhraseologyToken
     data object Taxi : PhraseologyToken
     data object To : PhraseologyToken
     data object Via : PhraseologyToken
@@ -347,12 +350,12 @@ private fun renderGroundInstructionPhraseology(
     val phraseology = when (instruction) {
         is StopImmediately -> stopImmediatelyPhraseology(aircraftId)
         is TaxiToStand -> taxiToStandPhraseology(aircraftId, instruction.destination, instruction.via)
+        is AirTaxiTo -> airTaxiToPhraseology(aircraftId, instruction) ?: return unsupportedInstruction(instruction)
         is StartupApproved,
         is PushbackApproved,
         is PushbackFace,
         is TaxiToHoldingPoint,
         is TaxiViaRunway,
-        is AirTaxiTo,
         is HoldPosition,
         is HoldShortOf,
         is CrossRunway,
@@ -469,7 +472,11 @@ fun renderPilotReadbackPhraseology(
     val phraseology = when (val atom = atoms.singleOrNull()) {
         is LineUpReadback -> lineUpReadbackPhraseology(aircraftId = aircraftId)
         is FrequencyReadback -> frequencyReadbackPhraseology(aircraftId = aircraftId, frequency = atom.frequency)
-        is TaxiRouteReadback -> taxiRouteReadbackPhraseology(
+        is TaxiRouteReadback -> airTaxiRouteReadbackPhraseology(
+            aircraftId = aircraftId,
+            destination = atom.destination,
+            via = atom.via,
+        ) ?: taxiRouteReadbackPhraseology(
             aircraftId = aircraftId,
             destination = atom.destination,
             via = atom.via,
@@ -772,9 +779,11 @@ private fun routeText(
     via: List<PointId>,
 ): String =
     if (via.isEmpty()) {
-        destination.value
+        phraseologyPointText(destination)
     } else {
-        "${destination.value} VIA ${via.joinToString(separator = " ") { point -> point.value }}"
+        "${phraseologyPointText(destination)} VIA ${via.joinToString(separator = " ") { point ->
+            phraseologyPointText(point)
+        }}"
     }
 
 private val renderedClearanceObligations: Set<PhraseologyObligationKind> =
@@ -790,7 +799,7 @@ private val reportObligations: Set<PhraseologyObligationKind> =
         PhraseologyObligationKind.SemanticSlot,
     )
 
-private val readbackObligations: Set<PhraseologyObligationKind> =
+internal val readbackObligations: Set<PhraseologyObligationKind> =
     setOf(
         PhraseologyObligationKind.OrderedPhrase,
         PhraseologyObligationKind.Readback,
