@@ -184,6 +184,8 @@ enum class RenderedPhraseologyTemplate {
     TouchAndGoClearance,
     LineUpAndWaitInstruction,
     LineUpReadback,
+    AfterLandingVacateViaInstruction,
+    FirstRightFrequencyReadback,
     ContactFrequencyInstruction,
     FrequencyReadback,
     StopImmediatelyInstruction,
@@ -218,6 +220,10 @@ sealed interface PhraseologyToken {
     data object Up : PhraseologyToken
     data object Lining : PhraseologyToken
     data object Wait : PhraseologyToken
+    data object Take : PhraseologyToken
+    data object First : PhraseologyToken
+    data object Right : PhraseologyToken
+    data object When : PhraseologyToken
     data object Contact : PhraseologyToken
     data class UnitName(val value: String) : PhraseologyToken
     data class FrequencyValue(val frequency: Frequency) : PhraseologyToken
@@ -371,6 +377,8 @@ private fun renderRunwayInstructionPhraseology(
         is ClearedForTakeoff -> takeoffClearancePhraseology(aircraftId, instruction.runway)
         is ClearedTouchAndGo -> touchAndGoClearancePhraseology(aircraftId)
         is StopImmediately -> stopImmediatelyPhraseology(aircraftId)
+        is AfterLandingVacateVia -> afterLandingVacateViaPhraseology(aircraftId, instruction)
+            ?: return unsupportedInstruction(instruction)
         is ClearedToLand,
         is ClearedLowApproach,
         is GoAround,
@@ -378,7 +386,6 @@ private fun renderRunwayInstructionPhraseology(
         is BreakOff,
         is TakeoffImmediatelyOrVacateRunway,
         is TakeoffImmediatelyOrHoldShort,
-        is AfterLandingVacateVia,
         -> return unsupportedInstruction(instruction)
     }
     return ControllerPhraseologyRenderResult.Rendered(phraseology)
@@ -455,6 +462,9 @@ fun renderPilotReadbackPhraseology(
     }
     if (atoms.size != readback.elements.size) {
         return PilotReadbackPhraseologyRenderResult.UnsupportedReadback(readback)
+    }
+    firstRightFrequencyReadbackPhraseology(aircraftId = aircraftId, atoms = atoms)?.let { phraseology ->
+        return PilotReadbackPhraseologyRenderResult.Rendered(phraseology)
     }
     val phraseology = when (val atom = atoms.singleOrNull()) {
         is LineUpReadback -> lineUpReadbackPhraseology(aircraftId = aircraftId)

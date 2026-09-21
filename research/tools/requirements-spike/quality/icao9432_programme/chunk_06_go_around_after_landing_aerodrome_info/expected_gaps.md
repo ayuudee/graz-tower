@@ -13,15 +13,15 @@ honestly be marked covered-green with the current model/evidence surface.
 | `model-gap` | 1 |
 | `model-gap` + `policy-blocked` | 3 |
 | `policy-blocked` | 3 |
-| split residual | 1 |
+| split residual | 0 |
 | `phraseology-later` | 2 |
 
 The VFR traffic-circuit continuation row and the essential-information category
 rows now have structural evidence-vocabulary coverage. The after-landing
-runway-vacated / taxi-to-stand rendered wording branch is covered. Timing,
-omission, open pertinence, essential-aerodrome-information phraseology,
-helicopter air-taxi phraseology, residual first-right/vacating wording, live
-sim projection, and IFR missed-approach rows remain gaps.
+first-right / contact-ground and runway-vacated / taxi-to-stand rendered
+wording branches are covered. Timing, omission, open pertinence,
+essential-aerodrome-information phraseology, helicopter air-taxi phraseology,
+live sim projection, and IFR missed-approach rows remain gaps.
 
 ## Covered-Structural Essential-Information Vocabulary
 
@@ -60,9 +60,10 @@ sim projection, and IFR missed-approach rows remain gaps.
 
 ## Split Residuals
 
-| Source unit | Covered branch | Residual |
-|---|---|---|
-| `icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3` | `Icao9432PhraseologyEvidenceTest` covers rendered `CONTACT GROUND 118.350` plus frequency readback wording through the production `ContactFrequency` / `FrequencyReadback` renderers. | `TAKE FIRST RIGHT WHEN VACATED` and the `FIRST RIGHT` readback remain blocked until rendered vacating-runway instruction/readback phraseology exists. |
+No split residuals remain in chunk 06. The prior
+`icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3` first-right /
+contact-ground residual is now covered by `Icao9432PhraseologyEvidenceTest`
+through typed rendered phraseology evidence.
 
 ## Phraseology-Later
 

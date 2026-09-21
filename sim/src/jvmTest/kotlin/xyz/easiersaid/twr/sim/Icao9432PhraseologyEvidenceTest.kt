@@ -1,13 +1,20 @@
 package xyz.easiersaid.twr.sim
 
+import arrow.core.NonEmptyList
 import kotlin.test.Test
+import xyz.easiersaid.twr.controller.bdi.Dispatch
+import xyz.easiersaid.twr.controller.certify.CertificationEvidence
 import xyz.easiersaid.twr.controller.ControllerOutput
 import xyz.easiersaid.twr.controller.DecisionTrace
+import xyz.easiersaid.twr.controller.observe.OutstandingCoordination
 import xyz.easiersaid.twr.pilot.CircuitOutcome
+import xyz.easiersaid.twr.protocol.AfterLandingVacateVia
 import xyz.easiersaid.twr.protocol.AircraftId
 import xyz.easiersaid.twr.protocol.ContactFrequency
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.Frequency
+import xyz.easiersaid.twr.protocol.FrequencyReadback
+import xyz.easiersaid.twr.protocol.PointId
 import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.Report
 import xyz.easiersaid.twr.protocol.ReportEvent
@@ -17,8 +24,8 @@ import xyz.easiersaid.twr.protocol.SimDuration
 import xyz.easiersaid.twr.protocol.SimTime
 import xyz.easiersaid.twr.protocol.SimpleElement
 import xyz.easiersaid.twr.protocol.StopImmediately
-import xyz.easiersaid.twr.protocol.FrequencyReadback
 import xyz.easiersaid.twr.protocol.Urgency
+import xyz.easiersaid.twr.protocol.VacateReadback
 import xyz.easiersaid.twr.sim.testing.TransmissionRecord
 
 class Icao9432PhraseologyEvidenceTest {
@@ -108,7 +115,10 @@ class Icao9432PhraseologyEvidenceTest {
                     ),
                     EvidenceFactAdapters.fromTransmissionRecords(
                         scenarioId = "icao9432-rendered-takeoff-word-use-stop",
-                        records = listOf(stopImmediatelyRecord(aircraft)),
+                        records = listOf(
+                            stopImmediatelyRecord(aircraft),
+                            firstRightWhenVacatedRecord(aircraft),
+                        ),
                     ),
                 )
             }
@@ -340,51 +350,73 @@ class Icao9432PhraseologyEvidenceTest {
     }
 
     @Test
-    fun `synthetic after-landing contact-ground branch renders ICAO 9432 wording with residual first-right branch`() {
+    fun `synthetic after-landing first-right contact-ground branch renders ICAO 9432 wording`() {
         val aircraft = AircraftId("FASTAIR 345")
         val groundFrequency = Frequency.unsafe("118.350")
 
-        val report = simEvidence("icao9432-rendered-after-landing-contact-ground-split") {
+        val report = simEvidence("icao9432-rendered-after-landing-first-right-contact-ground") {
             observe {
                 EvidenceFactAdapters.fromTransmissionRecords(
-                    scenarioId = "icao9432-rendered-after-landing-contact-ground-split",
+                    scenarioId = "icao9432-rendered-after-landing-first-right-contact-ground",
                     records = listOf(
+                        firstRightWhenVacatedRecord(aircraft),
                         contactGroundRecord(
                             aircraft = aircraft,
                             frequency = groundFrequency,
                         ),
-                        frequencyReadbackRecord(
+                        firstRightFrequencyReadbackRecord(
                             aircraft = aircraft,
                             frequency = groundFrequency,
                         ),
                     ),
                 )
             }
-            source("after-landing CONTACT GROUND rendered branch only") {
-                cites(ICAO9432.AfterLanding.ContactGroundWordingOnly)
+            source("after-landing first-right contact-ground rendered exchange") {
+                cites(ICAO9432.AfterLanding.FirstRightContactGroundWording)
                 sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §4.9")
-                sample("synthetic-branch", "CONTACT GROUND 118.350")
+                sample("controller-branch", "FASTAIR 345 TAKE FIRST RIGHT WHEN VACATED")
+                sample("frequency-branch", "FASTAIR 345 CONTACT GROUND 118.350")
+                sample("pilot-readback", "FIRST RIGHT 118.350 FASTAIR 345")
                 sample("why-synthetic", "LOWG production trace uses local handoff frequencies, not the Doc 9432 example frequency")
-                sample("production-renderer-path", "ContactFrequency plus FrequencyReadback rendered through EvidenceFactAdapters.fromTransmissionRecords")
-                sample("residual", "TAKE FIRST RIGHT WHEN VACATED and FIRST RIGHT readback remain blocked")
+                sample("production-renderer-path", "AfterLandingVacateVia, ContactFrequency, and composite VacateReadback plus FrequencyReadback rendered through EvidenceFactAdapters.fromTransmissionRecords")
                 expect {
-                    renderedPhraseology(aircraft).contactFrequency("GROUND", groundFrequency)
-                }
-            }
-            source("after-landing contact-ground frequency readback rendered branch only") {
-                cites(ICAO9432.AfterLanding.ContactGroundWordingOnly)
-                sample("source", "ICAO Doc 9432, Manual of Radiotelephony, Fourth Edition, 2007, §4.9")
-                sample("synthetic-branch", "118.350 FASTAIR 345")
-                sample("why-synthetic", "LOWG production trace uses local handoff frequencies, not the Doc 9432 example frequency")
-                sample("production-renderer-path", "FrequencyReadback rendered through EvidenceFactAdapters.fromTransmissionRecords")
-                sample("residual", "FIRST RIGHT element remains blocked because vacating-runway readback rendering is not modelled")
-                expect {
-                    renderedPilotReadbackPhraseology(aircraft).frequencyReadback(groundFrequency)
+                    afterLandingPhraseology(aircraft).firstRightWhenVacatedContactGroundExchange(groundFrequency)
                 }
             }
         }
 
         report.assertNoFailures()
+    }
+
+    @Test
+    fun `after-landing first-right rendering keeps unsupported variants explicit`() {
+        val aircraft = AircraftId("FASTAIR 345")
+        val groundFrequency = Frequency.unsafe("118.350")
+
+        val report = simEvidence("icao9432-rendered-after-landing-first-right-unsupported") {
+            observe {
+                EvidenceFactAdapters.fromTransmissionRecords(
+                    scenarioId = "icao9432-rendered-after-landing-first-right-unsupported",
+                    records = listOf(
+                        unsupportedWhenAbleFirstRightRecord(aircraft),
+                        wrongExitFirstRightRecord(aircraft),
+                        reversedFirstRightFrequencyReadbackRecord(
+                            aircraft = aircraft,
+                            frequency = groundFrequency,
+                        ),
+                    ),
+                )
+            }
+            invariant("unsupported variants cannot satisfy first-right contact-ground exchange") {
+                expect {
+                    afterLandingPhraseology(aircraft).firstRightWhenVacatedContactGroundExchange(groundFrequency)
+                }
+            }
+        }
+
+        val outcome = report.results.single().outcome
+        kotlin.test.assertTrue(outcome is EvidenceAuditOutcome.Fail)
+        kotlin.test.assertTrue(report.results.single().activationFactIds.isEmpty())
     }
 
     private fun stopImmediatelyRecord(
@@ -439,6 +471,113 @@ class Icao9432PhraseologyEvidenceTest {
         )
     }
 
+    private fun firstRightWhenVacatedRecord(
+        aircraft: AircraftId,
+    ): TransmissionRecord {
+        val instruction = AfterLandingVacateVia(
+            target = aircraft,
+            exit = PointId("FIRST_RIGHT"),
+            whenAble = false,
+        )
+        val output = ControllerOutput.Instruct.fromCoordinationReissue(
+            coordination = OutstandingCoordination(
+                aircraft = aircraft,
+                dispatch = Dispatch.Direct(instruction),
+                certificationEvidence = NonEmptyList(
+                    CertificationEvidence.RuntimeChecked(
+                        checkId = "synthetic-icao9432-first-right-phraseology",
+                        summary = "Synthetic ICAO 9432 §4.9 first-right phraseology branch",
+                    ),
+                    emptyList(),
+                ),
+                expectedReadback = setOf(
+                    VacateReadback(via = PointId("FIRST_RIGHT")),
+                ),
+                issuedAt = SimTime.ZERO,
+            ),
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("TEST-FIRST-RIGHT", "test first-right phraseology", emptyList()),
+        )
+        return TransmissionRecord(
+            transmissionId = TransmissionId(91),
+            time = SimTime.ZERO,
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(2),
+            speaker = SpeakerRef.Controller(ControllerId("GEORGETOWN_TWR")),
+            receiver = ReceiverRef.Pilot(aircraft),
+            utterance = Utterance.FromController(output),
+        )
+    }
+
+    private fun unsupportedWhenAbleFirstRightRecord(
+        aircraft: AircraftId,
+    ): TransmissionRecord {
+        val instruction = AfterLandingVacateVia(
+            target = aircraft,
+            exit = PointId("FIRST_RIGHT"),
+            whenAble = true,
+        )
+        val output = ControllerOutput.Instruct.fromCoordinationReissue(
+            coordination = OutstandingCoordination(
+                aircraft = aircraft,
+                dispatch = Dispatch.Direct(instruction),
+                certificationEvidence = NonEmptyList(
+                    CertificationEvidence.RuntimeChecked(
+                        checkId = "synthetic-icao9432-when-able-first-right",
+                        summary = "Synthetic unsupported when-able first-right phraseology branch",
+                    ),
+                    emptyList(),
+                ),
+                expectedReadback = setOf(VacateReadback(via = PointId("FIRST_RIGHT"))),
+                issuedAt = SimTime.ZERO,
+            ),
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("TEST-FIRST-RIGHT-WHEN-ABLE", "test unsupported first-right phraseology", emptyList()),
+        )
+        return TransmissionRecord(
+            transmissionId = TransmissionId(94),
+            time = SimTime.ZERO,
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(2),
+            speaker = SpeakerRef.Controller(ControllerId("GEORGETOWN_TWR")),
+            receiver = ReceiverRef.Pilot(aircraft),
+            utterance = Utterance.FromController(output),
+        )
+    }
+
+    private fun wrongExitFirstRightRecord(
+        aircraft: AircraftId,
+    ): TransmissionRecord {
+        val instruction = AfterLandingVacateVia(
+            target = aircraft,
+            exit = PointId("BRAVO"),
+            whenAble = false,
+        )
+        val output = ControllerOutput.Instruct.fromCoordinationReissue(
+            coordination = OutstandingCoordination(
+                aircraft = aircraft,
+                dispatch = Dispatch.Direct(instruction),
+                certificationEvidence = NonEmptyList(
+                    CertificationEvidence.RuntimeChecked(
+                        checkId = "synthetic-icao9432-wrong-exit-first-right",
+                        summary = "Synthetic unsupported wrong-exit first-right phraseology branch",
+                    ),
+                    emptyList(),
+                ),
+                expectedReadback = setOf(VacateReadback(via = PointId("BRAVO"))),
+                issuedAt = SimTime.ZERO,
+            ),
+            urgency = Urgency.PROGRESSION,
+            trace = DecisionTrace("TEST-FIRST-RIGHT-WRONG-EXIT", "test unsupported first-right exit", emptyList()),
+        )
+        return TransmissionRecord(
+            transmissionId = TransmissionId(95),
+            time = SimTime.ZERO,
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(2),
+            speaker = SpeakerRef.Controller(ControllerId("GEORGETOWN_TWR")),
+            receiver = ReceiverRef.Pilot(aircraft),
+            utterance = Utterance.FromController(output),
+        )
+    }
+
     private fun frequencyReadbackRecord(
         aircraft: AircraftId,
         frequency: Frequency,
@@ -450,6 +589,46 @@ class Icao9432PhraseologyEvidenceTest {
             speaker = SpeakerRef.Pilot(aircraft),
             receiver = ReceiverRef.Controller(ControllerId("GEORGETOWN_TWR")),
             utterance = Utterance.FromPilot(Readback(listOf(SimpleElement(FrequencyReadback(frequency))))),
+        )
+
+    private fun firstRightFrequencyReadbackRecord(
+        aircraft: AircraftId,
+        frequency: Frequency,
+    ): TransmissionRecord =
+        TransmissionRecord(
+            transmissionId = TransmissionId(93),
+            time = SimTime.ZERO + SimDuration.ofSeconds(3),
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(5),
+            speaker = SpeakerRef.Pilot(aircraft),
+            receiver = ReceiverRef.Controller(ControllerId("GEORGETOWN_TWR")),
+            utterance = Utterance.FromPilot(
+                Readback(
+                    listOf(
+                        SimpleElement(VacateReadback(via = PointId("FIRST_RIGHT"))),
+                        SimpleElement(FrequencyReadback(frequency)),
+                    ),
+                ),
+            ),
+        )
+
+    private fun reversedFirstRightFrequencyReadbackRecord(
+        aircraft: AircraftId,
+        frequency: Frequency,
+    ): TransmissionRecord =
+        TransmissionRecord(
+            transmissionId = TransmissionId(96),
+            time = SimTime.ZERO + SimDuration.ofSeconds(3),
+            endedAt = SimTime.ZERO + SimDuration.ofSeconds(5),
+            speaker = SpeakerRef.Pilot(aircraft),
+            receiver = ReceiverRef.Controller(ControllerId("GEORGETOWN_TWR")),
+            utterance = Utterance.FromPilot(
+                Readback(
+                    listOf(
+                        SimpleElement(FrequencyReadback(frequency)),
+                        SimpleElement(VacateReadback(via = PointId("FIRST_RIGHT"))),
+                    ),
+                ),
+            ),
         )
 
     private fun combinedEvidenceFactSet(

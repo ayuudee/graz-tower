@@ -11,14 +11,21 @@ import xyz.easiersaid.twr.protocol.AircraftType
 import xyz.easiersaid.twr.protocol.Callsign
 import xyz.easiersaid.twr.protocol.ClearedForTakeoff
 import xyz.easiersaid.twr.protocol.ClearedForTakeoffReadback
+import xyz.easiersaid.twr.protocol.ConditionalElement
 import xyz.easiersaid.twr.protocol.ControllerId
 import xyz.easiersaid.twr.protocol.Frequency
+import xyz.easiersaid.twr.protocol.FrequencyReadback
 import xyz.easiersaid.twr.protocol.LineUpAndWait
+import xyz.easiersaid.twr.protocol.LineUpReadback
 import xyz.easiersaid.twr.protocol.PointId
+import xyz.easiersaid.twr.protocol.Readback
 import xyz.easiersaid.twr.protocol.ReportEvent
 import xyz.easiersaid.twr.protocol.RoleName
 import xyz.easiersaid.twr.protocol.RunwayId
+import xyz.easiersaid.twr.protocol.SimpleElement
 import xyz.easiersaid.twr.protocol.TaxiToHoldingPoint
+import xyz.easiersaid.twr.protocol.VacateReadback
+import xyz.easiersaid.twr.protocol.WhenAbleCondition
 
 class EvidenceDslTest {
     @Test
@@ -482,6 +489,190 @@ class EvidenceDslTest {
         }
 
         assertTrue(taxiBeforeVacatedReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+    }
+
+    @Test
+    fun `after-landing first-right selector requires adjacent ordered rendered exchange`() {
+        val aircraft = AircraftId("FASTAIR 345")
+        val frequency = Frequency.unsafe("118.350")
+
+        val passReport = firstRightExchangeReport(
+            scenarioId = "first-right-exchange-pass",
+            aircraft = aircraft,
+            frequency = frequency,
+            payloads = firstRightExchangePayloads(aircraft, frequency),
+        )
+        assertTrue(passReport.results.single().outcome is EvidenceAuditOutcome.Pass)
+        assertTrue(passReport.results.single().activationFactIds.isNotEmpty())
+
+        val wrongOrderReport = firstRightExchangeReport(
+            scenarioId = "first-right-exchange-wrong-order",
+            aircraft = aircraft,
+            frequency = frequency,
+            payloads = listOf(
+                contactGroundPayload(aircraft, frequency),
+                firstRightInstructionPayload(aircraft),
+                firstRightReadbackPayload(aircraft, frequency),
+            ),
+        )
+        assertTrue(wrongOrderReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+
+        val interveningReadbackReport = firstRightExchangeReport(
+            scenarioId = "first-right-exchange-intervening-readback",
+            aircraft = aircraft,
+            frequency = frequency,
+            payloads = listOf(
+                firstRightInstructionPayload(aircraft),
+                contactGroundPayload(aircraft, frequency),
+                renderedPilotReadbackPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.FrequencyReadback,
+                    tokens = listOf(
+                        PhraseologyToken.FrequencyValue(frequency),
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                    ),
+                    text = "118.350 FASTAIR 345",
+                ),
+                firstRightReadbackPayload(aircraft, frequency),
+            ),
+        )
+        assertTrue(interveningReadbackReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+
+        val malformedReport = firstRightExchangeReport(
+            scenarioId = "first-right-exchange-malformed",
+            aircraft = aircraft,
+            frequency = frequency,
+            payloads = listOf(
+                renderedPhraseologyPayload(
+                    aircraft = aircraft,
+                    template = RenderedPhraseologyTemplate.AfterLandingVacateViaInstruction,
+                    obligationKinds = setOf(PhraseologyObligationKind.OrderedPhrase),
+                    tokens = listOf(
+                        PhraseologyToken.AircraftCallsign(aircraft),
+                        PhraseologyToken.Take,
+                        PhraseologyToken.Right,
+                        PhraseologyToken.When,
+                        PhraseologyToken.Vacated,
+                    ),
+                    text = "FASTAIR 345 TAKE RIGHT WHEN VACATED",
+                ),
+                contactGroundPayload(aircraft, frequency),
+                firstRightReadbackPayload(aircraft, frequency),
+            ),
+        )
+        val malformedOutcome = malformedReport.results.single().outcome
+        assertTrue(malformedOutcome is EvidenceAuditOutcome.Fail)
+        assertTrue(malformedOutcome.reason.contains("Malformed"))
+
+        val wrongTextReport = firstRightExchangeReport(
+            scenarioId = "first-right-exchange-wrong-text",
+            aircraft = aircraft,
+            frequency = frequency,
+            payloads = listOf(
+                firstRightInstructionPayload(aircraft).copy(
+                    text = RenderedPhraseText("FASTAIR 345 TAKE SECOND RIGHT WHEN VACATED"),
+                ),
+                contactGroundPayload(aircraft, frequency),
+                firstRightReadbackPayload(aircraft, frequency),
+            ),
+        )
+        val wrongTextOutcome = wrongTextReport.results.single().outcome
+        assertTrue(wrongTextOutcome is EvidenceAuditOutcome.Fail)
+        assertTrue(wrongTextOutcome.reason.contains("Malformed"))
+
+        val missingObligationReport = firstRightExchangeReport(
+            scenarioId = "first-right-exchange-missing-obligation",
+            aircraft = aircraft,
+            frequency = frequency,
+            payloads = listOf(
+                firstRightInstructionPayload(aircraft).copy(
+                    obligationKinds = setOf(
+                        PhraseologyObligationKind.OrderedPhrase,
+                        PhraseologyObligationKind.SemanticSlot,
+                    ),
+                ),
+                contactGroundPayload(aircraft, frequency),
+                firstRightReadbackPayload(aircraft, frequency),
+            ),
+        )
+        val missingObligationOutcome = missingObligationReport.results.single().outcome
+        assertTrue(missingObligationOutcome is EvidenceAuditOutcome.Fail)
+        assertTrue(missingObligationOutcome.reason.contains("Malformed"))
+
+        val wrongTemplateReport = firstRightExchangeReport(
+            scenarioId = "first-right-exchange-wrong-template",
+            aircraft = aircraft,
+            frequency = frequency,
+            payloads = listOf(
+                firstRightInstructionPayload(aircraft).copy(
+                    template = RenderedPhraseologyTemplate.TaxiToStandInstruction,
+                ),
+                contactGroundPayload(aircraft, frequency),
+                firstRightReadbackPayload(aircraft, frequency),
+            ),
+        )
+        assertTrue(wrongTemplateReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(wrongTemplateReport.results.single().activationFactIds.isNotEmpty())
+
+        val emptyReport = firstRightExchangeReport(
+            scenarioId = "first-right-exchange-empty",
+            aircraft = aircraft,
+            frequency = frequency,
+            payloads = emptyList(),
+        )
+        assertTrue(emptyReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(emptyReport.results.single().activationFactIds.isEmpty())
+
+        val wrongFrequencyReport = firstRightExchangeReport(
+            scenarioId = "first-right-exchange-wrong-frequency",
+            aircraft = aircraft,
+            frequency = frequency,
+            payloads = firstRightExchangePayloads(aircraft, Frequency.unsafe("118.400")),
+        )
+        assertTrue(wrongFrequencyReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+
+        val otherAircraftReport = firstRightExchangeReport(
+            scenarioId = "first-right-exchange-other-aircraft",
+            aircraft = aircraft,
+            frequency = frequency,
+            payloads = firstRightExchangePayloads(AircraftId("OTHER 123"), frequency),
+        )
+        assertTrue(otherAircraftReport.results.single().outcome is EvidenceAuditOutcome.Fail)
+        assertTrue(otherAircraftReport.results.single().activationFactIds.isEmpty())
+    }
+
+    @Test
+    fun `first-right readback renderer only supports exact vacate plus frequency shape`() {
+        val aircraft = AircraftId("FASTAIR 345")
+        val frequency = Frequency.unsafe("118.350")
+        val firstRightVacate = SimpleElement(VacateReadback(via = PointId("FIRST_RIGHT")))
+        val frequencyReadback = SimpleElement(FrequencyReadback(frequency))
+        val unsupportedReadbacks = listOf(
+            Readback(listOf(firstRightVacate)),
+            Readback(listOf(firstRightVacate, frequencyReadback, SimpleElement(FrequencyReadback(frequency)))),
+            Readback(listOf(SimpleElement(VacateReadback(via = PointId("BRAVO"))), frequencyReadback)),
+            Readback(listOf(SimpleElement(LineUpReadback(RunwayId("16C"))), frequencyReadback)),
+            Readback(
+                listOf(
+                    ConditionalElement(
+                        condition = WhenAbleCondition,
+                        action = VacateReadback(via = PointId("FIRST_RIGHT")),
+                    ),
+                    frequencyReadback,
+                ),
+            ),
+        )
+
+        val supported = renderPilotReadbackPhraseology(
+            aircraftId = aircraft,
+            readback = Readback(listOf(firstRightVacate, frequencyReadback)),
+        )
+        assertTrue(supported is PilotReadbackPhraseologyRenderResult.Rendered)
+
+        unsupportedReadbacks.forEach { readback ->
+            val result = renderPilotReadbackPhraseology(aircraftId = aircraft, readback = readback)
+            assertTrue(result is PilotReadbackPhraseologyRenderResult.UnsupportedReadback)
+        }
     }
 
     @Test
@@ -1101,6 +1292,24 @@ class EvidenceDslTest {
             ),
             renderedPhraseologyPayload(
                 aircraft = aircraft,
+                template = RenderedPhraseologyTemplate.AfterLandingVacateViaInstruction,
+                obligationKinds = setOf(
+                    PhraseologyObligationKind.OrderedPhrase,
+                    PhraseologyObligationKind.SemanticSlot,
+                    PhraseologyObligationKind.Readback,
+                ),
+                tokens = listOf(
+                    PhraseologyToken.AircraftCallsign(aircraft),
+                    PhraseologyToken.Take,
+                    PhraseologyToken.First,
+                    PhraseologyToken.Right,
+                    PhraseologyToken.When,
+                    PhraseologyToken.Vacated,
+                ),
+                text = "OE-ABC TAKE FIRST RIGHT WHEN VACATED",
+            ),
+            renderedPhraseologyPayload(
+                aircraft = aircraft,
                 template = RenderedPhraseologyTemplate.LineUpAndWaitInstruction,
                 tokens = listOf(
                     PhraseologyToken.AircraftCallsign(aircraft),
@@ -1167,5 +1376,92 @@ class EvidenceDslTest {
                 ),
                 text = "OE-ABC TAXI TO STAND-1",
             ),
+        )
+
+    private fun firstRightExchangeReport(
+        scenarioId: String,
+        aircraft: AircraftId,
+        frequency: Frequency,
+        payloads: List<EvidenceFactPayload>,
+    ): EvidenceAuditReport =
+        simEvidence(scenarioId) {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = scenarioId,
+                    payloads = payloads,
+                )
+            }
+            invariant("first-right contact-ground exchange") {
+                expect { afterLandingPhraseology(aircraft).firstRightWhenVacatedContactGroundExchange(frequency) }
+            }
+        }
+
+    private fun firstRightExchangePayloads(
+        aircraft: AircraftId,
+        frequency: Frequency,
+    ): List<EvidenceFactPayload> =
+        listOf(
+            firstRightInstructionPayload(aircraft),
+            contactGroundPayload(aircraft, frequency),
+            firstRightReadbackPayload(aircraft, frequency),
+        )
+
+    private fun firstRightInstructionPayload(
+        aircraft: AircraftId,
+    ): EvidenceFactPayload.RenderedPhraseology =
+        renderedPhraseologyPayload(
+            aircraft = aircraft,
+            template = RenderedPhraseologyTemplate.AfterLandingVacateViaInstruction,
+            obligationKinds = setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.SemanticSlot,
+                PhraseologyObligationKind.Readback,
+            ),
+            tokens = listOf(
+                PhraseologyToken.AircraftCallsign(aircraft),
+                PhraseologyToken.Take,
+                PhraseologyToken.First,
+                PhraseologyToken.Right,
+                PhraseologyToken.When,
+                PhraseologyToken.Vacated,
+            ),
+            text = "${aircraft.value} TAKE FIRST RIGHT WHEN VACATED",
+        )
+
+    private fun contactGroundPayload(
+        aircraft: AircraftId,
+        frequency: Frequency,
+    ): EvidenceFactPayload.RenderedPhraseology =
+        renderedPhraseologyPayload(
+            aircraft = aircraft,
+            template = RenderedPhraseologyTemplate.ContactFrequencyInstruction,
+            obligationKinds = setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.SemanticSlot,
+                PhraseologyObligationKind.Readback,
+            ),
+            tokens = listOf(
+                PhraseologyToken.AircraftCallsign(aircraft),
+                PhraseologyToken.Contact,
+                PhraseologyToken.UnitName("GROUND"),
+                PhraseologyToken.FrequencyValue(frequency),
+            ),
+            text = "${aircraft.value} CONTACT GROUND ${frequency.mhz}",
+        )
+
+    private fun firstRightReadbackPayload(
+        aircraft: AircraftId,
+        frequency: Frequency,
+    ): EvidenceFactPayload.RenderedPilotReadbackPhraseology =
+        renderedPilotReadbackPhraseologyPayload(
+            aircraft = aircraft,
+            template = RenderedPhraseologyTemplate.FirstRightFrequencyReadback,
+            tokens = listOf(
+                PhraseologyToken.First,
+                PhraseologyToken.Right,
+                PhraseologyToken.FrequencyValue(frequency),
+                PhraseologyToken.AircraftCallsign(aircraft),
+            ),
+            text = "FIRST RIGHT ${frequency.mhz} ${aircraft.value}",
         )
 }

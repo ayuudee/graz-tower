@@ -1228,6 +1228,7 @@ class AuditRenderedPhraseologySubject internal constructor(
         val supportedControllerPhraseologyTemplates: Set<RenderedPhraseologyTemplate> =
             setOf(
                 RenderedPhraseologyTemplate.ContactFrequencyInstruction,
+                RenderedPhraseologyTemplate.AfterLandingVacateViaInstruction,
                 RenderedPhraseologyTemplate.LineUpAndWaitInstruction,
                 RenderedPhraseologyTemplate.TakeoffClearance,
                 RenderedPhraseologyTemplate.TouchAndGoClearance,
@@ -1459,6 +1460,55 @@ class AuditAfterLandingPhraseologySubject internal constructor(
     private val facts: List<EvidenceFact>,
     private val activate: (FactId) -> Unit,
 ) {
+    fun firstRightWhenVacatedContactGroundExchange(frequency: Frequency): EvidenceAuditOutcome {
+        val firstRightFacts = renderedController(RenderedPhraseologyTemplate.AfterLandingVacateViaInstruction)
+        val contactFacts = renderedController(RenderedPhraseologyTemplate.ContactFrequencyInstruction)
+        val readbackFacts = renderedReadbacks(RenderedPhraseologyTemplate.FirstRightFrequencyReadback)
+        val consultedFacts = firstRightFacts + contactFacts + readbackFacts
+        if (firstRightFacts.isEmpty() || contactFacts.isEmpty() || readbackFacts.isEmpty()) {
+            consultedFacts.forEach { fact -> activate(fact.id) }
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing rendered after-landing first-right/contact-ground phraseology for ${aircraftId.value}",
+                evidence = firstRightExchangeDiagnostics(firstRightFacts, contactFacts, readbackFacts),
+            )
+        }
+
+        val malformed = consultedFacts.filterNot { fact -> fact.hasValidFirstRightExchangeShape(frequency) }
+        val projection = renderedControllerAndReadbackProjection()
+        val matching = projection.windowed(FirstRightExchangeFactCount).firstOrNull { window ->
+            window[0].isExpectedFirstRightInstruction() &&
+                window[1].isExpectedGroundContact(frequency) &&
+                window[2].isExpectedFirstRightFrequencyReadback(frequency)
+        }
+
+        return if (matching == null) {
+            consultedFacts.forEach { fact -> activate(fact.id) }
+            val reason = if (malformed.isNotEmpty()) {
+                "Malformed rendered after-landing first-right/contact-ground phraseology for ${aircraftId.value}"
+            } else {
+                "Rendered after-landing first-right/contact-ground phraseology did not appear as adjacent first-right, contact-ground, readback facts"
+            }
+            EvidenceAuditOutcome.Fail(
+                reason = reason,
+                evidence = firstRightExchangeDiagnostics(firstRightFacts, contactFacts, readbackFacts),
+            )
+        } else {
+            matching.forEach { fact -> activate(fact.id) }
+            EvidenceAuditOutcome.Pass(
+                matching.map { fact ->
+                    val payload = fact.payload
+                    when (payload) {
+                        is EvidenceFactPayload.RenderedPhraseology ->
+                            "${payload.template}:${payload.text.value}@${fact.provenance.sequence.value}"
+                        is EvidenceFactPayload.RenderedPilotReadbackPhraseology ->
+                            "${payload.template}:${payload.text.value}@${fact.provenance.sequence.value}"
+                        else -> "${payload.kind}@${fact.provenance.sequence.value}"
+                    }
+                },
+            )
+        }
+    }
+
     fun runwayVacatedTaxiToStandExchange(): EvidenceAuditOutcome {
         val runwayVacatedFacts = renderedPilotReports(RenderedPhraseologyTemplate.RunwayVacatedReport)
             .filter { fact ->
@@ -1533,6 +1583,78 @@ class AuditAfterLandingPhraseologySubject internal constructor(
             payload.aircraftId == aircraftId && payload.template == template
         }
 
+    private fun renderedControllerAndReadbackProjection(): List<EvidenceFact> =
+        facts.filter { fact ->
+            when (val payload = fact.payload) {
+                is EvidenceFactPayload.RenderedPhraseology -> payload.aircraftId == aircraftId
+                is EvidenceFactPayload.RenderedPilotReadbackPhraseology -> payload.aircraftId == aircraftId
+                else -> false
+            }
+        }.sortedBy { fact -> fact.provenance.sequence }
+
+    private fun EvidenceFact.hasValidFirstRightExchangeShape(frequency: Frequency): Boolean =
+        isExpectedFirstRightInstruction() ||
+            isExpectedGroundContact(frequency) ||
+            isExpectedFirstRightFrequencyReadback(frequency)
+
+    private fun EvidenceFact.isExpectedFirstRightInstruction(): Boolean {
+        val payload = payload as? EvidenceFactPayload.RenderedPhraseology ?: return false
+        return payload.template == RenderedPhraseologyTemplate.AfterLandingVacateViaInstruction &&
+            payload.obligationKinds.containsAll(readbackInstructionObligations) &&
+            payload.tokens == firstRightInstructionTokens() &&
+            payload.text == RenderedPhraseText("${aircraftId.value} TAKE FIRST RIGHT WHEN VACATED")
+    }
+
+    private fun EvidenceFact.isExpectedGroundContact(frequency: Frequency): Boolean {
+        val payload = payload as? EvidenceFactPayload.RenderedPhraseology ?: return false
+        return payload.template == RenderedPhraseologyTemplate.ContactFrequencyInstruction &&
+            payload.obligationKinds.containsAll(readbackInstructionObligations) &&
+            payload.tokens == listOf(
+                PhraseologyToken.AircraftCallsign(aircraftId),
+                PhraseologyToken.Contact,
+                PhraseologyToken.UnitName("GROUND"),
+                PhraseologyToken.FrequencyValue(frequency),
+            ) &&
+            payload.text == RenderedPhraseText("${aircraftId.value} CONTACT GROUND ${frequency.mhz}")
+    }
+
+    private fun EvidenceFact.isExpectedFirstRightFrequencyReadback(frequency: Frequency): Boolean {
+        val payload = payload as? EvidenceFactPayload.RenderedPilotReadbackPhraseology ?: return false
+        return payload.template == RenderedPhraseologyTemplate.FirstRightFrequencyReadback &&
+            payload.obligationKinds.containsAll(readbackObligations) &&
+            payload.tokens == firstRightReadbackTokens(frequency) &&
+            payload.text == RenderedPhraseText("FIRST RIGHT ${frequency.mhz} ${aircraftId.value}")
+    }
+
+    private fun firstRightInstructionTokens(): List<PhraseologyToken> =
+        listOf(
+            PhraseologyToken.AircraftCallsign(aircraftId),
+            PhraseologyToken.Take,
+            PhraseologyToken.First,
+            PhraseologyToken.Right,
+            PhraseologyToken.When,
+            PhraseologyToken.Vacated,
+        )
+
+    private fun firstRightReadbackTokens(frequency: Frequency): List<PhraseologyToken> =
+        listOf(
+            PhraseologyToken.First,
+            PhraseologyToken.Right,
+            PhraseologyToken.FrequencyValue(frequency),
+            PhraseologyToken.AircraftCallsign(aircraftId),
+        )
+
+    private fun firstRightExchangeDiagnostics(
+        firstRightFacts: List<EvidenceFact>,
+        contactFacts: List<EvidenceFact>,
+        readbackFacts: List<EvidenceFact>,
+    ): List<String> =
+        listOf(
+            "firstRight=${firstRightFacts.map { fact -> (fact.payload as EvidenceFactPayload.RenderedPhraseology).tokens }}",
+            "contactGround=${contactFacts.map { fact -> (fact.payload as EvidenceFactPayload.RenderedPhraseology).tokens }}",
+            "firstRightReadback=${readbackFacts.map { fact -> (fact.payload as EvidenceFactPayload.RenderedPilotReadbackPhraseology).tokens }}",
+        )
+
     private fun diagnosticEvidence(
         runwayVacatedFacts: List<EvidenceFact>,
         taxiFacts: List<EvidenceFact>,
@@ -1550,6 +1672,24 @@ class AuditAfterLandingPhraseologySubject internal constructor(
         val routeReadback: EvidenceFact,
         val routeTokens: RenderedTaxiRoute,
     )
+
+    private companion object {
+        const val FirstRightExchangeFactCount = 3
+
+        val readbackInstructionObligations: Set<PhraseologyObligationKind> =
+            setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.SemanticSlot,
+                PhraseologyObligationKind.Readback,
+            )
+
+        val readbackObligations: Set<PhraseologyObligationKind> =
+            setOf(
+                PhraseologyObligationKind.OrderedPhrase,
+                PhraseologyObligationKind.Readback,
+                PhraseologyObligationKind.SemanticSlot,
+            )
+    }
 }
 
 class AuditRenderedVehicleDriverPhraseologySubject internal constructor(
@@ -1693,6 +1833,8 @@ class AuditRenderedVehicleDriverPhraseologySubject internal constructor(
         when (template) {
             RenderedPhraseologyTemplate.VehicleInitialCall -> hasVehicleInitialCallShape()
             RenderedPhraseologyTemplate.VehicleTowRequest -> hasVehicleTowRequestShape()
+            RenderedPhraseologyTemplate.AfterLandingVacateViaInstruction,
+            RenderedPhraseologyTemplate.FirstRightFrequencyReadback,
             RenderedPhraseologyTemplate.ContactFrequencyInstruction,
             RenderedPhraseologyTemplate.FrequencyReadback,
             RenderedPhraseologyTemplate.TaxiToStandInstruction,

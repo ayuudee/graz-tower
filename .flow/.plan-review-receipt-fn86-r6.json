@@ -1,0 +1,12 @@
+{
+  "type": "plan_review",
+  "id": "fn-86-icao-9432-after-landing-first-right",
+  "mode": "codex",
+  "verdict": "SHIP",
+  "session_id": "01a0c40a-3392-7993-8bb5-558792460b00",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-21T12:58:11.353471Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0c40a-3392-7993-8bb5-558792460b00\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"I\u2019ll review this as a plan/design review against the embedded code only, per your constraint. I\u2019m looking especially for places where the acceptance criteria would let an implementation appear green without proving the actual typed first-right branch.\"}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_1\",\"type\":\"agent_message\",\"text\":\"Issues: None found.\\n\\nThe epic and task specs line up well with the embedded code. The plan correctly scopes the work to rendered phraseology/evidence, preserves unsupported paths, requires exact `PointId(\\\"FIRST_RIGHT\\\")` matching, adds adjacency semantics at the rendered-evidence projection level, and calls out the exhaustive `RenderedPhraseologyTemplate` audit that the current code will need.\\n\\nThe one thing I would watch during implementation is that \u201ctyped binding\u201d must be proven through adapter/renderer tests built from real `TransmissionRecord` values, since the source selector itself only sees rendered payloads. The spec already says that, so it is not a blocking gap.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":81471,\"cached_input_tokens\":4480,\"cache_write_input_tokens\":0,\"output_tokens\":4859,\"reasoning_output_tokens\":4660}}\n"
+}

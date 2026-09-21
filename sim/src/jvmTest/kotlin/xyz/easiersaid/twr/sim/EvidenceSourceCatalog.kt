@@ -307,9 +307,9 @@ object ICAO9432 {
     }
 
     object AfterLanding {
-        val ContactGroundWordingOnly: EvidenceSourceRef = source(
+        val FirstRightContactGroundWording: EvidenceSourceRef = source(
             canonicalId = "icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3",
-            title = "CONTACT GROUND branch rendered; TAKE FIRST RIGHT WHEN VACATED remains blocked",
+            title = "First-right vacating, contact-ground, and readback rendered phraseology",
             claimScope = EvidenceSourceClaimScope.RenderedPhraseologyTrace,
         )
 
@@ -335,7 +335,7 @@ object ICAO9432 {
             setOf(RemainTowerFrequencyUntilRunwayVacated, TaxiInstructionsAfterLandingRoll)
 
         val PhraseologyItems: Set<EvidenceSourceRef> =
-            setOf(ContactGroundWordingOnly, RunwayVacatedTaxiToStandWording)
+            setOf(FirstRightContactGroundWording, RunwayVacatedTaxiToStandWording)
     }
 
     object TransferCommunications {

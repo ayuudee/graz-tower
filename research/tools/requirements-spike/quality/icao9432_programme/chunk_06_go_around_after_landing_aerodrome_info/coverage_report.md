@@ -7,16 +7,17 @@ information.
 
 | Final state | Units |
 |---|---:|
-| `covered-green` | 2 |
+| `covered-green` | 3 |
 | `covered-structural` | 8 |
 | `covered-red` | 0 |
 | `model-gap` | 1 |
 | `model-gap` + `policy-blocked` | 3 |
 | `policy-blocked` | 3 |
-| `split residual` | 1 |
+| `split residual` | 0 |
 | `phraseology-later` | 2 |
 
-The covered-green source units are the VFR go-around default and the rendered
+The covered-green source units are the VFR go-around default, the rendered
+after-landing first-right / contact-ground wording branch, and the rendered
 after-landing runway-vacated / taxi-to-stand wording branch. The
 essential-aerodrome-information category/definition rows are covered only as
 structural evidence vocabulary. They do not claim live sim projection, timing,
@@ -32,7 +33,7 @@ receipt, omission policy, open pertinence, or rendered phraseology coverage.
 | `icao9432-extracted::after_landing_4_9_en::203b53733da22603` | `phraseology-later` | `PHRASE-1` | Air-taxi to helicopter stand example phraseology. |
 | `icao9432-extracted::after_landing_4_9_en::4a512226eec962cb` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `POLICY-1` | Pilot remains on tower frequency until runway vacated unless otherwise advised. |
 | `icao9432-extracted::after_landing_4_9_en::5d742dc66caa1790` | `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `ClearanceTimingPolicy` | Controller should not issue taxi instructions until landing roll completed unless absolutely necessary. |
-| `icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3` | `split: CONTACT GROUND wording covered; TAKE FIRST RIGHT WHEN VACATED remains blocked` | `Icao9432PhraseologyEvidenceTest`; residual `PHRASE-1` | Contact-ground rendered phraseology and frequency readback are covered; first-right/vacating wording remains blocked. |
+| `icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3` | `covered-green rendered first-right/contact-ground phraseology` | `Icao9432PhraseologyEvidenceTest` | Synthetic ICAO 9432 example renders `TAKE FIRST RIGHT WHEN VACATED`, `CONTACT GROUND 118.350`, and `FIRST RIGHT 118.350 FASTAIR 345` through typed transmission records. |
 | `icao9432-extracted::after_landing_4_9_en::e30350fdecad45a1` | `covered-green` | `Icao9432PhraseologyEvidenceTest` | Runway-vacated and taxi-to-stand rendered phraseology. |
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::01c0a4bc62b1e926` | `covered-structural` | `Icao9432EssentialAerodromeInformationEvidenceTest`; structural evidence vocabulary | Essential aerodrome information includes water on runway, taxiway, or apron. |
 | `icao9432-extracted::essential_aerodrome_information_4_10_en::1306eb5cc586df34` | `model-gap` + `policy-blocked` | `Icao9432ModelGapSourceUnitSpecTest`; `FN43-GAP-1`; `OperationalGuidancePolicy` | Essential aerodrome information may be omitted when already known from other sources. |
@@ -72,8 +73,10 @@ receipt, omission policy, open pertinence, or rendered phraseology coverage.
   trace with `GoingAround -> post-GA Downwind -> ClearedToLand -> RunwayVacated`.
   The after-landing runway-vacated / taxi-to-stand row is proven by rendered
   phraseology facts in strict `RUNWAY VACATED -> TAXI TO STAND -> readback`
-  order. The contact-ground row is explicitly split: `CONTACT GROUND` wording
-  is covered, while first-right/vacating wording remains residual.
+  order. The first-right / contact-ground row is proven by a synthetic typed
+  ICAO example trace in strict `TAKE FIRST RIGHT WHEN VACATED -> CONTACT
+  GROUND -> FIRST RIGHT + frequency readback` order, while unsupported
+  vacating/readback variants remain explicit unsupported evidence.
 - Impact: no controller, pilot, movement, clearance, or policy behaviour was
   changed. The phraseology renderer/evidence surface was extended for supported
   after-landing templates only; §4.10 category coverage remains structural

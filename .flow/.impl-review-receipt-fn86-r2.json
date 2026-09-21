@@ -1,0 +1,13 @@
+{
+  "type": "impl_review",
+  "id": "fn-86-icao-9432-after-landing-first-right.1",
+  "mode": "codex",
+  "base": "197c1947119c6da98a1101f1660645d56e943365",
+  "verdict": "SHIP",
+  "session_id": "01a0c41a-f1d6-75f0-92aa-1a1a1277431d",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-21T13:16:27.091646Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0c41a-f1d6-75f0-92aa-1a1a1277431d\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"I\u2019ll stay inside the embedded diff/content as requested and review this as an implementation review. I\u2019m tracing the new renderer path, the fact projection, and the selector tests together so I only flag things that are actually introduced by this changeset.\"}}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_1\",\"type\":\"agent_message\",\"text\":\"Issues: None found.\\n\\nThe new first-right renderer path is narrow, unsupported variants stay explicit, and the after-landing selector now checks the adjacent rendered exchange with exact text/tokens for the same aircraft. The added selector cases cover the prior implementation-review gap: wrong text, missing obligations, wrong template, wrong order, wrong frequency, absent evidence, and wrong aircraft.\\n\\n## Pre-existing issues (not blocking this verdict)\\n\\nNone.\\n\\nClassification counts: 0 introduced, 0 pre_existing.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":124575,\"cached_input_tokens\":11648,\"cache_write_input_tokens\":0,\"output_tokens\":4829,\"reasoning_output_tokens\":4660}}\n"
+}

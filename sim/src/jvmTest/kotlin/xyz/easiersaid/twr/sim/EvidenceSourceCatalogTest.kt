@@ -236,17 +236,17 @@ class EvidenceSourceCatalogTest {
     }
 
     @Test
-    fun `after-landing contact-ground residual blocker remains represented in central manifest`() {
+    fun `after-landing first-right contact-ground source is covered in central manifest`() {
         val manifest = Files.readString(
             manifestPath(),
         )
 
         val sourceId = "icao9432-extracted::after_landing_4_9_en::df25159c1e7b94a3"
-        val state = "split: CONTACT GROUND wording covered; TAKE FIRST RIGHT WHEN VACATED remains blocked"
-        val residual = "first-right/vacating wording remains PHRASE-1"
+        val state = "covered-green rendered first-right/contact-ground phraseology"
+        val evidence = "Icao9432PhraseologyEvidenceTest; RenderedPhraseologyTrace"
         assertTrue(manifest.contains(sourceId), "manifest missing $sourceId")
         assertTrue(manifest.contains(state), "manifest missing state $state")
-        assertTrue(manifest.contains(residual), "manifest missing residual $residual")
+        assertTrue(manifest.contains(evidence), "manifest missing evidence $evidence")
     }
 
     private fun manifestPath() =
