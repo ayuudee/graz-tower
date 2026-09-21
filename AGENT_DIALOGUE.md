@@ -53,11 +53,17 @@ source-mapped regulatory testing programme.
 Current programme state:
 
 - `fn-46` mapped all accepted ICAO 9432 source units.
-- `fn-47` completed chunk 01: communications, transfer, and readback.
-- Chunk 01 result: 6 `covered-green`, 4 `expected-gap`, 7
-  `phraseology-later`, 2 `policy-blocked`, 1 `not-applicable`.
+- `fn-47` through `fn-58` completed the chunk source-mapped coverage wall.
+- `fn-60` through `fn-89` have been working down blocker families with
+  source-mapped implementation epics.
+- Latest completed programme commit before the 2026-09-21 shutdown handoff:
+  `176b6d6f fn-89 cover communications phraseology examples`.
+- Current durable shutdown note:
+  `research/tools/requirements-spike/quality/icao9432_programme/SHUTDOWN_HANDOFF_2026-09-21.md`.
 - Chunk 01 artifacts live under:
   `research/tools/requirements-spike/quality/icao9432_programme/chunk_01_comms_readback_transfer/`.
+- Central implementation tracking table:
+  `research/tools/requirements-spike/quality/icao9432_programme/implementation_blocker_manifest.csv`.
 
 ## Workflow
 
@@ -121,6 +127,46 @@ Test Completer specifically — **no debt, no surprises**:
   and visible.
 
 ## Dialogue Log
+
+### 2026-09-21 16:39 CEST - Shutdown handoff after fn-89
+
+Repository was clean and local `main` matched `origin/main` at
+`176b6d6f fn-89 cover communications phraseology examples` before the shutdown
+docs pass.
+
+Recent programme state:
+
+- `fn-87` covered helicopter air-taxi rendered phraseology.
+- `fn-88` covered ICAO 9432 section 4.10 essential aerodrome information
+  example phraseology with synthetic rendered example evidence.
+- `fn-89` covered ICAO 9432 section 2.8.1 full-callsign initial-contact and
+  `ALL STATIONS` communication examples with synthetic rendered example
+  evidence.
+
+Current implementation manifest snapshot:
+
+- `implementation_blocker_manifest.csv` has 143 implementation-tracking rows.
+  The full accepted source-unit inventory remains 166 units in the programme
+  README.
+- Largest remaining manifest states: 28 `phraseology-later`, 22
+  `policy-blocked`, 8 `covered-structural`, 7 `covered-green`, 6
+  `model-gap + policy-blocked`, 4 `model-gap`, 4
+  `model-gap + phraseology-later`, 4
+  `covered-synthetic rendered example phraseology`, and 4
+  `covered-green rendered phraseology`.
+
+Recommended next candidate:
+
+- `icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9`.
+- ICAO Doc 9432, Fourth Edition, 2007, section 2.8.3.3: route clearance is not
+  takeoff or active-runway-entry clearance.
+- Likely implementation shape: structural protocol evidence proving the
+  route/runway boundary, only if the existing protocol surface can prove it
+  honestly. Do not treat it as rendered phraseology and do not green it if the
+  evidence would only restate a compiler fact.
+
+Full resume note:
+`research/tools/requirements-spike/quality/icao9432_programme/SHUTDOWN_HANDOFF_2026-09-21.md`.
 
 ### 2026-05-20
 

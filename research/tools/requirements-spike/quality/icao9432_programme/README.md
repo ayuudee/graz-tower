@@ -1,5 +1,13 @@
 # ICAO 9432 source-unit programme map
 Generated from `research/tools/requirements-spike/registry/ollama_first/` by selecting `documentId = icao9432-extracted` and `lifecycle.state = accepted`.
+
+## Current Handoff
+
+- Shutdown/resume status after fn-89:
+  `SHUTDOWN_HANDOFF_2026-09-21.md`.
+- Central implementation tracking table:
+  `implementation_blocker_manifest.csv`.
+
 ## Inventory Summary
 - Accepted source units: 166
 - Non-programme ICAO 9432 units in registry: 21 rejected, 2 pending (189 total).
