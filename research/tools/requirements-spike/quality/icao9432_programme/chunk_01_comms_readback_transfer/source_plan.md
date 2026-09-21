@@ -11,9 +11,10 @@ Source: `classification.csv` rows with `chunk_id = chunk-01-comms-readback-trans
 | State | Units |
 |---|---:|
 | `candidate-test` | 9 |
+| `covered-synthetic rendered example phraseology` | 3 |
 | `expected-gap` | 1 |
 | `not-applicable` | 1 |
-| `phraseology-later` | 4 |
+| `phraseology-later` | 1 |
 | `policy-blocked` | 2 |
 | `rendered-phraseology` | 1 |
 | `split: supported rendered controller templates covered; cancellation wording phraseology-later` | 1 |
@@ -24,10 +25,10 @@ Source: `classification.csv` rows with `chunk_id = chunk-01-comms-readback-trans
 | Source unit | Section | Claim | Planned state | Blocker | Notes |
 |---|---|---|---|---|---|
 | `icao9432-extracted::communications_2_8_1_en::0a964f42b6100596` | `communications_2_8_1_en` | If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either in full or in part. | `candidate-test` | `none` | Covered by fn-50 real radio-overlap evidence: stepped-on controller transmission produces ReceptionDoubt resolved by pilot SayAgain. |
-| `icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca` | `communications_2_8_1_en` | When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the call "ALL STATIONS". | `phraseology-later` | `PHRASE-1` | Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology. |
+| `icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca` | `communications_2_8_1_en` | When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the call "ALL STATIONS". | `covered-synthetic rendered example phraseology` | `none` | `Icao9432Chunk01CommunicationsPhraseologyEvidenceTest` covers the §2.8.1.3 aircraft ALL STATIONS example as synthetic rendered-example evidence only. |
 | `icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf` | `communications_2_8_1_en` | No reply is expected to such general calls unless individual stations are subsequently called upon to acknowledge receipt. | `policy-blocked` | `POLICY-1` | Block on typed policy concept OperationalGuidancePolicy; do not assert one universal behaviour. |
-| `icao9432-extracted::communications_2_8_1_en::a685cef087951878` | `communications_2_8_1_en` | When establishing communications, an aircraft should use the full call sign of both the aircraft and the aeronautical station. | `phraseology-later` | `PHRASE-1` | Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology. |
-| `icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510` | `communications_2_8_1_en` | When a ground station wishes to broadcast information, the message should be prefaced by the call "ALL STATIONS". | `phraseology-later` | `PHRASE-1` | Block on PHRASE-1; typed semantics alone do not prove rendered RT phraseology. |
+| `icao9432-extracted::communications_2_8_1_en::a685cef087951878` | `communications_2_8_1_en` | When establishing communications, an aircraft should use the full call sign of both the aircraft and the aeronautical station. | `covered-synthetic rendered example phraseology` | `none` | `Icao9432Chunk01CommunicationsPhraseologyEvidenceTest` covers the §2.8.1.1 full-callsign initial-contact examples as synthetic rendered-example evidence only. |
+| `icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510` | `communications_2_8_1_en` | When a ground station wishes to broadcast information, the message should be prefaced by the call "ALL STATIONS". | `covered-synthetic rendered example phraseology` | `none` | `Icao9432Chunk01CommunicationsPhraseologyEvidenceTest` covers the §2.8.1.2 ground-station ALL STATIONS example as synthetic rendered-example evidence only. |
 | `icao9432-extracted::readback_2_8_3_en::15940532b37f8528` | `readback_2_8_3_en` | Clearances and instructions to enter, land on, take off from, hold short of, cross and backtrack on any runway shall always be read back. | `candidate-test` | `none` | Author protocolEvidence source-mapped test if current DSL can express readback/hearback semantic evidence. |
 | `icao9432-extracted::readback_2_8_3_en::25c245bc4728ed60` | `readback_2_8_3_en` | Runway-in-use, altimeter settings, SSR codes, level instructions, heading and speed instructions, and transition levels shall always be read back. | `candidate-test` | `none` | Author protocolEvidence source-mapped test if current DSL can express readback/hearback semantic evidence. |
 | `icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726` | `readback_2_8_3_en` | Whenever possible, controllers should pass a route clearance to an aircraft before start-up. | `policy-blocked` | `POLICY-1` | Block on typed policy concept ClearanceTimingPolicy; do not assert one universal behaviour. |
@@ -56,10 +57,7 @@ Source: `classification.csv` rows with `chunk_id = chunk-01-comms-readback-trans
 
 ## Expected Gaps / Blocked / Not Applicable Units
 
-- `icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca` -> `phraseology-later` via `PHRASE-1`: When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the call "ALL STATIONS".
 - `icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf` -> `policy-blocked` via `POLICY-1`: No reply is expected to such general calls unless individual stations are subsequently called upon to acknowledge receipt.
-- `icao9432-extracted::communications_2_8_1_en::a685cef087951878` -> `phraseology-later` via `PHRASE-1`: When establishing communications, an aircraft should use the full call sign of both the aircraft and the aeronautical station.
-- `icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510` -> `phraseology-later` via `PHRASE-1`: When a ground station wishes to broadcast information, the message should be prefaced by the call "ALL STATIONS".
 - `icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726` -> `policy-blocked` via `POLICY-1`: Whenever possible, controllers should pass a route clearance to an aircraft before start-up.
 - `icao9432-extracted::readback_2_8_3_en::ac9111d240cfd2c2` -> `expected-gap` via `FN33-MODEL-1`: Controllers should pass a clearance slowly and clearly, avoid passing clearances during complicated taxiing, and on no occasion should a clearance be passed when the pilot is engaged in line up or take-off manoeuvres.
 - `icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649` -> `split: supported rendered controller templates covered; cancellation wording phraseology-later` via `PHRASE-1`: fn-82 covers supported rendered controller templates; take-off-clearance cancellation wording remains unmodelled.

@@ -1,0 +1,14 @@
+{
+  "type": "impl_review",
+  "id": "fn-89-fn-89-icao-9432-chunk-01-communications.1",
+  "mode": "codex",
+  "base": "origin/main",
+  "verdict": "SHIP",
+  "session_id": "01a0c455-9065-7ce0-832b-cb9e161d2660",
+  "model": "gpt-5.5",
+  "effort": "high",
+  "spec": "codex:gpt-5.5:high",
+  "timestamp": "2026-09-21T14:19:14.485299Z",
+  "review": "{\"type\":\"thread.started\",\"thread_id\":\"01a0c455-9065-7ce0-832b-cb9e161d2660\"}\n{\"type\":\"turn.started\"}\n{\"type\":\"item.completed\",\"item\":{\"id\":\"item_0\",\"type\":\"agent_message\",\"text\":\"No blocking introduced issues found.\\n\\nThe implementation matches the spec: it keeps the new communication examples in the synthetic rendered-example lane, uses separate payload/template/token types, adds exact-block selector coverage, cites the three ICAO 9432 source refs with the right claim scope, and updates the chunk docs/manifest without widening trace-backed phraseology evidence.\\n\\nSuppressed findings: none.\\nClassification counts: 0 introduced, 0 pre_existing.\\n\\n<verdict>SHIP</verdict>\"}}\n{\"type\":\"turn.completed\",\"usage\":{\"input_tokens\":130957,\"cached_input_tokens\":4480,\"cache_write_input_tokens\":0,\"output_tokens\":618,\"reasoning_output_tokens\":516}}\n",
+  "focus": "Review fn-89 synthetic rendered communication phraseology example evidence. Check source fidelity for ICAO 9432 \u00a72.8.1 examples, honesty of synthetic claim scope, selector exactness/failure modes, separation from trace-backed rendered phraseology, docs/manifest consistency, and AGENTS constraints."
+}

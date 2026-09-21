@@ -167,6 +167,18 @@ sealed interface EvidenceFactPayload {
         override val kind: EvidenceFactKind = EvidenceFactKind.RenderedEssentialAerodromeInformationPhraseology
     }
 
+    data class RenderedCommunicationPhraseologyExample(
+        val template: RenderedCommunicationPhraseologyTemplate,
+        val tokens: List<CommunicationPhraseologyToken>,
+        val text: RenderedPhraseText,
+    ) : EvidenceFactPayload {
+        init {
+            require(tokens.isNotEmpty()) { "rendered communication phraseology example must carry tokens" }
+        }
+
+        override val kind: EvidenceFactKind = EvidenceFactKind.RenderedCommunicationPhraseologyExample
+    }
+
     data class CriticalPhaseWindow(
         val aircraftId: AircraftId,
         val phase: CriticalPhaseKind,
@@ -397,6 +409,7 @@ enum class EvidenceFactKind {
     AerodromeInformation,
     EssentialAerodromeInformation,
     RenderedEssentialAerodromeInformationPhraseology,
+    RenderedCommunicationPhraseologyExample,
     CriticalPhaseWindow,
     CriticalPhaseTransmission,
     FrequencyTransfer,
@@ -501,6 +514,20 @@ sealed interface EssentialAerodromeInformationPhraseologyToken {
     data object AvailableWidth : EssentialAerodromeInformationPhraseologyToken
     data object CoveredWithThinPatchesOfIce : EssentialAerodromeInformationPhraseologyToken
     data object BrakingActionPoor : EssentialAerodromeInformationPhraseologyToken
+}
+
+enum class RenderedCommunicationPhraseologyTemplate {
+    InitialContactStationThenAircraft,
+    InitialContactAircraftThenStation,
+    GroundStationAllStationsBroadcast,
+    AircraftAllStationsBroadcast,
+}
+
+sealed interface CommunicationPhraseologyToken {
+    data class AircraftCallsign(val aircraftId: AircraftId) : CommunicationPhraseologyToken
+    data class StationCallsign(val value: String) : CommunicationPhraseologyToken
+    data class BroadcastContent(val value: String) : CommunicationPhraseologyToken
+    data object AllStations : CommunicationPhraseologyToken
 }
 
 data class AerodromeInformationDetail(

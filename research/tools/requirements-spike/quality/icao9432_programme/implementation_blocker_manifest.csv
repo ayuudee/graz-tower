@@ -1,8 +1,8 @@
 source_unit_id,chunk,final_state,blockers,coverage_cell
-icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca,chunk_01_comms_readback_transfer,phraseology-later,PHRASE-1,PHRASE-1
+icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca,chunk_01_comms_readback_transfer,covered-synthetic rendered example phraseology,,Icao9432Chunk01CommunicationsPhraseologyEvidenceTest; SyntheticRenderedPhraseologyExample
 icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf,chunk_01_comms_readback_transfer,policy-blocked,POLICY-1,POLICY-1
-icao9432-extracted::communications_2_8_1_en::a685cef087951878,chunk_01_comms_readback_transfer,phraseology-later,PHRASE-1,PHRASE-1
-icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510,chunk_01_comms_readback_transfer,phraseology-later,PHRASE-1,PHRASE-1
+icao9432-extracted::communications_2_8_1_en::a685cef087951878,chunk_01_comms_readback_transfer,covered-synthetic rendered example phraseology,,Icao9432Chunk01CommunicationsPhraseologyEvidenceTest; SyntheticRenderedPhraseologyExample
+icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510,chunk_01_comms_readback_transfer,covered-synthetic rendered example phraseology,,Icao9432Chunk01CommunicationsPhraseologyEvidenceTest; SyntheticRenderedPhraseologyExample
 icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726,chunk_01_comms_readback_transfer,policy-blocked,POLICY-1,POLICY-1
 icao9432-extracted::readback_2_8_3_en::f06dfa1cefd2d649,chunk_01_comms_readback_transfer,split: supported rendered controller templates covered; cancellation wording phraseology-later,PHRASE-1,Icao9432PhraseologyEvidenceTest; RenderedPhraseologyTrace; cancellation wording and unsupported templates remain PHRASE-1
 icao9432-extracted::readback_2_8_3_en::fe3b04ca9c3384d9,chunk_01_comms_readback_transfer,phraseology-later,PHRASE-1,PHRASE-1

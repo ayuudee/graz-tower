@@ -91,8 +91,33 @@ object ICAO9432 {
             claimScope = EvidenceSourceClaimScope.ScenarioBehavior,
         )
 
+        val FullCallsignInitialContact: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::communications_2_8_1_en::a685cef087951878",
+            title = "ICAO Doc 9432 Fourth Edition 2007 §2.8.1.1 full call sign initial contact",
+            claimScope = EvidenceSourceClaimScope.SyntheticRenderedPhraseologyExample,
+        )
+
+        val GroundStationAllStationsBroadcast: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510",
+            title = "ICAO Doc 9432 Fourth Edition 2007 §2.8.1.2 ground station ALL STATIONS broadcast",
+            claimScope = EvidenceSourceClaimScope.SyntheticRenderedPhraseologyExample,
+        )
+
+        val AircraftAllStationsBroadcast: EvidenceSourceRef = source(
+            canonicalId = "icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca",
+            title = "ICAO Doc 9432 Fourth Edition 2007 §2.8.1.3 aircraft ALL STATIONS broadcast",
+            claimScope = EvidenceSourceClaimScope.SyntheticRenderedPhraseologyExample,
+        )
+
         val RequiredProcedures: Set<EvidenceSourceRef> =
             setOf(ReceptionDoubtRepetitionRequested)
+
+        val PhraseologyExampleItems: Set<EvidenceSourceRef> =
+            setOf(
+                FullCallsignInitialContact,
+                GroundStationAllStationsBroadcast,
+                AircraftAllStationsBroadcast,
+            )
     }
 
     object Readback {
@@ -854,6 +879,7 @@ object EvidenceGaps {
 object EvidenceSourceCatalog {
     val All: Set<EvidenceSourceRef> =
             ICAO9432.Communications.RequiredProcedures +
+            ICAO9432.Communications.PhraseologyExampleItems +
             ICAO9432.Readback.RequiredItems +
             ICAO9432.Readback.AdvisoryItems +
             ICAO9432.Readback.PhraseologyItems +

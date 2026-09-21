@@ -7,10 +7,11 @@ Chunk: ICAO 9432 communications, transfer, and readback.
 | Final state | Units |
 |---|---:|
 | `covered-green` | 11 |
+| `covered-synthetic rendered example phraseology` | 3 |
 | `covered-red` | 0 |
 | `expected-gap` | 0 |
 | `not-applicable` | 1 |
-| `phraseology-later` | 4 |
+| `phraseology-later` | 1 |
 | `policy-blocked` | 2 |
 | `split: supported rendered controller templates covered; cancellation wording phraseology-later` | 1 |
 | `split: supported rendered readbacks covered; remaining templates phraseology-later` | 1 |
@@ -26,7 +27,10 @@ currently supported rendered pilot readback templates (`LineUpReadback` and
 `FrequencyReadback`); other readback templates remain PHRASE-1.
 fn-82 partially closes the TAKE OFF word-use row for supported rendered
 controller templates; take-off-clearance cancellation wording and unsupported
-templates remain PHRASE-1.
+templates remain PHRASE-1. fn-89 covers the §2.8.1 full-callsign and
+ALL STATIONS examples as synthetic rendered-example evidence only; it does not
+claim live broadcast routing, acknowledgement policy, or controller/pilot
+generation.
 
 Focused verification run:
 
@@ -38,6 +42,7 @@ Result: GREEN. All chunk-01 evidence tests pass
 (`Icao9432Chunk01ReadbackEvidenceTest`,
 `Icao9432Chunk01FrequencyTransferEvidenceTest`,
 `Icao9432Chunk01ReceptionDoubtEvidenceTest`,
+`Icao9432Chunk01CommunicationsPhraseologyEvidenceTest`,
 `Icao9432Chunk01ClearancePacingEvidenceTest` on the sim side;
 `Icao9432ReadbackConformanceSpec` on the controller side; plus the
 adjacent `Icao9432*SourceUnitSpec` / `Icao9432*SourceBackedScenario`
@@ -59,10 +64,10 @@ test-environment concern, not as a chunk closure blocker.
 | Source unit | Final state | Test / blocker | Claim |
 |---|---|---|---|
 | `icao9432-extracted::communications_2_8_1_en::0a964f42b6100596` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ReceptionDoubtEvidenceTest.kt` | If there is doubt that a message has been correctly received, a repetition of the messages shall be requested either ... |
-| `icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca` | `phraseology-later` | `PHRASE-1` | When an aircraft wishes to broadcast information to aircraft in its vicinity, the message should be prefaced by the c... |
+| `icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca` | `covered-synthetic rendered example phraseology` | `Icao9432Chunk01CommunicationsPhraseologyEvidenceTest`; SyntheticRenderedPhraseologyExample | Synthetic rendered-example evidence covers the §2.8.1.3 aircraft `ALL STATIONS` broadcast example. |
 | `icao9432-extracted::communications_2_8_1_en::8b0487b183cd02cf` | `policy-blocked` | `POLICY-1` | No reply is expected to such general calls unless individual stations are subsequently called upon to acknowledge rec... |
-| `icao9432-extracted::communications_2_8_1_en::a685cef087951878` | `phraseology-later` | `PHRASE-1` | When establishing communications, an aircraft should use the full call sign of both the aircraft and the aeronautical... |
-| `icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510` | `phraseology-later` | `PHRASE-1` | When a ground station wishes to broadcast information, the message should be prefaced by the call "ALL STATIONS". |
+| `icao9432-extracted::communications_2_8_1_en::a685cef087951878` | `covered-synthetic rendered example phraseology` | `Icao9432Chunk01CommunicationsPhraseologyEvidenceTest`; SyntheticRenderedPhraseologyExample | Synthetic rendered-example evidence covers the §2.8.1.1 full-callsign initial-contact examples. |
+| `icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510` | `covered-synthetic rendered example phraseology` | `Icao9432Chunk01CommunicationsPhraseologyEvidenceTest`; SyntheticRenderedPhraseologyExample | Synthetic rendered-example evidence covers the §2.8.1.2 ground-station `ALL STATIONS` broadcast example. |
 | `icao9432-extracted::readback_2_8_3_en::15940532b37f8528` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ReadbackEvidenceTest.kt` | Clearances and instructions to enter, land on, take off from, hold short of, cross and backtrack on any runway shall ... |
 | `icao9432-extracted::readback_2_8_3_en::25c245bc4728ed60` | `covered-green` | `sim/src/jvmTest/kotlin/xyz/easiersaid/twr/sim/Icao9432Chunk01ReadbackEvidenceTest.kt` | Runway-in-use, altimeter settings, SSR codes, level instructions, heading and speed instructions, and transition leve... |
 | `icao9432-extracted::readback_2_8_3_en::36e6ad16cffe8726` | `policy-blocked` | `POLICY-1` | Whenever possible, controllers should pass a route clearance to an aircraft before start-up. |
@@ -94,8 +99,9 @@ test-environment concern, not as a chunk closure blocker.
   `transfer_communications_2_8_2_en::96720e821bf926cc` CONTACT
   frequency-change phraseology row, by fn-81 for the supported rendered
   readback-termination templates (`LineUpReadback`, `FrequencyReadback`), and
-  by fn-82 for supported rendered controller-template TAKE OFF word-use.
-  Still cross-chunk infrastructure; covers ALL STATIONS, full callsign, TAKE
+  by fn-82 for supported rendered controller-template TAKE OFF word-use, and
+  by fn-89 for synthetic rendered §2.8.1 full-callsign / ALL STATIONS examples.
+  Still cross-chunk infrastructure; covers TAKE
   OFF cancellation wording, unsupported readback/controller templates,
   unit-only CONTACT variants, MONITOR, WHEN PASSING conditionals, and other
   phraseology units. Tracked in `.plan`.

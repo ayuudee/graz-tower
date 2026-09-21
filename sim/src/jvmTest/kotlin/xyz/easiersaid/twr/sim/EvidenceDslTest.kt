@@ -1330,6 +1330,62 @@ class EvidenceDslTest {
         }
     }
 
+    @Test
+    fun `communicationPhraseologyExamples selector matches exact synthetic example block`() {
+        val expected = listOf(
+            communicationInitialContactStationThenAircraftExample(),
+            communicationInitialContactAircraftThenStationExample(),
+            communicationGroundStationAllStationsExample(),
+            communicationAircraftAllStationsExample(),
+        )
+        val unrelated = essentialInformationPayload(
+            category = EssentialAerodromeInformationCategory.TemporaryHazard,
+            domain = EssentialAerodromeInformationDomain.MovementArea,
+            facets = setOf(EssentialAerodromeInformationFacet.BirdsOnGroundOrInAir),
+            detail = "birds on the ground",
+        )
+
+        val passReport = communicationPhraseologyReport(
+            scenarioId = "communication-phraseology-pass",
+            payloads = listOf(unrelated) + expected,
+        )
+        assertTrue(passReport.results.single().outcome is EvidenceAuditOutcome.Pass)
+        assertEquals(4, passReport.results.single().activationFactIds.size)
+
+        val failingCases = listOf(
+            "absent" to emptyList(),
+            "missing-example" to expected.take(3),
+            "wrong-order" to listOf(expected[1], expected[0], expected[2], expected[3]),
+            "wrong-template" to listOf(
+                expected[0].copy(template = RenderedCommunicationPhraseologyTemplate.AircraftAllStationsBroadcast),
+                expected[1],
+                expected[2],
+                expected[3],
+            ),
+            "wrong-text" to listOf(
+                expected[0].copy(text = RenderedPhraseText("STEPHENVILLE G-ABCD")),
+                expected[1],
+                expected[2],
+                expected[3],
+            ),
+            "malformed-tokens" to listOf(
+                expected[0].copy(tokens = expected[0].tokens.dropLast(1)),
+                expected[1],
+                expected[2],
+                expected[3],
+            ),
+            "extra-duplicate" to (expected + expected[0]),
+        )
+
+        failingCases.forEach { (scenario, payloads) ->
+            val report = communicationPhraseologyReport(
+                scenarioId = "communication-phraseology-$scenario",
+                payloads = payloads,
+            )
+            assertTrue(report.results.single().outcome is EvidenceAuditOutcome.Fail, scenario)
+        }
+    }
+
     private fun essentialInformationPayload(
         category: EssentialAerodromeInformationCategory,
         domain: EssentialAerodromeInformationDomain,
@@ -1357,6 +1413,22 @@ class EvidenceDslTest {
             }
             invariant("essential aerodrome information phraseology") {
                 expect { essentialAerodromeInformationPhraseology().exampleBlock() }
+            }
+        }
+
+    private fun communicationPhraseologyReport(
+        scenarioId: String,
+        payloads: List<EvidenceFactPayload>,
+    ): EvidenceAuditReport =
+        simEvidence(scenarioId) {
+            observe {
+                EvidenceFactAdapters.fromProjectedPayloads(
+                    scenarioId = scenarioId,
+                    payloads = payloads,
+                )
+            }
+            invariant("communication phraseology examples") {
+                expect { communicationPhraseologyExamples().exampleBlock() }
             }
         }
 

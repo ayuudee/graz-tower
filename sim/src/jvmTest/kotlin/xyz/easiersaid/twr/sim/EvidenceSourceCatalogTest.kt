@@ -15,6 +15,9 @@ class EvidenceSourceCatalogTest {
         assertEquals(
             setOf(
                 "icao9432-extracted::communications_2_8_1_en::0a964f42b6100596",
+                "icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca",
+                "icao9432-extracted::communications_2_8_1_en::a685cef087951878",
+                "icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510",
                 "icao9432-extracted::readback_2_8_3_en::15940532b37f8528",
                 "icao9432-extracted::readback_2_8_3_en::25c245bc4728ed60",
                 "icao9432-extracted::readback_2_8_3_en::58594a8ee6243296",
@@ -205,13 +208,23 @@ class EvidenceSourceCatalogTest {
     @Test
     fun `synthetic rendered example phraseology refs are separate from trace-backed rendered phraseology`() {
         assertEquals(
-            setOf("icao9432-extracted::essential_aerodrome_information_4_10_en::7b81f87f5c2b4d75"),
+            setOf(
+                "icao9432-extracted::communications_2_8_1_en::5efac97fddfd54ca",
+                "icao9432-extracted::communications_2_8_1_en::a685cef087951878",
+                "icao9432-extracted::communications_2_8_1_en::b7acdc88125f1510",
+                "icao9432-extracted::essential_aerodrome_information_4_10_en::7b81f87f5c2b4d75",
+            ),
             EvidenceSourceCatalog.All
                 .filter { source ->
                     source.record.claimScope == EvidenceSourceClaimScope.SyntheticRenderedPhraseologyExample
                 }
                 .map { source -> source.canonicalId }
                 .toSet(),
+        )
+        assertTrue(
+            ICAO9432.Communications.PhraseologyExampleItems.all { source ->
+                source.record.claimScope != EvidenceSourceClaimScope.RenderedPhraseologyTrace
+            },
         )
         assertTrue(
             ICAO9432.AerodromeInformation.ExamplePhraseology.record.claimScope !=

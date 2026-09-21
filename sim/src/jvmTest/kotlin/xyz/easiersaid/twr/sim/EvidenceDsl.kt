@@ -475,6 +475,12 @@ class EvidenceExpectContext internal constructor(
             activate = { factId -> activated += factId },
         )
 
+    fun communicationPhraseologyExamples(): AuditCommunicationPhraseologyExampleSubject =
+        AuditCommunicationPhraseologyExampleSubject(
+            facts = facts.orderedFacts(),
+            activate = { factId -> activated += factId },
+        )
+
     fun criticalPhase(aircraftId: AircraftId): AuditCriticalPhaseSubject =
         AuditCriticalPhaseSubject(
             aircraftId = aircraftId,
@@ -833,6 +839,97 @@ fun essentialRunwayConditionExample(): EvidenceFactPayload.RenderedEssentialAero
         text = RenderedPhraseText(
             "RUNWAY CONDITIONS 09: AVAILABLE WIDTH 32 METRES, " +
                 "COVERED WITH THIN PATCHES OF ICE, BRAKING ACTION POOR",
+        ),
+    )
+
+class AuditCommunicationPhraseologyExampleSubject internal constructor(
+    private val facts: List<EvidenceFact>,
+    private val activate: (FactId) -> Unit,
+) {
+    fun exampleBlock(): EvidenceAuditOutcome {
+        val phraseologyFacts = facts.filter { fact ->
+            fact.payload is EvidenceFactPayload.RenderedCommunicationPhraseologyExample
+        }
+        if (phraseologyFacts.isEmpty()) {
+            return EvidenceAuditOutcome.Fail(
+                reason = "Missing rendered communication phraseology examples",
+                evidence = emptyList(),
+            )
+        }
+        phraseologyFacts.forEach { fact -> activate(fact.id) }
+        return if (phraseologyFacts.map { fact -> fact.payload } == expectedPayloads) {
+            EvidenceAuditOutcome.Pass(
+                phraseologyFacts.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedCommunicationPhraseologyExample
+                    "${payload.template}:${payload.text.value}@${fact.provenance.sequence.value}"
+                },
+            )
+        } else {
+            EvidenceAuditOutcome.Fail(
+                reason = "Rendered communication phraseology examples did not match the exact source block",
+                evidence = phraseologyFacts.map { fact ->
+                    val payload = fact.payload as EvidenceFactPayload.RenderedCommunicationPhraseologyExample
+                    "${payload.template}:${payload.tokens}:${payload.text.value}@${fact.provenance.sequence.value}"
+                },
+            )
+        }
+    }
+
+    private companion object {
+        val expectedPayloads: List<EvidenceFactPayload.RenderedCommunicationPhraseologyExample> =
+            listOf(
+                communicationInitialContactStationThenAircraftExample(),
+                communicationInitialContactAircraftThenStationExample(),
+                communicationGroundStationAllStationsExample(),
+                communicationAircraftAllStationsExample(),
+            )
+    }
+}
+
+fun communicationInitialContactStationThenAircraftExample(): EvidenceFactPayload.RenderedCommunicationPhraseologyExample =
+    EvidenceFactPayload.RenderedCommunicationPhraseologyExample(
+        template = RenderedCommunicationPhraseologyTemplate.InitialContactStationThenAircraft,
+        tokens = listOf(
+            CommunicationPhraseologyToken.StationCallsign("STEPHENVILLE TOWER"),
+            CommunicationPhraseologyToken.AircraftCallsign(AircraftId("G-ABCD")),
+        ),
+        text = RenderedPhraseText("STEPHENVILLE TOWER G-ABCD"),
+    )
+
+fun communicationInitialContactAircraftThenStationExample(): EvidenceFactPayload.RenderedCommunicationPhraseologyExample =
+    EvidenceFactPayload.RenderedCommunicationPhraseologyExample(
+        template = RenderedCommunicationPhraseologyTemplate.InitialContactAircraftThenStation,
+        tokens = listOf(
+            CommunicationPhraseologyToken.AircraftCallsign(AircraftId("G-ABCD")),
+            CommunicationPhraseologyToken.StationCallsign("STEPHENVILLE TOWER"),
+        ),
+        text = RenderedPhraseText("G-ABCD STEPHENVILLE TOWER"),
+    )
+
+fun communicationGroundStationAllStationsExample(): EvidenceFactPayload.RenderedCommunicationPhraseologyExample =
+    EvidenceFactPayload.RenderedCommunicationPhraseologyExample(
+        template = RenderedCommunicationPhraseologyTemplate.GroundStationAllStationsBroadcast,
+        tokens = listOf(
+            CommunicationPhraseologyToken.AllStations,
+            CommunicationPhraseologyToken.StationCallsign("ALEXANDER CONTROL"),
+            CommunicationPhraseologyToken.BroadcastContent("FUEL DUMPING COMPLETED"),
+        ),
+        text = RenderedPhraseText("ALL STATIONS ALEXANDER CONTROL, FUEL DUMPING COMPLETED"),
+    )
+
+fun communicationAircraftAllStationsExample(): EvidenceFactPayload.RenderedCommunicationPhraseologyExample =
+    EvidenceFactPayload.RenderedCommunicationPhraseologyExample(
+        template = RenderedCommunicationPhraseologyTemplate.AircraftAllStationsBroadcast,
+        tokens = listOf(
+            CommunicationPhraseologyToken.AllStations,
+            CommunicationPhraseologyToken.AircraftCallsign(AircraftId("G-CDAB")),
+            CommunicationPhraseologyToken.BroadcastContent(
+                "WESTBOUND MARLO VOR TO STEPHENVILLE LEAVING FL 260 DESCENDING FL 150",
+            ),
+        ),
+        text = RenderedPhraseText(
+            "ALL STATIONS G-CDAB WESTBOUND MARLO VOR TO STEPHENVILLE " +
+                "LEAVING FL 260 DESCENDING FL 150",
         ),
     )
 
